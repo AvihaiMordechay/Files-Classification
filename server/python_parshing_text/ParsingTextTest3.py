@@ -1,10 +1,11 @@
 import pytesseract
 from PIL import Image
 
-pytesseract.pytesseract.tesseract_cmd = r'/opt/homebrew/bin/tesseract'
+pytesseract.pytesseract.tesseract_cmd = r"/opt/homebrew/bin/tesseract"
+
 
 # פונקציה לפענוח תמונה לטקסט
-def extract_text_from_image(image_path, lang='heb+eng'):
+def extract_text_from_image(image_path, lang="heb+eng"):
     """
     Extract text from an image using pytesseract.
 
@@ -23,6 +24,7 @@ def extract_text_from_image(image_path, lang='heb+eng'):
         return text
     except Exception as e:
         return f"Error: {e}"
+
 
 # הדגמה עם קובץ תמונה
 if __name__ == "__main__":

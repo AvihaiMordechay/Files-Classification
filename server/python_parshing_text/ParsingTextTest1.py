@@ -3,7 +3,7 @@ from PIL import Image, ImageEnhance
 import cv2
 
 # טוען את התמונה
-image_path = 'assets/IMG_5776.JPG'  # כאן תכניס את הנתיב שלך לתמונה
+image_path = "assets/IMG_5776.JPG"  # כאן תכניס את הנתיב שלך לתמונה
 image = cv2.imread(image_path)
 
 # 1. המרת התמונה לשחור-לבן (Gray Scale)
@@ -21,7 +21,7 @@ enhancer = ImageEnhance.Brightness(pil_image)
 bright_image = enhancer.enhance(2)  # 1 הוא ברירת המחדל, 2 מגביר את הבהירות
 
 # 5. קריאה עם pytesseract על התמונה המעובדת
-text = pytesseract.image_to_string(bright_image, lang='heb+eng')  # עברית ואנגלית
+text = pytesseract.image_to_string(bright_image, lang="heb+eng")  # עברית ואנגלית
 
 # הצגת התוצאה
 print(text)
