@@ -2,3 +2,4 @@ finalproject-441315-f9731388604c.json
 venv/
 .idea/
 __pycache__/
+.DS_Store
