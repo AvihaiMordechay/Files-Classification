@@ -8,7 +8,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "finalproject-441315-f9731388604c
 client = vision.ImageAnnotatorClient()
 
 # פתיחת התמונה שלך
-with open("assets/GetSecuredPersonalDocument_page-0001.jpg", "rb") as image_file:
+with open("assets/IMG_5776.JPG", "rb") as image_file:
     content = image_file.read()
 
 # יצירת אובייקט Image מהתמונה
