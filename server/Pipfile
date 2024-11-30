@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 django = "*"
+google-cloud-vision = "*"
+google-cloud-secret-manager = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
