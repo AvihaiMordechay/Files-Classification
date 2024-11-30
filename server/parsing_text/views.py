@@ -1,5 +1,9 @@
 from django.http import JsonResponse
 from .services import parse_text_from_image
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 def parse_text_view(request):
@@ -13,8 +17,8 @@ def parse_text_view(request):
                 temp_file.write(chunk)
 
         try:
-            project_id = "your-gcp-project-id"
-            secret_name = "google-vision-key"
+            project_id = os.getenv("GCP_PROJECT_ID")
+            secret_name = os.getenv("GCP_SECRET_NAME")
             extracted_text = parse_text_from_image(
                 file_path, project_id, secret_name)
             return JsonResponse({"text": extracted_text}, status=200)
