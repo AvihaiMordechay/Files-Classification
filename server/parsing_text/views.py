@@ -1,18 +1,9 @@
 from django.http import JsonResponse
 from .services import parse_text_from_image
 from dotenv import load_dotenv
-from django.middleware.csrf import get_token
 import os
 
 load_dotenv()
-
-
-def get_csrf_token_view(request):
-    """
-    View to provide CSRF Token for the client.
-    """
-    token = get_token(request)
-    return JsonResponse({'csrfToken': token})
 
 
 def parse_text_view(request):
