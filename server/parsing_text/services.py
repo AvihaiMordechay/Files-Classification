@@ -4,7 +4,8 @@ from google.cloud import vision
 
 def parse_text_from_image(file_path: str, credentials_path: str) -> str:
     """
-    Parses text from an image using Google Vision API with the credentials loaded from a local JSON file.
+    Parses text from an image using Google Vision API
+      with the credentials loaded from a local JSON file.
 
     Args:
         file_path (str): The path to the image file.

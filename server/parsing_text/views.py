@@ -16,7 +16,6 @@ def get_csrf_token_view(request):
 
 
 def parse_text_view(request):
-    print('test')
     if request.method == "POST" and request.FILES.get("file"):
         file = request.FILES["file"]
 
@@ -34,7 +33,6 @@ def parse_text_view(request):
 
             # Extract text from image using Google Vision
             extracted_text = parse_text_from_image(file_path, credentials_path)
-            print(extracted_text)
             return JsonResponse({"text": extracted_text}, status=200, json_dumps_params={'ensure_ascii': False})
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
