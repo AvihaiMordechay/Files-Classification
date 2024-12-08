@@ -13,7 +13,7 @@ class GoogleVisionRealImageTest(TestCase):
         Test parse_text_from_image with a real image file.`
         """
 
-        file_path = "/Users/avihaimor/Desktop/Files-Classification/python_parsing_text/IMG_BF5C5404296B-1.jpeg"
+        file_path = "C:\\Users\\omerz\\OneDrive\\מסמכים\\Files-Classification\\python_parsing_text\\IMG_BF5C5404296B-1.jpeg"
         if not os.path.exists(file_path):
             self.fail(f"Test image not found at {file_path}")
 
