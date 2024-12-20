@@ -4,14 +4,10 @@ import os
 from parsing_text.services import parse_text_from_image
 from machine_learning.services import predict_category
 
-# טוען משתני סביבה מה-.env
 load_dotenv()
 
 
 def process_file(request):
-    """
-    מקבל קובץ מהלקוח, מנתח את התוכן ומחזיר את הקטגוריה
-    """
     if request.method == "POST":
         try:
             # שליפת הקובץ מתוך הבקשה

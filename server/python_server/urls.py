@@ -4,7 +4,7 @@ from django.contrib import admin
 
 
 def not_found_view(request):
-    return HttpResponse("This page does not exist. Please use one of the defined paths.", status=404)
+    return HttpResponse("This page does not exist.", status=404)
 
 
 urlpatterns = [
