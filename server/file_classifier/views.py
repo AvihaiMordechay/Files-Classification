@@ -24,11 +24,20 @@ def process_file(request):
             if not credentials_path:
                 return JsonResponse({"error": "Google credentials not set"}, status=500)
 
-            # ניתוח הטקסט של הקובץ באמצעות הנתיב הזמני
+            # # ניתוח הטקסט של הקובץ באמצעות הנתיב הזמני
             extracted_text = parse_text_from_image(
-                file_path=file.temporary_file_path(), 
+                file_path=file.temporary_file_path(),
                 credentials_path=credentials_path
             )
+
+            # -------------------------------------
+            # file_path = f"/tmp/{file.name}"
+            # with open(file_path, "wb") as temp_file:
+            #     for chunk in file.chunks():
+            #         temp_file.write(chunk)
+
+            # extracted_text = parse_text_from_image(file_path, credentials_path)
+            # -------------------------------------
 
             # סיווג הטקסט לקטגוריה
             category = predict_category(extracted_text)
