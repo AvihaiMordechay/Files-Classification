@@ -1,35 +1,22 @@
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification
-import requests
-from dotenv import load_dotenv
 import json
 import os
 
-load_dotenv()
+# Paths for the model and category mapping
+MODEL_DIR = os.path.join(os.path.dirname(__file__), "saved_model")
+CATEGORY_MAPPING_FILE = os.path.join(MODEL_DIR, "category_mapping.json")
 
-# Hugging Face model path
-# השם של המאגר שלך ב-Hugging Face
-MODEL_ID = os.getenv("HUGGING_FACE_MODEL_ID")
-
-# Set Hugging Face API Token
-API_TOKEN = os.getenv("HUGGING_FACE_API_TOKEN")
-
-# Load model and tokenizer from Hugging Face Hub with API token
+# Load model, tokenizer, and category mapping
 try:
-    # Load model and tokenizer
-    model = BertForSequenceClassification.from_pretrained(
-        MODEL_ID, token=API_TOKEN)
+    model = BertForSequenceClassification.from_pretrained(MODEL_DIR)
     model.eval()  # Set model to evaluation mode
-    tokenizer = BertTokenizer.from_pretrained(MODEL_ID, token=API_TOKEN)
-    # Fetch the category mapping file from Hugging Face
-    CATEGORY_MAPPING_URL = f"https://huggingface.co/{MODEL_ID}/resolve/main/category_mapping.json"
-    headers = {"Authorization": f"Bearer {API_TOKEN}"}
-    response = requests.get(CATEGORY_MAPPING_URL, headers=headers)
-    response.raise_for_status()
-    category_mapping = response.json()
+    tokenizer = BertTokenizer.from_pretrained(MODEL_DIR)
+
+    with open(CATEGORY_MAPPING_FILE, "r") as f:
+        category_mapping = json.load(f)
 except Exception as e:
-    raise ValueError(
-        f"Failed to load model, tokenizer, or category mapping: {e}")
+    raise ValueError(f"Failed to load model or mapping: {e}")
 
 
 def predict_category(text: str) -> str:
