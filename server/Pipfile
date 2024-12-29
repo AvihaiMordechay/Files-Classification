@@ -8,8 +8,10 @@ django = "*"
 google-cloud-vision = "*"
 google-cloud-secret-manager = "*"
 python-dotenv = "*"
+torch = "*"
+transformers = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.11"
+python_version = "3.12"

@@ -36,7 +36,10 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "parsing_text"
+    "parsing_text",
+    "csrf_handler",
+    "machine_learning",
+    "file_classifier"
 ]
 
 MIDDLEWARE = [

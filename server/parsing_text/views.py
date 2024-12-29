@@ -17,11 +17,14 @@ def parse_text_view(request):
                 temp_file.write(chunk)
 
         try:
-            project_id = os.getenv("GCP_PROJECT_ID")
-            secret_name = os.getenv("GCP_SECRET_NAME")
-            extracted_text = parse_text_from_image(
-                file_path, project_id, secret_name)
-            return JsonResponse({"text": extracted_text}, status=200)
+            # Get the credentials path from environment variables
+            credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_PATH")
+            if not credentials_path:
+                return JsonResponse({"error": "Google credentials not set"}, status=500)
+
+            # Extract text from image using Google Vision
+            extracted_text = parse_text_from_image(file_path, credentials_path)
+            return JsonResponse({"text": extracted_text}, status=200, json_dumps_params={'ensure_ascii': False})
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 
