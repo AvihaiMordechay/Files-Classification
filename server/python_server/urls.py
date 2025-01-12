@@ -9,8 +9,6 @@ def not_found_view(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('parsing_text.urls')),
-    path('model/', include('machine_learning.urls')),
     path('csrf/', include('csrf_handler.urls')),
     path('file_classifier/', include('file_classifier.urls')),
     path('', not_found_view),
