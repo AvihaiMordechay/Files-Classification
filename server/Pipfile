@@ -10,6 +10,7 @@ google-cloud-secret-manager = "*"
 python-dotenv = "*"
 torch = "*"
 transformers = "*"
+pdf2image = "*"
 
 [dev-packages]
 
