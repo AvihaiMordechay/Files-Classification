@@ -23,19 +23,41 @@ def parse_text_from_image(file_path: str, credentials_path: str) -> str:
 
     # Check if the file is a PDF or an image
     file_extension = file_path.lower().split('.')[-1]
+    temp_image_path = "temp_page.jpg"  # Temporary image path
 
-    if file_extension == 'pdf':
-        # If it's a PDF, convert it to images (one per page)
-        pages = convert_from_path(file_path, 300)  # 300 dpi for better quality
-        full_text = ""
-        for page in pages:
-            # Convert each page to a byte array
-            with open("temp_page.jpg", "wb") as temp_image:
-                page.save(temp_image, 'JPEG')
-                temp_image.close()
+    try:
+        if file_extension == 'pdf':
+            # If it's a PDF, convert it to images (one per page)
+            pages = convert_from_path(file_path, 300)  # 300 dpi for better quality
+            full_text = ""
+            for page in pages:
+                # Convert each page to a byte array
+                with open(temp_image_path, "wb") as temp_image:
+                    page.save(temp_image, 'JPEG')
 
-            # Read the image file
-            with open("temp_page.jpg", "rb") as image_file:
+                # Read the image file
+                with open(temp_image_path, "rb") as image_file:
+                    content = image_file.read()
+
+                # Set up the image to be analyzed
+                image = vision.Image(content=content)
+
+                # Call the API for text detection
+                response = client.text_detection(image=image)
+
+                # Check for errors in the response
+                if response.error.message:
+                    raise Exception(f"Google Vision API error: {response.error.message}")
+
+                # Add the text from this page to the full text
+                if response.text_annotations:
+                    full_text += response.text_annotations[0].description.strip() + "\n"
+
+            return full_text.strip()
+
+        elif file_extension in ['png', 'jpg', 'jpeg', 'tiff']:
+            # If it's an image, process it directly
+            with open(file_path, "rb") as image_file:
                 content = image_file.read()
 
             # Set up the image to be analyzed
@@ -48,30 +70,14 @@ def parse_text_from_image(file_path: str, credentials_path: str) -> str:
             if response.error.message:
                 raise Exception(f"Google Vision API error: {response.error.message}")
 
-            # Add the text from this page to the full text
+            # Return the first text annotation found in the image
             if response.text_annotations:
-                full_text += response.text_annotations[0].description.strip() + "\n"
+                return response.text_annotations[0].description.strip()
 
-        return full_text.strip()
+        else:
+            raise ValueError("Unsupported file type. Only PDF and image files are supported.")
 
-    elif file_extension in ['png', 'jpg', 'jpeg', 'tiff']:
-        # If it's an image, process it directly
-        with open(file_path, "rb") as image_file:
-            content = image_file.read()
-
-        # Set up the image to be analyzed
-        image = vision.Image(content=content)
-
-        # Call the API for text detection
-        response = client.text_detection(image=image)
-
-        # Check for errors in the response
-        if response.error.message:
-            raise Exception(f"Google Vision API error: {response.error.message}")
-
-        # Return the first text annotation found in the image
-        if response.text_annotations:
-            return response.text_annotations[0].description.strip()
-
-    else:
-        raise ValueError("Unsupported file type. Only PDF and image files are supported.")
+    finally:
+        # Ensure the temporary image file is deleted
+        if os.path.exists(temp_image_path):
+            os.remove(temp_image_path)
