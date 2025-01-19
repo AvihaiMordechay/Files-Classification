@@ -10,7 +10,8 @@ class FileClassifierTests(unittest.TestCase):
         """
         הגדרת הנתיב המלא לקובץ והגדרת נתיב credentials.
         """
-        self.file_directory = r"C:\Omer_code\Files-Classification\file_classifier_assets\High quality"
+        self.high_quality_directory = r"C:\Omer_code\Files-Classification\file_classifier_assets\High quality"
+        self.low_quality_directory = r"C:\Omer_code\Files-Classification\file_classifier_assets\Low quality"
         self.credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_PATH")
         if not self.credentials_path:
             raise EnvironmentError("Google credentials not set in environment variables.")
@@ -36,36 +37,56 @@ class FileClassifierTests(unittest.TestCase):
             print(f"An error occurred while processing {file_path}: {e}")
             return None
     
-    def test_classify_file_financial_category(self):
+    def test_classify_file(self):
         """
         בדיקה אם הסיווג שהתקבל הוא כפי הצפוי עבור כל קובץ.
         """
-        files_and_expected_categories = {
-            "אי הגשת תביעה.pdf": "תחבורה",
-            "בקשה לחידוש רישיון איכות גבוהה.jpg": "תחבורה",
-            "העברת זהב 12-01-2021.pdf": "פיננסי",
-            "הצהרת בריאות 2.pdf": "רפואה",
-            "טופס הודעה על תאונה.pdf": "תחבורה",
-            "ערבות בנקאית סרוק איכות גבוהה תמונה.jpg": "פיננסי",
-            "רישיון נהיגה סרוק איכות גבוהה.jpg": "תחבורה",
-            "רישיון רכב.pdf": "תחבורה",
-            "שטר ערבות.pdf": "פיננסי"
-        }
+        test_failed = False  # משתנה שיבדוק אם היה כישלון
+        all_tests_passed = True  # משתנה שיבדוק אם כל הבדיקות עברו
 
-        # לולאה על הקבצים והקטגוריות
-        for idx, (file_name, expected_category) in enumerate(files_and_expected_categories.items(), start=1):
-            file_path = os.path.join(self.file_directory, file_name)
+        # לולאה על כל הקבצים בתיקיית High quality
+        print("\nTesting High Quality files:")
+        for idx, file_name in enumerate(os.listdir(self.high_quality_directory), start=1):
+            file_path = os.path.join(self.high_quality_directory, file_name)
+            
+            # סיווג הקובץ
             predicted_category = self.classify_file(file_path, self.credentials_path)
-            
-            # השוואת הקטגוריה המנובאת לצפוי
-            self.assertEqual(predicted_category, expected_category, f"Expected '{expected_category}', but got '{predicted_category}' for {file_name}")
-            
-            # הדפסת הודעה עם מספר סידורי
-            if predicted_category == expected_category:
+                
+            # בדיקה אם הסיווג המנובא נמצא בשם הקובץ
+            if predicted_category and predicted_category in file_name:
                 print(f"File number {idx} was classified correctly as '{predicted_category}'.")
             else:
-                print(f"File number {idx} was NOT classified correctly. Expected '{expected_category}', but got '{predicted_category}'.")
+                print(f"File number {idx} was NOT classified correctly. Expected category in file name, but got '{predicted_category}'.")
+                print(f"Error in file: {file_name}")  # הדפסת שם הקובץ שנכשל
+                test_failed = True  # אם יש כישלון, נעדכן את המשתנה
+                all_tests_passed = False  # סימון שהיו טעויות בבדיקות
 
+        # לולאה על כל הקבצים בתיקיית Low quality
+        print("\nTesting Low Quality files:")
+        for idx, file_name in enumerate(os.listdir(self.low_quality_directory), start=1):
+            file_path = os.path.join(self.low_quality_directory, file_name)
+            
+            # סיווג הקובץ
+            predicted_category = self.classify_file(file_path, self.credentials_path)
+                
+            # בדיקה אם הסיווג המנובא נמצא בשם הקובץ
+            if predicted_category and predicted_category in file_name:
+                print(f"File number {idx} was classified correctly as '{predicted_category}'.")
+            else:
+                print(f"File number {idx} was NOT classified correctly. Expected category in file name, but got '{predicted_category}'.")
+                print(f"Error in file: {file_name}")  # הדפסת שם הקובץ שנכשל
+                test_failed = True  # אם יש כישלון, נעדכן את המשתנה
+                all_tests_passed = False  # סימון שהיו טעויות בבדיקות
+
+        # אם היה כישלון, נגרום לטסט להיכשל
+        if test_failed:
+            self.fail("One or more files were not classified correctly.")
+
+        # הדפסת סיכום אם כל הבדיקות עברו
+        if all_tests_passed:
+            print("\nAll tests passed successfully!")
+        else:
+            print("\nSome tests failed.")
 
 if __name__ == "__main__":
     unittest.main()
