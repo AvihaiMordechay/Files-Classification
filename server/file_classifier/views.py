@@ -3,10 +3,12 @@ from dotenv import load_dotenv
 import os
 from parsing_text.services import parse_text_from_image
 from machine_learning.services import predict_category
+# from django.views.decorators.csrf import csrf_exempt
 
 load_dotenv()
 
 
+# @csrf_exempt
 def process_file(request):
     if request.method == "POST":
         try:
