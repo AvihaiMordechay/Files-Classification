@@ -1,11 +1,16 @@
 import { View, Text } from 'react-native';
+import Header from '../components/Header';
 
-const FavoritesScreen = () => {
+const FavoritesScreen = ({ route }) => {
+    const { user } = route.params || {};
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Favorites Screen</Text>
-        </View>
+        <>
+            <View>
+                <Header user={user} />
+                <Text>מועדפים</Text>
+            </View>
+        </>
     );
 };
 

@@ -1,11 +1,15 @@
 import { View, Text } from 'react-native';
 import Header from '../components/Header';
-const HomeScreen = () => {
 
+const HomeScreen = ({ route }) => {
+    const { user } = route.params || {};
     return (
-        <View >
-            <Header name={"אביחי"} />
-        </View>
+        <>
+            <View>
+                <Header user={user} />
+                <Text>דף הבית</Text>
+            </View>
+        </>
     );
 };
 

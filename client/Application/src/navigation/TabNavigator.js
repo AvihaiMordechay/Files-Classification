@@ -8,16 +8,17 @@ import HomeScreen from '../screens/HomeScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import AddFiles from '../components/AddFilesComponent';
+import { TouchableOpacity } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+const TabNavigator = ({ user }) => {
     return (
         <NavigationContainer>
             <Tab.Navigator
                 screenOptions={({ route }) => ({
                     headerShown: false,
-                    tabBarStyle: { backgroundColor: '#fff', height: 70 },
+                    tabBarStyle: { backgroundColor: '#fff', height: 75 },
                     tabBarActiveTintColor: '#00C7BE',
                     tabBarInactiveTintColor: 'gray',
                     tabBarIcon: ({ focused, color, size }) => {
@@ -35,13 +36,27 @@ const TabNavigator = () => {
                     }
                 })}
             >
-                <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'דף הבית' }} />
-                <Tab.Screen name="Favorites" component={FavoritesScreen} options={{ title: 'מועדפים' }} />
-                <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: 'הגדרות' }} />
-                <Tab.Screen name="Add" component={AddFiles} options={{ title: 'הוספה' }} />
-                {/* <Tab.Screen
+                <Tab.Screen
+                    name="Home"
+                    component={HomeScreen}
+                    initialParams={{ user }}
+                    options={{ title: 'דף הבית' }}
+                />
+                <Tab.Screen
+                    name="Favorites"
+                    component={FavoritesScreen}
+                    initialParams={{ user }}
+                    options={{ title: 'מועדפים' }}
+                />
+                <Tab.Screen
+                    name="Settings"
+                    component={SettingsScreen}
+                    initialParams={{ user }}
+                    options={{ title: 'הגדרות' }}
+                />
+                <Tab.Screen
                     name="Add"
-                    component={AddOptionsScreen}
+                    component={AddFiles}
                     options={{
                         title: 'הוספה',
                         tabBarButton: (props) => (
@@ -53,7 +68,8 @@ const TabNavigator = () => {
                             </TouchableOpacity>
                         ),
                     }}
-                /> */}
+                />
+
             </Tab.Navigator>
         </NavigationContainer>
     );
@@ -65,7 +81,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: -30,
-        marginBottom: 10,
+        marginLeft: -10,
         width: 100,
         height: 100,
         borderRadius: 50,

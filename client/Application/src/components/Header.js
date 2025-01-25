@@ -1,15 +1,19 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, SafeAreaView, Platform, StatusBar } from 'react-native';
 
-const Header = ({ name }) => {
+const Header = ({ user }) => {
+    const greeting = user.gender === 'male' ? 'ברוך הבא' : 'ברוכה הבאה';
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.headerContainer}>
                 <Image
-                    source={{ uri: 'https://example.com/profile.jpg' }}
+                    source={user.imgPath}
                     style={styles.profileImage}
                 />
-                <Text style={styles.headerText}>{name}</Text>
+                <View>
+                    <Text style={styles.greetingText}>{greeting}</Text>
+                    <Text style={styles.headerText}>{user.firstName}</Text>
+                </View>
             </View>
         </SafeAreaView>
     );
@@ -20,25 +24,34 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     headerContainer: {
-        flexDirection: 'row',
+        flexDirection: 'row-reverse',
         alignItems: 'center',
         paddingHorizontal: 15,
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 10 : 10,
         backgroundColor: 'white',
-        height: 80,
+        height: 90,
         zIndex: 100,
         borderBottomWidth: 1,
         borderBottomColor: '#e0e0e0',
     },
     profileImage: {
-        width: 40,
-        height: 40,
+        width: 45,
+        height: 45,
         borderRadius: 20,
-        marginRight: 10,
+        marginLeft: 20,
+    },
+    greetingText: {
+        fontSize: 14,
+        color: '#777',
+        fontWeight: 'normal',
+        writingDirection: 'rtl',
+        textAlign: 'right',  // הוסף את השורה הזו
     },
     headerText: {
         fontSize: 20,
         fontWeight: 'bold',
+        writingDirection: 'rtl',
+        textAlign: 'right',  // הוסף את השורה הזו
     },
 });
 
