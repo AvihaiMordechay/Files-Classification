@@ -1,34 +1,47 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
+import FileButton from '../components/FileButton';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
-const FolderScreen = ({ route }) => {
-    const { folderName, filesCount } = route.params || {};
+const FolderScreen = ({ route, navigation }) => {
+    const { files } = route.params || {};
+
+    console.log(files);
+    const handleFilePress = (file) => {
+        navigation.navigate('File', {
+            file: file
+        });
+    };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>{folderName}</Text>
-            <Text style={styles.subtitle}>{filesCount} קבצים</Text>
-        </View>
+        <SafeAreaProvider>
+            <SafeAreaView style={styles.container}>
+                <ScrollView contentContainerStyle={styles.categoriesContainer}>
+                    {files?.map((file, index) => (
+                        <FileButton
+                            key={index}
+                            file={file}
+                            onPress={() => handleFilePress(file)}
+                        />
+                    ))}
+                </ScrollView>
+            </SafeAreaView>
+        </SafeAreaProvider>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        paddingHorizontal: 15,
+    },
+    categoriesContainer: {
+        marginTop: 20,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
-        backgroundColor: '#fff',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    subtitle: {
-        fontSize: 16,
-        color: '#666',
-    },
+    }
 });
 
 export default FolderScreen;

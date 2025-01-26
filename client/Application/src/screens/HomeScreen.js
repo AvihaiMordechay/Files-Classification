@@ -10,7 +10,7 @@ const HomeScreen = ({ route, navigation }) => {
     const handleCategoryPress = (category) => {
         navigation.navigate('Folder', {
             folderName: category.tagName,
-            filesCount: category.filesCount,
+            files: category.files
         });
     };
 

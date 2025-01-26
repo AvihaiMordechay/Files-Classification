@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -8,8 +9,8 @@ import HomeScreen from '../screens/HomeScreen';
 import FolderScreen from '../screens/FolderScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import FileScreen from '../screens/FileScreen';
 import AddFiles from '../components/AddFilesComponent';
-import { StyleSheet, TouchableOpacity } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -38,13 +39,20 @@ const HomeStackNavigator = ({ user }) => {
                     },
                 })}
             />
-            {/* <Stack.Screen
+            <Stack.Screen
                 name="File"
                 component={FileScreen}
                 options={({ route }) => ({
-                    title: route.params?.fileName || 'קובץ',
+                    title: route.params?.file.name || 'קובץ',
+                    headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        writingDirection: 'rtl',
+                        fontSize: 18,
+                        fontWeight: 'bold',
+                        color: 'black',
+                    },
                 })}
-            /> */}
+            />
         </Stack.Navigator>
     );
 };
