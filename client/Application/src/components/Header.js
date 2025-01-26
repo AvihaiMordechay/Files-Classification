@@ -38,20 +38,20 @@ const styles = StyleSheet.create({
         width: 45,
         height: 45,
         borderRadius: 20,
-        marginLeft: 20,
+        marginLeft: 10,
     },
     greetingText: {
         fontSize: 14,
         color: '#777',
         fontWeight: 'normal',
         writingDirection: 'rtl',
-        textAlign: 'right',  // הוסף את השורה הזו
+        textAlign: 'right',
     },
     headerText: {
         fontSize: 20,
         fontWeight: 'bold',
         writingDirection: 'rtl',
-        textAlign: 'right',  // הוסף את השורה הזו
+        textAlign: 'right',
     },
 });
 
