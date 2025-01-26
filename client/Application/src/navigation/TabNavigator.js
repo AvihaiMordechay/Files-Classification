@@ -29,6 +29,13 @@ const HomeStackNavigator = ({ user }) => {
                 component={FolderScreen}
                 options={({ route }) => ({
                     title: route.params?.folderName || 'תקייה',
+                    headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        writingDirection: 'rtl',
+                        fontSize: 18,
+                        fontWeight: 'bold',
+                        color: 'black',
+                    },
                 })}
             />
             {/* <Stack.Screen

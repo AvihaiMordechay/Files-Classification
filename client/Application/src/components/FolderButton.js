@@ -21,14 +21,14 @@ const styles = StyleSheet.create({
         padding: 15,
         backgroundColor: '#f5f5f5',
         borderRadius: 12,
-        margin: 10,
+        margin: 6,
         width: 100, // Adjust the width to fit your grid
         height: 120, // Adjust the height to fit your grid
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
-        writingDirection: 'rtl', // This ensures the text is rendered right-to-left
+        writingDirection: 'center', // This ensures the text is rendered right-to-left
     },
     iconContainer: {
         marginBottom: 10,
