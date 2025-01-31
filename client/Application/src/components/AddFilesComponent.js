@@ -12,7 +12,7 @@ const AddFiles = () => {
             console.log(csrfToken);
 
             const formData = new FormData();
-            const fileUri = require('../../assets/image.jpeg');
+            const fileUri = require('../../assets/data/image.jpeg');  // קבע את ה-URI של הקובץ
             const file = {
                 uri: fileUri,
                 type: 'image/jpeg',
