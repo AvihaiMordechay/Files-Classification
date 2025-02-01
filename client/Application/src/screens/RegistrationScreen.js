@@ -13,6 +13,8 @@ import {
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+
 
 // סכמת הולידציה עם Yup
 const validationSchema = Yup.object().shape({
@@ -32,11 +34,25 @@ const validationSchema = Yup.object().shape({
 });
 
 const RegistrationScreen = () => {
-    const handleRegister = (values) => {
-        console.log('Full Name:', values.fullName);
-        console.log('Email:', values.email);
-        console.log('Password:', values.password);
+    const handleRegister = async (values) => {
+        const auth = getAuth(); // אתחול Firebase Auth
+        try {
+            // יצירת משתמש
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                values.email,
+                values.password
+            );
+
+            // קבלת UID
+            const user = userCredential.user;
+            console.log('UID:', user.uid);
+
+        } catch (error) {
+            console.error('Error creating user:', error.message);
+        }
     };
+
 
     return (
         <SafeAreaProvider style={styles.background}>
