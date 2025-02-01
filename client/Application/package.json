@@ -17,6 +17,7 @@
     "axios": "^1.7.9",
     "expo": "~52.0.25",
     "expo-document-picker": "^13.0.2",
+    "expo-sqlite": "~15.1.1",
     "expo-status-bar": "~2.0.1",
     "firebase": "^11.2.0",
     "formik": "^2.4.6",
