@@ -3,12 +3,14 @@ import * as SQLite from 'expo-sqlite';
 const initDB = async () => {
     try {
         const db = await SQLite.openDatabaseAsync('myapp.db');
+        await db.execAsync('PRAGMA foreign_keys = ON;');
         return db;
     } catch (error) {
         console.error('Database initialization error:', error);
         return null;
     }
 };
+
 
 const getElement = async (element) => {
     try {
@@ -108,7 +110,8 @@ export const createApplicationDB = async (id, name, email) => {
                 folderId TEXT NOT NULL,
                 tagName TEXT NOT NULL,
                 type TEXT NOT NULL,
-                FOREIGN KEY (folderId) REFERENCES folders (name)
+                path TEXT NOT NULL,
+                FOREIGN KEY (folderId) REFERENCES folders (name) ON DELETE CASCADE
             );
         `);
 
@@ -125,8 +128,12 @@ export const createApplicationDB = async (id, name, email) => {
 
 export const createFolder = async (folderName) => {
     try {
+        if (!folderName) {
+            throw new Error('The folderName parameter are required');
+        }
+
         const db = await initDB();
-        console.log(db)
+
         await db.runAsync('INSERT INTO folders (name , filesCount) VALUES (?, ?)', [folderName, 0]);
 
         console.log(`The ${folderName} folder created successfully.`);
@@ -137,5 +144,27 @@ export const createFolder = async (folderName) => {
     }
 
 }
+
+export const addFile = async (name, folderId, tagName, type, path) => {
+    try {
+        if (!name || !folderId || !tagName || !type || !path) {
+            throw new Error('All parameters (name, folderId, tagName, type, path) are required');
+        }
+
+        const db = await initDB();
+
+        await db.runAsync(
+            'INSERT INTO files (name, folderId, tagName, type, path) VALUES (?, ?, ?, ?, ?)',
+            [name, folderId, tagName, type, path]
+        );
+
+        console.log(`File '${name}' added successfully to folder '${folderId}'.`);
+        return true;
+    } catch (error) {
+        console.error('Error adding file:', error);
+        return false;
+    }
+};
+
 
 

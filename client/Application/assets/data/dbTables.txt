@@ -12,3 +12,4 @@ files:
 - folderId: string FOREIGN KEY NOT NULL (to folders/name)
 - tagName: string NOT NULL
 - type: string NOT NULL
+- path: string NOT NULL
