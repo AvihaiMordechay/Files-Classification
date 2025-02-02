@@ -1,0 +1,6 @@
+- get all favorite files
+- set file to favorite V
+- create favoire table that contains name for forgin key and for primay key V
+- delete file/folder
+- rename file/folder
+- most recently used files 

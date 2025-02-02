@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 
+// TODO: CHECK FOR CHANGING THE INIT DB THAT I DO EACH FUNCTION.
 const initDB = async () => {
     try {
         const db = await SQLite.openDatabaseAsync('myapp.db');
@@ -22,15 +23,17 @@ const getElement = async (element) => {
         return [];
     }
 };
-
+// FOR DEVELOPMENT!! DELETE IT IN PRODUCTION!! 
 export const printDB = async () => {
     const user = await getElement("user");
     const folders = await getElement("folders");
     const files = await getElement("files");
+    const favorite = await getElement("favorites");
 
     console.log("User Table:", user);
     console.log("Folders Table:", folders);
     console.log("Files Table:", files);
+    console.log("Favorites Table:", favorite);
 }
 // FOR DEVELOPMENT!! DELETE IT IN PRODUCTION!! 
 const deleteElement = async (tableName, elementid) => {
@@ -76,7 +79,7 @@ export const isFirstTime = async () => {
         return result.length === 0;
     } catch (error) {
         console.error('Error with isFirstTime function:', error);
-        return true;
+        return true; // think about that..
     }
 };
 
@@ -115,6 +118,14 @@ export const createApplicationDB = async (id, name, email) => {
             );
         `);
 
+        await db.execAsync(`
+            CREATE TABLE IF NOT EXISTS favorites (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                fileName TEXT NOT NULL UNIQUE,
+                FOREIGN KEY (fileName) REFERENCES files (name) ON DELETE CASCADE
+            );
+        `);
+
         await db.runAsync('INSERT INTO user (id ,name, email) VALUES (?, ?, ?)', [id, name, email]);
 
         console.log("The Application created successfully!");
@@ -140,7 +151,7 @@ export const createFolder = async (folderName) => {
         return true;
     } catch (error) {
         console.error('Error with create folder: ', error);
-        return false;
+        return error; // To handle errors differently in the GUI
     }
 
 }
@@ -162,9 +173,31 @@ export const addFile = async (name, folderId, tagName, type, path) => {
         return true;
     } catch (error) {
         console.error('Error adding file:', error);
-        return false;
+        return error; // To handle errors differently in the GUI
     }
 };
+
+export const addToFavorites = async (fileName) => {
+    try {
+        const db = await initDB();
+
+        await db.runAsync(
+            'INSERT INTO favorites (fileName) VALUES (?)',
+            [fileName]
+        );
+
+        console.log(`File '${fileName}' added to favorites.`);
+        return true;
+    } catch (error) {
+        console.error('Error adding file:', error);
+        return error; // To handle errors differently in the GUI
+    }
+};
+
+
+
+
+
 
 
 

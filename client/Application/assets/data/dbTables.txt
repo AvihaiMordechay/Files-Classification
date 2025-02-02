@@ -7,6 +7,10 @@ folders:
 - name: string PRIMARY KEY NOT NULL
 - filesCount: int NOT NULL
 
+favoire:
+- name: string PRIMARY KEY FOREIGN KEY NOT NULL(to files->name)
+ 
+
 files:
 - name: string PRIMARY KEY NOT NULL
 - folderId: string FOREIGN KEY NOT NULL (to folders/name)
