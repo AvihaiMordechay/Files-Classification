@@ -1,6 +1,7 @@
-- get all favorite files
+- get all favorite files V
 - set file to favorite V
 - create favoire table that contains name for forgin key and for primay key V
-- delete file/folder
-- rename file/folder
-- most recently used files 
+- delete file/folder V
+- rename file/folder v
+- most recently used files ?
+- If the category exist (boolean) V

@@ -1,19 +1,21 @@
 user:
-- id: int PRIMARY KEY NOT NULL (from firebase uid)
-- name; string NOT NULL
-- email: string NOT NULL
+- id: INTEGER PRIMARY KEY NOT NULL (from firebase uid)
+- name; STRING NOT NULL
+- email: STRING NOT NULL
 
 folders:
-- name: string PRIMARY KEY NOT NULL
-- filesCount: int NOT NULL
-
-favoire:
-- name: string PRIMARY KEY FOREIGN KEY NOT NULL(to files->name)
+- id: INTEGER PRIMARY KEY NOT NULL AUTOINCREMENT
+- name: STRING PRIMARY KEY NOT NULL
+- filesCount: INTEGER NOT NULL
  
-
 files:
-- name: string PRIMARY KEY NOT NULL
-- folderId: string FOREIGN KEY NOT NULL (to folders/name)
-- tagName: string NOT NULL
-- type: string NOT NULL
-- path: string NOT NULL
+- id INTEGER PRIMARY KEY NOT NULL AUTOINCREMENT
+- name: STRING PRIMARY KEY NOT NULL
+- folderId: STRING FOREIGN KEY NOT NULL (to folders/name)
+- tagName: STRING NOT NULL
+- type: STRING NOT NULL
+- path: STRING NOT NULL
+
+favorites:
+- id INTEGER PRIMARY KEY AUTOINCREMENT,
+- name: STRING PRIMARY KEY FOREIGN KEY NOT NULL (to files->name)
