@@ -5,7 +5,28 @@ import AddFiles from './components/AddFilesComponent';
 import RegistrationScreen from './screens/RegistrationScreen';
 
 export default function App() {
-  const user = new User("אביחי", "מרדכי", "male", "avihaimo1@gmail.com", require("../assets/profile.jpg"), foldersCategories);
+  const [isFirstTimeFlag, setIsFirstTimeFlag] = useState(false);
+
+  useEffect(() => {
+    checkFirstTime();
+    // deleteDB();
+  }, []);
+
+  const checkFirstTime = async () => {
+    try {
+      // await printDB();
+      if (await isFirstTime()) {
+        await createApplicationDB("123", "אביחי", "test");
+        await createFolder("Medical");
+        await addFile("test", "Medical", "רפואה", "png", "/c/asd/rs");
+        setIsFirstTimeFlag(true);
+        await printDB();
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   return (
     <>
       {/* <Navigator user={user} /> */}
@@ -15,3 +36,19 @@ export default function App() {
   );
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  message: {
+    fontSize: 18,
+    marginTop: 20,
+  },
+});

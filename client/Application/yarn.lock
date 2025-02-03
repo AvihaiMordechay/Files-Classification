@@ -3598,6 +3598,11 @@ expo-modules-core@2.1.3:
   dependencies:
     invariant "^2.2.4"
 
+expo-sqlite@~15.1.1:
+  version "15.1.1"
+  resolved "https://registry.npmjs.org/expo-sqlite/-/expo-sqlite-15.1.1.tgz"
+  integrity sha512-+muFuSbwxCtxs6ndk14acMFdiYt2pGjO5CicRqxNsqGrl3j5fcfP2qlqebcigwOCwZDaARNHIEwu6HbX8vxg+g==
+
 expo-status-bar@~2.0.1:
   version "2.0.1"
   resolved "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-2.0.1.tgz"
