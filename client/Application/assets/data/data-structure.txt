@@ -1,0 +1,13 @@
+foldersCategories:
+[
+    {
+        "name": "medical",
+        "filesCount": 10,
+        "files": [
+            {
+                "fileName": "ביטוח רפואי",
+                "filePath": "path/to/file"
+            }
+        ]
+    }
+]

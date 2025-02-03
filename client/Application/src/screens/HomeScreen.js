@@ -1,16 +1,62 @@
-import { View, Text } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Header from '../components/Header';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import FolderButton from '../components/FolderButton';
 
-const HomeScreen = ({ route }) => {
+const HomeScreen = ({ route, navigation }) => {
     const { user } = route.params || {};
+
+    const handleCategoryPress = (category) => {
+        navigation.navigate('Folder', {
+            folderName: category.tagName,
+            files: category.files
+        });
+    };
+
     return (
         <>
             <View>
                 <Header user={user} />
-                <Text>דף הבית</Text>
             </View>
+            <SafeAreaProvider>
+                <SafeAreaView style={styles.container}>
+                    <Text style={styles.baseText}>התיקיות שלי:</Text>
+                    <ScrollView contentContainerStyle={styles.categoriesContainer}>
+                        {user.foldersCategories?.map((category, index) => (
+                            <FolderButton
+                                key={index}
+                                category={category}
+                                onPress={() => handleCategoryPress(category)}
+                            />
+                        ))}
+                    </ScrollView>
+                </SafeAreaView>
+            </SafeAreaProvider>
         </>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingHorizontal: 15,
+    },
+    baseText: {
+        fontWeight: 'bold',
+        fontSize: 20,
+        marginRight: 20,
+        marginTop: 30,
+        writingDirection: 'rtl',
+        textAlign: 'right',
+    },
+    categoriesContainer: {
+        marginTop: 20,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+});
 
 export default HomeScreen;
