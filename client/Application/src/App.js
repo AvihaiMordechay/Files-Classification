@@ -6,6 +6,7 @@ import Navigator from './navigation/Navigator';
 import User from './user/user';
 import foldersCategories from '../assets/data/foldersCategories.json'
 import AddFiles from './components/AddFilesComponent';
+import  {saveFileToAppStorage, readFile, deleteFile } from './services/localFileSystem';
 
 
 export default function App() {
