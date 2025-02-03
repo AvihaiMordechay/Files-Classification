@@ -13,7 +13,8 @@ import {
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../services/firebase';
 
 
 // סכמת הולידציה עם Yup
@@ -35,7 +36,6 @@ const validationSchema = Yup.object().shape({
 
 const RegistrationScreen = () => {
     const handleRegister = async (values) => {
-        const auth = getAuth(); // אתחול Firebase Auth
         try {
             // יצירת משתמש
             const userCredential = await createUserWithEmailAndPassword(
