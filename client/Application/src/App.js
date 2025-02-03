@@ -1,8 +1,6 @@
-import Navigator from './navigation/Navigator';
-import User from './user/user';
-import foldersCategories from '../assets/data/foldersCategories.json'
-import AddFiles from './components/AddFilesComponent';
-import RegistrationScreen from './screens/RegistrationScreen';
+import { useEffect, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { isFirstTime, createFolder, deleteDB, printDB, addFile, addFileToFavorites, createDB, deleteFileDB } from '../src/services/database';
 
 export default function App() {
   const [isFirstTimeFlag, setIsFirstTimeFlag] = useState(false);
@@ -14,11 +12,13 @@ export default function App() {
 
   const checkFirstTime = async () => {
     try {
-      // await printDB();
+      await addFile("test", 1, "png", "/c/asd/rs");
+      await printDB();
       if (await isFirstTime()) {
-        await createApplicationDB("123", "אביחי", "test");
+        await createDB("123", "אביחי", "test", "male");
         await createFolder("Medical");
-        await addFile("test", "Medical", "רפואה", "png", "/c/asd/rs");
+        await addFile("test", 1, "png", "/c/asd/rs");
+        await addFileToFavorites(1);
         setIsFirstTimeFlag(true);
         await printDB();
       }
@@ -28,11 +28,15 @@ export default function App() {
   };
 
   return (
-    <>
-      {/* <Navigator user={user} /> */}
-      {/* <AddFiles /> */}
-      <RegistrationScreen />
-    </>
+    <View style={styles.container}>
+      <Text style={styles.header}>SQLite First Time Demo</Text>
+      <Text style={styles.message}>
+        {isFirstTimeFlag === false
+          ? 'Welcome back!'
+          : 'Welcome! This is your first time here.'
+        }
+      </Text>
+    </View>
   );
 }
 

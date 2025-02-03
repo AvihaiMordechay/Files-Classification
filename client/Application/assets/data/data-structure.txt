@@ -2,7 +2,6 @@ foldersCategories:
 [
     {
         "name": "medical",
-        "tagName": "רפואה",
         "filesCount": 10,
         "files": [
             {

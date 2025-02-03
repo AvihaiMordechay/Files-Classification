@@ -88,9 +88,9 @@ export const isFirstTime = async () => {
 };
 
 
-export const createDB = async (id, name, email) => {
+export const createDB = async (id, name, email, gender) => {
     try {
-        if (!id || !name || !email) {
+        if (!id || !name || !email || !gender) {
             throw new Error('id, Name and email are required');
         }
 
@@ -100,14 +100,15 @@ export const createDB = async (id, name, email) => {
             CREATE TABLE IF NOT EXISTS ${USER}  ( 
                 id TEXT PRIMARY KEY NOT NULL,
                 name TEXT NOT NULL, 
-                email TEXT NOT NULL   
+                email TEXT NOT NULL,
+                gender TEXT NOT NULL
             );
         `);
 
         await db.execAsync(`
             CREATE TABLE IF NOT EXISTS ${FOLDERS} ( 
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL, 
+                name TEXT NOT NULL UNIQUE, 
                 filesCount INTEGER NOT NULL
             );
         `);
@@ -117,10 +118,10 @@ export const createDB = async (id, name, email) => {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL, 
                 folderId INTEGER NOT NULL,
-                tagName TEXT NOT NULL,
                 type TEXT NOT NULL,
                 path TEXT NOT NULL,
-                FOREIGN KEY (folderId) REFERENCES ${FOLDERS} (id) ON DELETE CASCADE
+                FOREIGN KEY (folderId) REFERENCES ${FOLDERS} (id) ON DELETE CASCADE,
+                UNIQUE (folderId, name)
             );
         `);
 
@@ -132,7 +133,7 @@ export const createDB = async (id, name, email) => {
             );
         `);
 
-        await db.runAsync(`INSERT INTO ${USER} (id ,name, email) VALUES (?, ?, ?)`, [id, name, email]);
+        await db.runAsync(`INSERT INTO ${USER} (id ,name, email, gender) VALUES (?, ?, ?, ?)`, [id, name, email, gender]);
 
         console.log("The Application created successfully!");
         return true;
@@ -155,29 +156,34 @@ export const createFolder = async (folderName) => {
         console.log(`The ${folderName} folder created successfully.`);
         return true;
     } catch (error) {
-        console.log("Error with createFolder in DB:", error);
+        console.error("Error with createFolder in DB:", error);
         return error; // To handle errors differently in the GUI
     }
 
 }
 
-export const addFile = async (name, folderId, tagName, type, path) => {
+export const addFile = async (name, folderId, type, path) => {
     try {
-        if (!name || !folderId || !tagName || !type || !path) {
-            throw new Error('All parameters (name, folderId, tagName, type, path) are required');
+        if (!name || !folderId || !type || !path) {
+            throw new Error('All parameters (name, folderId, type, path) are required');
         }
 
         const db = await initDB();
 
         await db.runAsync(
-            `INSERT INTO ${FILES} (name, folderId, tagName, type, path) VALUES (?, ?, ?, ?, ?)`,
-            [name, folderId, tagName, type, path]
+            `INSERT INTO ${FILES} (name, folderId, type, path) VALUES (?, ?, ?, ?)`,
+            [name, folderId, type, path]
+        );
+
+        await db.runAsync(
+            `UPDATE ${FOLDERS} SET filesCount = filesCount + 1 WHERE id = ?`,
+            [folderId]
         );
 
         console.log(`File '${name}' added successfully to folder '${folderId}'.`);
         return true;
     } catch (error) {
-        console.log("Error with addFile in DB:", error);
+        console.error("Error with addFile in DB:", error);
         return error; // To handle errors differently in the GUI
     }
 };
@@ -194,7 +200,7 @@ export const addFileToFavorites = async (fileId) => {
         console.log(`File '${fileId}' added to ${FAVORITES}.`);
         return true;
     } catch (error) {
-        console.log("Error with addFileToFavorites in DB:", error);
+        console.error("Error with addFileToFavorites in DB:", error);
         return error; // To handle errors differently in the GUI
     }
 };
@@ -249,17 +255,34 @@ export const getAllCategories = async () => {
 
 export const deleteFileDB = async (fileId) => {
     try {
-        const result = deleteRow(`${FILES}`, fileId);
-        console.log(`File:'${fileId}' removed successfully!`);
+        const db = await initDB();
+
+        const file = await db.getFirstAsync(`SELECT folderId FROM ${FILES} WHERE id = ?`, [fileId]);
+        if (!file) {
+            console.log(`File with ID '${fileId}' not found.`);
+            return false;
+        }
+
+        const folderId = file.folderId;
+
+        await deleteRow(`${FILES}`, fileId);
+
+        await db.runAsync(
+            `UPDATE ${FOLDERS} SET filesCount = filesCount - 1 WHERE id = ? AND filesCount > 0`,
+            [folderId]
+        );
+
+        console.log(`File: '${fileId}' removed successfully!`);
         return true;
     } catch (error) {
         console.error('Error with delete file:', error);
         return false;
     }
-}
+};
 
 export const deleteFolderDB = async (folderId) => {
     try {
+        // TODO: Delete the files that contains in folder? Or send a meassage that impossibole to delete the folder!
         const result = deleteRow(`${FOLDERS}`, folderId);
         console.log(`Folder: '${folderId}' removed successfully!`);
         return true;
