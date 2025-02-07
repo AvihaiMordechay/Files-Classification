@@ -30,10 +30,10 @@ const getTable = async (tableName) => {
 
 
 export const printDB = async () => {
-    const user = await getTable(`${USER}`);
-    const folders = await getTable(`${FOLDERS}`);
-    const files = await getTable(`${FILES}`);
-    const favorite = await getTable(`${FAVORITES}`);
+    const user = await getTable(USER);
+    const folders = await getTable(FOLDERS);
+    const files = await getTable(FILES);
+    const favorite = await getTable(FAVORITES);
 
     console.log("User Table:", user);
     console.log("Folders Table:", folders);
@@ -86,7 +86,6 @@ export const isFirstTime = async () => {
         throw error;
     }
 };
-
 
 export const createDB = async (id, name, email, gender) => {
     try {
@@ -142,6 +141,10 @@ export const createDB = async (id, name, email, gender) => {
     }
 };
 
+export const getUserDetails = async () => {
+    const users = await getTable(USER);
+    return users[0];
+}
 
 export const createFolder = async (folderName) => {
     try {
@@ -162,7 +165,39 @@ export const createFolder = async (folderName) => {
 
 }
 
-export const addFile = async (name, folderId, type, path) => {
+export const getFoldersDetails = async () => {
+    try {
+        const result = getTable(FOLDERS);
+        return result;
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        return null;
+    }
+}
+
+export const changeFolderName = async (oldName, newName) => {
+    try {
+        if (!oldName || !newName) {
+            throw new Error('Both oldName and newName are required');
+        }
+
+        const db = await initDB();
+
+        await db.runAsync(`
+            UPDATE ${FOLDERS} 
+            SET name = ? 
+            WHERE name = ?
+        `, [newName, oldName]);
+
+        console.log(`Folder name updated from '${oldName}' to '${newName}'.`);
+        return true;
+    } catch (error) {
+        console.error('Error updating folder name:', error);
+        return false;
+    }
+}
+
+export const addFileToFolder = async (name, folderId, type, path) => {
     try {
         if (!name || !folderId || !type || !path) {
             throw new Error('All parameters (name, folderId, type, path) are required');
@@ -188,6 +223,36 @@ export const addFile = async (name, folderId, type, path) => {
     }
 };
 
+export const deleteFolder = async (folderId) => {
+    try {
+        // TODO: Delete the files that contains in folder? Or send a meassage that impossibole to delete the folder!
+        const result = deleteRow(`${FOLDERS}`, folderId);
+        console.log(`Folder: '${folderId}' removed successfully!`);
+        return true;
+    } catch (error) {
+        console.error('Error with delete folder:', error);
+        return false;
+    }
+}
+
+export const getFilesByFolder = async (folderId) => {
+    try {
+        const db = await initDB();
+
+        const result = await db.getAllAsync(`
+            SELECT ${FILES}.id, ${FILES}.name, ${FILES}.type, ${FILES}.path
+            FROM ${FILES}
+            JOIN ${FOLDERS} ON ${FILES}.folderId = ${FOLDERS}.id
+            WHERE ${FOLDERS}.id = ?
+        `, [folderId]);
+
+        return result;
+    } catch (error) {
+        console.error('Error fetching files by category:', error);
+        return [];
+    }
+};
+
 export const addFileToFavorites = async (fileId) => {
     try {
         const db = await initDB();
@@ -210,10 +275,15 @@ export const getAllFavoritesFiles = async () => {
         const db = await initDB();
         const result = await db.getAllAsync(`
             SELECT 
-                ${FAVORITES}.id as favoriteId,
-                ${FILES}.*
+                ${FAVORITES}.*,
+                ${FILES}.name, 
+                ${FILES}.path, 
+                ${FILES}.type, 
+                ${FILES}.folderId,  
+                ${FOLDERS}.name AS folderName
             FROM ${FAVORITES}
-            JOIN ${FILES} ON ${FAVORITES}.fileId = ${FILES}.name
+            JOIN ${FILES} ON ${FAVORITES}.fileId = ${FILES}.id
+            JOIN ${FOLDERS} ON ${FILES}.folderId = ${FOLDERS}.id
             ORDER BY ${FAVORITES}.id DESC
         `);
 
@@ -224,36 +294,30 @@ export const getAllFavoritesFiles = async () => {
     }
 };
 
-export const getFavoriteFileById = async (favoriteId) => {
+
+export const changeFileName = async (oldName, newName) => {
     try {
+        if (!oldName || !newName) {
+            throw new Error('Both oldName and newName are required');
+        }
+
         const db = await initDB();
-        const result = await db.getFirstAsync(`
-            SELECT 
-                ${FAVORITES}.id as favoriteId,
-                ${FILES}.*
-            FROM ${FAVORITES}
-            JOIN ${FILES} ON ${FAVORITES}.fileId = ${FILES}.name
-            WHERE ${FAVORITES}.id = ?
-        `, [favoriteId]);
 
-        return result;
-    } catch (error) {
-        console.error('Error fetching favorite by ID:', error);
-        return null;
-    }
-};
+        await db.runAsync(`
+            UPDATE ${FILES} 
+            SET name = ? 
+            WHERE name = ?
+        `, [newName, oldName]);
 
-export const getAllCategories = async () => {
-    try {
-        const result = getTable(`${FOLDERS}`);
-        return result;
+        console.log(`File name updated from '${oldName}' to '${newName}'.`);
+        return true;
     } catch (error) {
-        console.error('Error fetching categories:', error);
-        return [];
+        console.error('Error updating file name:', error);
+        return false;
     }
 }
 
-export const deleteFileDB = async (fileId) => {
+export const deleteFile = async (fileId) => {
     try {
         const db = await initDB();
 
@@ -280,59 +344,5 @@ export const deleteFileDB = async (fileId) => {
     }
 };
 
-export const deleteFolderDB = async (folderId) => {
-    try {
-        // TODO: Delete the files that contains in folder? Or send a meassage that impossibole to delete the folder!
-        const result = deleteRow(`${FOLDERS}`, folderId);
-        console.log(`Folder: '${folderId}' removed successfully!`);
-        return true;
-    } catch (error) {
-        console.error('Error with delete folder:', error);
-        return false;
-    }
-}
 
-export const changeFileNameDB = async (oldName, newName) => {
-    try {
-        if (!oldName || !newName) {
-            throw new Error('Both oldName and newName are required');
-        }
-
-        const db = await initDB();
-
-        await db.runAsync(`
-            UPDATE ${FILES} 
-            SET name = ? 
-            WHERE name = ?
-        `, [newName, oldName]);
-
-        console.log(`File name updated from '${oldName}' to '${newName}'.`);
-        return true;
-    } catch (error) {
-        console.error('Error updating file name:', error);
-        return false;
-    }
-}
-
-export const changeFolderNameDB = async (oldName, newName) => {
-    try {
-        if (!oldName || !newName) {
-            throw new Error('Both oldName and newName are required');
-        }
-
-        const db = await initDB();
-
-        await db.runAsync(`
-            UPDATE ${FOLDERS} 
-            SET name = ? 
-            WHERE name = ?
-        `, [newName, oldName]);
-
-        console.log(`Folder name updated from '${oldName}' to '${newName}'.`);
-        return true;
-    } catch (error) {
-        console.error('Error updating folder name:', error);
-        return false;
-    }
-}
 
