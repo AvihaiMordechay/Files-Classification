@@ -11,11 +11,11 @@ import User from './user/user';
 const isAuthenticated = () => {
   return new Promise((resolve) => {
     const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
-      unsubscribe(); // מבטל את המנוי אחרי הבדיקה הראשונה
+      unsubscribe();
       if (firebaseUser) {
-        resolve(true);  // המשתמש מחובר
+        resolve(true);
       } else {
-        resolve(false); // המשתמש לא מחובר
+        resolve(false);
       }
     });
   });
