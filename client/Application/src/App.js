@@ -1,58 +1,64 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { isFirstTime, createFolder, deleteDB, printDB, addFile, addFileToFavorites, createDB, deleteFileDB } from '../src/services/database';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { isFirstTime, deleteDB, printDB } from './services/database';
+import { NavigationContainer } from '@react-navigation/native';
+import RegistrationNavigator from './navigation/RegistrationNav';
+import AuthenticatedNavigator from './navigation/AuthenticatedNav';
+import User from './user/user';
 
 export default function App() {
-  const [isFirstTimeFlag, setIsFirstTimeFlag] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [userStatus, setUserStatus] = useState(null); // 'new', 'authenticated', 'unauthenticated'
+  const [user, setUser] = useState(new User());
+
 
   useEffect(() => {
-    checkFirstTime();
-    // deleteDB();
+    initApplication();
   }, []);
 
-  const checkFirstTime = async () => {
+  const initApplication = async () => {
     try {
-      await addFile("test", 1, "png", "/c/asd/rs");
-      await printDB();
       if (await isFirstTime()) {
-        await createDB("123", "אביחי", "test", "male");
-        await createFolder("Medical");
-        await addFile("test", 1, "png", "/c/asd/rs");
-        await addFileToFavorites(1);
-        setIsFirstTimeFlag(true);
-        await printDB();
+        setUserStatus('new');
+      }
+      // TODO: WRITRE isAuthenticated()
+      else if (true) {
+        await user.initDB();
+        setUserStatus('authenticated');
+      }
+      else {
+        setUserStatus('unauthenticated');
       }
     } catch (error) {
       console.error('Error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>טוען...</Text>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>SQLite First Time Demo</Text>
-      <Text style={styles.message}>
-        {isFirstTimeFlag === false
-          ? 'Welcome back!'
-          : 'Welcome! This is your first time here.'
-        }
-      </Text>
-    </View>
+    <NavigationContainer>
+      {userStatus === 'new' && <RegistrationNavigator user={user} />}
+      {userStatus === 'authenticated' && <AuthenticatedNavigator user={user} />}
+      {/* {userStatus === 'unauthenticated' && <LoginNavigator />} */}
+    </NavigationContainer>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  message: {
-    fontSize: 18,
-    marginTop: 20,
   },
 });

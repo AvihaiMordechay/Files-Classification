@@ -2,7 +2,9 @@ import React from 'react';
 import { View, Button, Alert } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 
-const AddFiles = () => {
+const AddFiles = ({ route }) => {
+    const { user } = route.params || {};
+
     const handleFileUpload = async () => {
         try {
             const result = await DocumentPicker.getDocumentAsync({

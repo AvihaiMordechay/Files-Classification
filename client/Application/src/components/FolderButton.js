@@ -2,14 +2,14 @@ import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const FolderButton = ({ category, onPress }) => {
+const FolderButton = ({ folder, onPress }) => {
     return (
         <TouchableOpacity style={styles.button} onPress={onPress}>
             <View style={styles.iconContainer}>
                 <Ionicons name="folder-outline" size={40} color="#00C7BE" />
             </View>
-            <Text style={styles.buttonText}>{category.tagName}</Text>
-            <Text style={styles.subButtonText}>{category.filesCount} קבצים</Text>
+            <Text style={styles.buttonText}>{folder.tagName}</Text>
+            <Text style={styles.subButtonText}>{folder.filesCount} קבצים</Text>
         </TouchableOpacity>
     );
 };

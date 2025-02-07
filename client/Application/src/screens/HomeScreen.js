@@ -7,10 +7,10 @@ import FolderButton from '../components/FolderButton';
 const HomeScreen = ({ route, navigation }) => {
     const { user } = route.params || {};
 
-    const handleCategoryPress = (category) => {
+    const handleFolderPress = (folder) => {
         navigation.navigate('Folder', {
-            folderName: category.tagName,
-            files: category.files
+            folderName: folder.tagName,
+            files: folder.files
         });
     };
 
@@ -22,12 +22,12 @@ const HomeScreen = ({ route, navigation }) => {
             <SafeAreaProvider>
                 <SafeAreaView style={styles.container}>
                     <Text style={styles.baseText}>התיקיות שלי:</Text>
-                    <ScrollView contentContainerStyle={styles.categoriesContainer}>
-                        {user.foldersCategories?.map((category, index) => (
+                    <ScrollView contentContainerStyle={styles.foldersContainer}>
+                        {user.folders?.map((folder, index) => (
                             <FolderButton
                                 key={index}
-                                category={category}
-                                onPress={() => handleCategoryPress(category)}
+                                folder={folder}
+                                onPress={() => handleFolderPress(folder)}
                             />
                         ))}
                     </ScrollView>
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
         writingDirection: 'rtl',
         textAlign: 'right',
     },
-    categoriesContainer: {
+    foldersContainer: {
         marginTop: 20,
         flexDirection: 'row',
         flexWrap: 'wrap',
