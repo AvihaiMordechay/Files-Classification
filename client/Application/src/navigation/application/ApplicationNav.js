@@ -14,7 +14,6 @@ const Tab = createBottomTabNavigator();
 const ApplicationNavigator = ({ route }) => {
     const { user } = route.params || {};
 
-    console.log("User ApplicationNavigator:", user);
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({

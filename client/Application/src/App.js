@@ -1,10 +1,25 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { isFirstTime, deleteDB, printDB } from './services/database';
+import { auth } from './services/firebase';
 import { NavigationContainer } from '@react-navigation/native';
 import RegistrationNavigator from './navigation/RegistrationNav';
 import AuthenticatedNavigator from './navigation/AuthenticatedNav';
+import LoginNavigator from './navigation/LoginNav';
 import User from './user/user';
+
+const isAuthenticated = () => {
+  return new Promise((resolve) => {
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+      unsubscribe(); // מבטל את המנוי אחרי הבדיקה הראשונה
+      if (firebaseUser) {
+        resolve(true);  // המשתמש מחובר
+      } else {
+        resolve(false); // המשתמש לא מחובר
+      }
+    });
+  });
+};
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -21,8 +36,7 @@ export default function App() {
       if (await isFirstTime()) {
         setUserStatus('new');
       }
-      // TODO: WRITRE isAuthenticated()
-      else if (true) {
+      else if (await isAuthenticated()) {
         await user.initDB();
         setUserStatus('authenticated');
       }
@@ -49,7 +63,7 @@ export default function App() {
     <NavigationContainer>
       {userStatus === 'new' && <RegistrationNavigator user={user} />}
       {userStatus === 'authenticated' && <AuthenticatedNavigator user={user} />}
-      {/* {userStatus === 'unauthenticated' && <LoginNavigator />} */}
+      {userStatus === 'unauthenticated' && <LoginNavigator user={user} />}
     </NavigationContainer>
   );
 }
