@@ -13,12 +13,10 @@ import {
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebase';
 
-
 const validationSchema = Yup.object().shape({
-    name: Yup.string().required('יש למלא שם מלא'),
     email: Yup.string()
         .matches(
             /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
@@ -28,33 +26,27 @@ const validationSchema = Yup.object().shape({
     password: Yup.string()
         .required('יש למלא סיסמה')
         .min(8, 'הסיסמה חייבת להיות באורך של לפחות 8 תווים')
-        .matches(/^[A-Za-z0-9!@#$%^&*()_+=\-[\]{};':"\\|,.<>/?`~]*$/, 'הסיסמה חייבת להכיל אותיות באנגלית, מספרים או סימנים מיוחדים בלבד'),
-    confirmPassword: Yup.string()
-        .oneOf([Yup.ref('password')], 'הסיסמאות אינן תואמות')
-        .required('יש לאמת את הסיסמה'),
 });
 
-const RegistrationScreen = ({ route, navigation }) => {
+const LoginScreen = ({ route, navigation }) => {
     const { user } = route.params || {};
 
-
-    const handleRegister = async (values) => {
+    const handleLogin = async (values) => {
         try {
-            const userCredential = await createUserWithEmailAndPassword(
+            const userCredential = await signInWithEmailAndPassword(
                 auth,
                 values.email,
                 values.password
             );
             const firebaseUserAuth = userCredential.user;
 
-            await user.createDB(firebaseUserAuth.uid, values.name, values.email, "male");
-
+            await user.initDB();
+            console.log(user.name);
             navigation.replace('Application', { user: user });
         } catch (error) {
-            console.error('Error creating user:', error.message);
+            console.error('Error signing in:', error.message);
         }
     };
-
 
     return (
         <SafeAreaProvider style={styles.background}>
@@ -64,22 +56,19 @@ const RegistrationScreen = ({ route, navigation }) => {
                     style={styles.keyboardAvoidingView}
                 >
                     <ScrollView contentContainerStyle={styles.scrollView}>
-                        {/* לוגו */}
                         <View style={styles.logoContainer}>
                             <View style={styles.logoBox}></View>
                             <View style={[styles.logoBox, styles.logoBoxOverlap]}></View>
                         </View>
-                        <Text style={styles.title}>Files Classifiction</Text>
+                        <Text style={styles.title}>Files Classification</Text>
 
                         <Formik
                             initialValues={{
-                                name: '',
                                 email: '',
                                 password: '',
-                                confirmPassword: '',
                             }}
                             validationSchema={validationSchema}
-                            onSubmit={handleRegister}
+                            onSubmit={handleLogin}
                         >
                             {({
                                 handleChange,
@@ -90,19 +79,6 @@ const RegistrationScreen = ({ route, navigation }) => {
                                 touched,
                             }) => (
                                 <View style={styles.form}>
-                                    <View style={styles.inputContainer}>
-                                        <TextInput
-                                            style={styles.input}
-                                            placeholder="שם"
-                                            onChangeText={handleChange('name')}
-                                            onBlur={handleBlur('name')}
-                                            value={values.name}
-                                        />
-                                        {touched.name && errors.name && (
-                                            <Text style={styles.errorText}>{errors.name}</Text>
-                                        )}
-                                    </View>
-
                                     <View style={styles.inputContainer}>
                                         <TextInput
                                             style={styles.input}
@@ -131,20 +107,6 @@ const RegistrationScreen = ({ route, navigation }) => {
                                         )}
                                     </View>
 
-                                    <View style={styles.inputContainer}>
-                                        <TextInput
-                                            style={styles.input}
-                                            placeholder="אימות סיסמה"
-                                            secureTextEntry
-                                            onChangeText={handleChange('confirmPassword')}
-                                            onBlur={handleBlur('confirmPassword')}
-                                            value={values.confirmPassword}
-                                        />
-                                        {touched.confirmPassword && errors.confirmPassword && (
-                                            <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-                                        )}
-                                    </View>
-
                                     <TouchableOpacity
                                         style={styles.button}
                                         onPress={() => {
@@ -153,7 +115,15 @@ const RegistrationScreen = ({ route, navigation }) => {
                                             }
                                         }}
                                     >
-                                        <Text style={styles.buttonText}>המשך</Text>
+                                        <Text style={styles.buttonText}>התחבר</Text>
+                                    </TouchableOpacity>
+
+                                    {/* קישור להרשמה */}
+                                    <TouchableOpacity
+                                        style={styles.linkButton}
+                                        onPress={() => navigation.navigate('Registration', { user })}
+                                    >
+                                        <Text style={styles.linkText}>אין לך חשבון? הירשם כאן</Text>
                                     </TouchableOpacity>
                                 </View>
                             )}
@@ -232,6 +202,14 @@ const styles = StyleSheet.create({
         marginTop: 5,
         textAlign: 'right',
     },
+    linkButton: {
+        marginTop: 15,
+        alignItems: 'center',
+    },
+    linkText: {
+        color: theme.colors.primary,
+        fontSize: 14,
+    },
 });
 
-export default RegistrationScreen;
+export default LoginScreen;
