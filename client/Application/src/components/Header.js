@@ -12,7 +12,7 @@ const Header = ({ user }) => {
                 />
                 <View>
                     <Text style={styles.greetingText}>{greeting}</Text>
-                    <Text style={styles.headerText}>{user.firstName}</Text>
+                    <Text style={styles.headerText}>{user.name}</Text>
                 </View>
             </View>
         </SafeAreaView>
