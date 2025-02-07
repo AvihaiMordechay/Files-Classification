@@ -17,9 +17,8 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebase';
 
 
-// סכמת הולידציה עם Yup
 const validationSchema = Yup.object().shape({
-    fullName: Yup.string().required('יש למלא שם מלא'),
+    name: Yup.string().required('יש למלא שם מלא'),
     email: Yup.string()
         .matches(
             /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
@@ -28,26 +27,28 @@ const validationSchema = Yup.object().shape({
         .required('יש למלא אימייל'),
     password: Yup.string()
         .required('יש למלא סיסמה')
-        .min(8, 'הסיסמה חייבת להיות באורך של לפחות 8 תווים'),
+        .min(8, 'הסיסמה חייבת להיות באורך של לפחות 8 תווים')
+        .matches(/^[A-Za-z0-9!@#$%^&*()_+=\-[\]{};':"\\|,.<>/?`~]*$/, 'הסיסמה חייבת להכיל אותיות באנגלית, מספרים או סימנים מיוחדים בלבד'),
     confirmPassword: Yup.string()
         .oneOf([Yup.ref('password')], 'הסיסמאות אינן תואמות')
         .required('יש לאמת את הסיסמה'),
 });
 
-const RegistrationScreen = () => {
+const RegistrationScreen = ({ route, navigation }) => {
+    const { user } = route.params || {};
+
     const handleRegister = async (values) => {
         try {
-            // יצירת משתמש
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
                 values.email,
                 values.password
             );
+            const firebaseUserAuth = userCredential.user;
 
-            // קבלת UID
-            const user = userCredential.user;
-            console.log('UID:', user.uid);
+            await user.createDB(firebaseUserAuth.uid, values.name, values.email, "male");
 
+            navigation.replace('Application', { user: user });
         } catch (error) {
             console.error('Error creating user:', error.message);
         }
@@ -71,7 +72,7 @@ const RegistrationScreen = () => {
 
                         <Formik
                             initialValues={{
-                                fullName: '',
+                                name: '',
                                 email: '',
                                 password: '',
                                 confirmPassword: '',
@@ -88,17 +89,16 @@ const RegistrationScreen = () => {
                                 touched,
                             }) => (
                                 <View style={styles.form}>
-                                    {/* שם מלא */}
                                     <View style={styles.inputContainer}>
                                         <TextInput
                                             style={styles.input}
-                                            placeholder="שם מלא"
-                                            onChangeText={handleChange('fullName')}
-                                            onBlur={handleBlur('fullName')}
-                                            value={values.fullName}
+                                            placeholder="שם"
+                                            onChangeText={handleChange('name')}
+                                            onBlur={handleBlur('name')}
+                                            value={values.name}
                                         />
-                                        {touched.fullName && errors.fullName && (
-                                            <Text style={styles.errorText}>{errors.fullName}</Text>
+                                        {touched.name && errors.name && (
+                                            <Text style={styles.errorText}>{errors.name}</Text>
                                         )}
                                     </View>
 
@@ -148,7 +148,14 @@ const RegistrationScreen = () => {
                                     </View>
 
                                     {/* כפתור הרשמה */}
-                                    <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                                    <TouchableOpacity
+                                        style={styles.button}
+                                        onPress={() => {
+                                            if (Object.keys(errors).length === 0 && Object.keys(touched).length > 0) {
+                                                handleSubmit();
+                                            }
+                                        }}
+                                    >
                                         <Text style={styles.buttonText}>המשך</Text>
                                     </TouchableOpacity>
                                 </View>
