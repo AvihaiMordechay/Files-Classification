@@ -58,6 +58,7 @@ const ApplicationNavigator = ({ route }) => {
             <Tab.Screen
                 name="Add"
                 component={AddFiles}
+                initialParams={{ user }}
                 options={{
                     title: 'הוספה',
                     tabBarButton: (props) => (
