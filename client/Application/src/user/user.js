@@ -56,11 +56,21 @@ class User {
                     };
                 })
             )
+            return folders;
         } catch (error) {
             console.error("Error with load folder from DB: ", error);
             return [];
         }
     }
+
+    getFoldersNames() {
+        const folderNames = []
+        this.folders.map((folder) => {
+            folderNames.push(folder.name);
+        })
+        return folderNames;
+    }
+
 
     async printData() {
         await printDB();

@@ -90,7 +90,7 @@ export const isFirstTime = async () => {
 export const createDB = async (id, name, email, gender) => {
     try {
         if (!id || !name || !email || !gender) {
-            throw new Error('id, Name and email are required');
+            throw new Error('id, Name, gender and email are required');
         }
 
         const db = await initDB();

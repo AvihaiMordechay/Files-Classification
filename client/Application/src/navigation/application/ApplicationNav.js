@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeStackNavigator from './HomeNav';
 import FavoritesScreen from '../../screens/FavoritesScreen';
 import SettingsScreen from '../../screens/SettingsScreen';
-import AddFiles from '../../components/AddFilesComponent';
+import AddFiles from '../../components/AddFiles';
 
 
 const Tab = createBottomTabNavigator();

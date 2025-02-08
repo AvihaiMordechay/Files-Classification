@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { isFirstTime, deleteDB, printDB } from './services/database';
 import { auth } from './services/firebase';
 import { NavigationContainer } from '@react-navigation/native';
+import Spinner from './components/Spinner';
 import RegistrationNavigator from './navigation/RegistrationNav';
 import AuthenticatedNavigator from './navigation/AuthenticatedNav';
 import LoginNavigator from './navigation/LoginNav';
@@ -52,10 +53,7 @@ export default function App() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>טוען...</Text>
-      </View>
+      <Spinner />
     );
   }
 
@@ -69,10 +67,4 @@ export default function App() {
 }
 
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+
