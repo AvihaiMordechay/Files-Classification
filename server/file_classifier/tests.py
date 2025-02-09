@@ -4,6 +4,8 @@ from parsing_text.services import parse_text_from_image
 from machine_learning.services import predict_category
 
 
+#run with - python -m unittest discover tests , on server folder
+
 class FileClassifierTests(unittest.TestCase):
     
     def setUp(self):
@@ -87,6 +89,7 @@ class FileClassifierTests(unittest.TestCase):
             print("\nAll tests passed successfully!")
         else:
             print("\nSome tests failed.")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,6 +1,34 @@
 import os
+import re
 from google.cloud import vision
 from pdf2image import convert_from_path
+
+
+def remove_numbers_and_cleanup(text: str) -> str:
+    """
+    Removes all numeric digits from the given text, 
+    and also removes lines that are less than 2 characters or consist of only a single character (e.g., '.' or 'a').
+    
+    Args:
+        text (str): The input text with numbers.
+        
+    Returns:
+        str: The cleaned text with numbers and unnecessary lines removed.
+    """
+    # הסרת מספרים
+    text = re.sub(r'\d+', '', text)
+    
+    # הסרת שורות עם פחות משתי אותיות או שורות עם תו אחד בלבד
+    # כאן בודקים אם השורה מכילה לפחות 2 תווים משמעותיים
+    text = "\n".join([line for line in text.split("\n") if len(re.findall(r'[a-zA-Zא-ת]', line.strip())) > 1])
+
+    # הסרת שורות שמכילות תו בודד בלבד כמו נקודה או תו בודד אחר
+    text = re.sub(r'^\s*[\.\-a-zA-Z]{1,2}\s*$', '', text, flags=re.MULTILINE)
+    
+    # הסרת שורות ריקות אם נשארו
+    text = re.sub(r'\n+', '\n', text).strip()
+
+    return text
 
 
 def parse_text_from_image(file_path: str, credentials_path: str) -> str:
@@ -51,7 +79,8 @@ def parse_text_from_image(file_path: str, credentials_path: str) -> str:
 
                 # Add the text from this page to the full text
                 if response.text_annotations:
-                    full_text += response.text_annotations[0].description.strip() + "\n"
+                    page_text = response.text_annotations[0].description.strip()
+                    full_text += remove_numbers_and_cleanup(page_text) + "\n"  # Remove numbers from the text
 
             return full_text.strip()
 
@@ -70,9 +99,9 @@ def parse_text_from_image(file_path: str, credentials_path: str) -> str:
             if response.error.message:
                 raise Exception(f"Google Vision API error: {response.error.message}")
 
-            # Return the first text annotation found in the image
+            # Return the first text annotation found in the image, after removing numbers
             if response.text_annotations:
-                return response.text_annotations[0].description.strip()
+                return remove_numbers_and_cleanup(response.text_annotations[0].description.strip())
 
         else:
             raise ValueError("Unsupported file type. Only PDF and image files are supported.")

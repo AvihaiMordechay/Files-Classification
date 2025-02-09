@@ -2,45 +2,50 @@ import * as FileSystem from 'expo-file-system';
 
 const APP_DIRECTORY = FileSystem.documentDirectory + 'myFiles/';
 
-/**
- * Checks if the app's storage directory exists, and creates it if not.
- * 
- * 🔹 Where is the data stored?  
- * - Inside `FileSystem.documentDirectory/myFiles/`, which is the app's internal storage.
- * 
- * 🔹 Input:  
- * - This function does not take any parameters.
- * 
- * 🔹 Output:  
- * - No return value. If the directory does not exist, it will be created.
- */
 async function ensureAppDirectoryExists() {
-    const dirInfo = await FileSystem.getInfoAsync(APP_DIRECTORY);
-    if (!dirInfo.exists) {
-        await FileSystem.makeDirectoryAsync(APP_DIRECTORY, { intermediates: true });
+    try {
+        const dirInfo = await FileSystem.getInfoAsync(APP_DIRECTORY);
+        if (!dirInfo.exists) {
+            await FileSystem.makeDirectoryAsync(APP_DIRECTORY, { intermediates: true });
+        }
+        return true;
+    } catch (error) {
+        console.error('Error creating directory:', error);
+        return false;
     }
 }
 
-/**
- * Saves a user-selected file into the app's internal storage.
- * 
- * 🔹 Where is the data stored?  
- * - Inside `APP_DIRECTORY`, which is `FileSystem.documentDirectory/myFiles/`.
- * 
- * 🔹 Input:  
- * - `fileUri` (String) – The original path of the file selected by the user.  
- * - `fileName` (String) – The name under which the file will be saved in the app.
- * 
- * 🔹 Output:  
- * - Returns the new file path inside the app's storage if the operation succeeds.  
- * - Returns `null` in case of an error.
- */
 export async function saveFileToAppStorage(fileUri, fileName) {
+    if (!fileUri || !fileName) {
+        console.error('Invalid file URI or filename');
+        return null;
+    }
+
     try {
-        await ensureAppDirectoryExists();
+        const directoryCreated = await ensureAppDirectoryExists();
+        if (!directoryCreated) {
+            throw new Error('Failed to create app directory');
+        }
+
+        // Verify source file exists
+        const sourceExists = await FileSystem.getInfoAsync(fileUri);
+        if (!sourceExists.exists) {
+            throw new Error('Source file does not exist');
+        }
+
         const newFilePath = APP_DIRECTORY + fileName;
-        await FileSystem.copyAsync({ from: fileUri, to: newFilePath });
-        return newFilePath; // Returns the new file path
+        await FileSystem.copyAsync({
+            from: fileUri,
+            to: newFilePath
+        });
+
+        // Verify the file was copied successfully
+        const newFileExists = await FileSystem.getInfoAsync(newFilePath);
+        if (!newFileExists.exists) {
+            throw new Error('File copy failed');
+        }
+
+        return newFilePath;
     } catch (error) {
         console.error('Error saving file:', error);
         return null;
@@ -61,11 +66,15 @@ export async function saveFileToAppStorage(fileUri, fileName) {
  * - Returns `null` in case of an error.
  */
 //need to check if this function is really needed and also the delete function 
-export async function readFile(filePath) {
+export async function getFileInfo(filePath) {
     try {
-        return await FileSystem.readAsStringAsync(filePath);
+        const fileInfo = await FileSystem.getInfoAsync(filePath);
+        if (!fileInfo.exists) {
+            throw new Error('File does not exist');
+        }
+        return fileInfo;
     } catch (error) {
-        console.error('Error reading file:', error);
+        console.error('Error getting file info:', error);
         return null;
     }
 }
