@@ -1,0 +1,5 @@
+build the android application: 
+eas login
+adb uninstall com.avihaimo1.Application
+eas build --profile preview --platform android
+adb install application-bc7b6f4c-7e2a-4dca-aa9e-40a8fa9972db.apk
