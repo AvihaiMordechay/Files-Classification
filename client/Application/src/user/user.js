@@ -22,6 +22,7 @@ class User {
             console.log("The DB init passed!");
         } catch (error) {
             Alert.alert(error);
+            throw error;
         }
     }
 
@@ -36,6 +37,7 @@ class User {
             this.favoritesFiles = [];
         } catch (error) {
             Alert.alert('Error', error.message);
+            throw error;
         }
     }
 

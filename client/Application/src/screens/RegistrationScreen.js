@@ -8,12 +8,12 @@ import {
     StyleSheet,
     ScrollView,
     KeyboardAvoidingView,
-    Platform,
+    Platform
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, deleteUser } from 'firebase/auth';
 import { auth } from '../services/firebase';
 
 
@@ -32,26 +32,36 @@ const validationSchema = Yup.object().shape({
     confirmPassword: Yup.string()
         .oneOf([Yup.ref('password')], 'הסיסמאות אינן תואמות')
         .required('יש לאמת את הסיסמה'),
+    gender: Yup.string().required('יש לבחור מגדר'),
 });
 
 const RegistrationScreen = ({ route, navigation }) => {
     const { user } = route.params || {};
 
-
-    const handleRegister = async (values) => {
+    const handleRegister = async (values, { setFieldError }) => {
         try {
+
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
                 values.email,
-                values.password
+                values.password,
             );
             const firebaseUserAuth = userCredential.user;
 
-            await user.createDB(firebaseUserAuth.uid, values.name, values.email, "male");
-
-            navigation.replace('Application', { user: user });
+            try {
+                await user.createDB(firebaseUserAuth.uid, values.name, values.email, values.gender);
+                navigation.replace('Application', { user: user });
+            } catch (dbError) {
+                console.error('Database creation failed:', dbError.message);
+                await deleteUser(firebaseUserAuth); // מחיקת המשתמש מפיירבייס במקרה של כישלון
+            }
         } catch (error) {
-            console.error('Error creating user:', error.message);
+            if (error.code === 'auth/email-already-in-use') {
+                console.log(error)
+                setFieldError('email', 'האימייל כבר קיים במערכת');
+            } else {
+                console.error('Error creating user:', error.message);
+            }
         }
     };
 
@@ -77,6 +87,7 @@ const RegistrationScreen = ({ route, navigation }) => {
                                 email: '',
                                 password: '',
                                 confirmPassword: '',
+                                gender: 'male',
                             }}
                             validationSchema={validationSchema}
                             onSubmit={handleRegister}
@@ -88,6 +99,7 @@ const RegistrationScreen = ({ route, navigation }) => {
                                 values,
                                 errors,
                                 touched,
+                                setFieldValue,
                             }) => (
                                 <View style={styles.form}>
                                     <View style={styles.inputContainer}>
@@ -102,6 +114,26 @@ const RegistrationScreen = ({ route, navigation }) => {
                                             <Text style={styles.errorText}>{errors.name}</Text>
                                         )}
                                     </View>
+
+                                    <View style={styles.genderContainer}>
+                                        <TouchableOpacity
+                                            style={[styles.genderButton, values.gender === 'female' && styles.selectedGender]}
+                                            onPress={() => setFieldValue('gender', 'female')}
+                                        >
+                                            <Text style={[styles.genderText, values.gender === 'female' && styles.selectedText]}>נקבה</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity
+                                            style={[styles.genderButton, values.gender === 'male' && styles.selectedGender]}
+                                            onPress={() => setFieldValue('gender', 'male')}
+                                        >
+                                            <Text style={[styles.genderText, values.gender === 'male' && styles.selectedText]}>זכר</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    {touched.gender && errors.gender && (
+                                        <Text style={styles.errorText}>{errors.gender}</Text>
+                                    )}
+
 
                                     <View style={styles.inputContainer}>
                                         <TextInput
@@ -153,7 +185,7 @@ const RegistrationScreen = ({ route, navigation }) => {
                                             }
                                         }}
                                     >
-                                        <Text style={styles.buttonText}>המשך</Text>
+                                        <Text style={styles.buttonText}>הרשם</Text>
                                     </TouchableOpacity>
                                 </View>
                             )}
@@ -232,6 +264,31 @@ const styles = StyleSheet.create({
         marginTop: 5,
         textAlign: 'right',
     },
+    genderContainer: {
+        flexDirection: 'row',
+        backgroundColor: '#F1F5F9',
+        borderRadius: 10,
+        overflow: 'hidden',
+        alignItems: 'center',
+        borderRadius: 8,
+        marginBottom: 15,
+    },
+    genderButton: {
+        flex: 1,
+        paddingVertical: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    selectedGender: {
+        backgroundColor: theme.colors.primary,
+    },
+    genderText: {
+        fontSize: 16,
+        color: 'gray',
+    },
+    selectedText: {
+        color: 'white',
+    }
 });
 
 export default RegistrationScreen;

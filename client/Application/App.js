@@ -9,8 +9,8 @@ import AuthenticatedNavigator from './src/navigation/AuthenticatedNav';
 import LoginNavigator from './src/navigation/LoginNav';
 import User from './src/user/user';
 
-const isAuthenticated = () => {
-  return new Promise((resolve) => {
+const isAuthenticated = async (user) => {
+  const res = new Promise((resolve) => {
     const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
       unsubscribe();
       if (firebaseUser) {
@@ -20,6 +20,9 @@ const isAuthenticated = () => {
       }
     });
   });
+  if (res) {
+    await user.initDB();
+  }
 };
 
 export default function App() {
@@ -37,8 +40,7 @@ export default function App() {
       if (await isFirstTime()) {
         setUserStatus('new');
       }
-      else if (await isAuthenticated()) {
-        await user.initDB();
+      else if (await isAuthenticated(user)) {
         setUserStatus('authenticated');
       }
       else {
