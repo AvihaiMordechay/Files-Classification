@@ -2,33 +2,43 @@ import os
 import unittest
 from parsing_text.services import parse_text_from_image
 from machine_learning.services import predict_category
+from dotenv import load_dotenv
+load_dotenv()
 
+# Run with:  python -m unittest file_classifier.tests  , in the server folder
 
-#run with - python -m unittest discover tests , on server folder
+# Map Hebrew categories to English
+CATEGORY_MAP = {
+    'תחבורה': 'transportation',
+    'רפואה': 'health',
+    'פיננסי': 'finance'
+}
+
 
 class FileClassifierTests(unittest.TestCase):
     
     def setUp(self):
         """
-        הגדרת הנתיב המלא לקובץ והגדרת נתיב credentials.
+        Set up file paths and credentials.
         """
         self.high_quality_directory = r"C:\Omer_code\Files-Classification\file_classifier_assets\High quality"
         self.low_quality_directory = r"C:\Omer_code\Files-Classification\file_classifier_assets\Low quality"
         self.credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_PATH")
+        print(self.credentials_path)
         if not self.credentials_path:
             raise EnvironmentError("Google credentials not set in environment variables.")
     
     def classify_file(self, file_path, credentials_path):
         """
-        פונקציה שמבצעת את עיבוד הקובץ ומחזירה את הסיווג.
+        Process the file and return its classification.
         """
         try:
-            # ניתוח הטקסט מתוך הקובץ
+            # Extract text from the file
             extracted_text = parse_text_from_image(file_path, credentials_path)
             if not isinstance(extracted_text, str):
                 raise ValueError(f"Failed to extract text from {file_path}")
 
-            # סיווג הטקסט
+            # Predict category
             predicted_category = predict_category(extracted_text)
             if not isinstance(predicted_category, str):
                 raise ValueError(f"Failed to classify text from {file_path}")
@@ -41,50 +51,92 @@ class FileClassifierTests(unittest.TestCase):
     
     def test_classify_file(self):
         """
-        בדיקה אם הסיווג שהתקבל הוא כפי הצפוי עבור כל קובץ.
+        Test if file classification is correct for each file.
         """
-        test_failed = False  # משתנה שיבדוק אם היה כישלון
-        all_tests_passed = True  # משתנה שיבדוק אם כל הבדיקות עברו
+        test_failed = False  # Tracks if any test failed
+        all_tests_passed = True  # Tracks if all tests passed
+        
+        # Track results for each category
+        category_results = {}
 
-        # לולאה על כל הקבצים בתיקיית High quality
+        # Process High Quality files
         print("\nTesting High Quality files:")
         for idx, file_name in enumerate(os.listdir(self.high_quality_directory), start=1):
             file_path = os.path.join(self.high_quality_directory, file_name)
             
-            # סיווג הקובץ
+            # Get predicted category
             predicted_category = self.classify_file(file_path, self.credentials_path)
-                
-            # בדיקה אם הסיווג המנובא נמצא בשם הקובץ
-            if predicted_category and predicted_category in file_name:
-                print(f"File number {idx} was classified correctly as '{predicted_category}'.")
-            else:
-                print(f"File number {idx} was NOT classified correctly. Expected category in file name, but got '{predicted_category}'.")
-                print(f"Error in file: {file_name}")  # הדפסת שם הקובץ שנכשל
-                test_failed = True  # אם יש כישלון, נעדכן את המשתנה
-                all_tests_passed = False  # סימון שהיו טעויות בבדיקות
 
-        # לולאה על כל הקבצים בתיקיית Low quality
+            # Extract expected category from file name
+            expected_category = None
+            for category in category_results.keys():
+                if category in file_name:
+                    expected_category = category
+                    break
+
+            if predicted_category and predicted_category in file_name:
+                # Print with English categories
+                print(f"File {idx} classified correctly as '{CATEGORY_MAP.get(predicted_category, predicted_category)}'.")
+                category_results[predicted_category] = category_results.get(predicted_category, {"passed": 0, "failed": 0})
+                category_results[predicted_category]["passed"] += 1
+            else:
+                print(f"File {idx} was NOT classified correctly. Expected category in file name, but got '{CATEGORY_MAP.get(predicted_category, predicted_category)}'.")
+                print(f"Error in file: {file_name}")
+                test_failed = True
+                all_tests_passed = False
+                if expected_category:
+                    category_results[expected_category] = category_results.get(expected_category, {"passed": 0, "failed": 0})
+                    category_results[expected_category]["failed"] += 1
+
+        # Process Low Quality files
         print("\nTesting Low Quality files:")
         for idx, file_name in enumerate(os.listdir(self.low_quality_directory), start=1):
             file_path = os.path.join(self.low_quality_directory, file_name)
             
-            # סיווג הקובץ
+            # Get predicted category
             predicted_category = self.classify_file(file_path, self.credentials_path)
-                
-            # בדיקה אם הסיווג המנובא נמצא בשם הקובץ
-            if predicted_category and predicted_category in file_name:
-                print(f"File number {idx} was classified correctly as '{predicted_category}'.")
-            else:
-                print(f"File number {idx} was NOT classified correctly. Expected category in file name, but got '{predicted_category}'.")
-                print(f"Error in file: {file_name}")  # הדפסת שם הקובץ שנכשל
-                test_failed = True  # אם יש כישלון, נעדכן את המשתנה
-                all_tests_passed = False  # סימון שהיו טעויות בבדיקות
 
-        # אם היה כישלון, נגרום לטסט להיכשל
+            # Extract expected category from file name
+            expected_category = None
+            for category in category_results.keys():
+                if category in file_name:
+                    expected_category = category
+                    break
+
+            if predicted_category and predicted_category in file_name:
+                # Print with English categories
+                print(f"File {idx} classified correctly as '{CATEGORY_MAP.get(predicted_category, predicted_category)}'.")
+                category_results[predicted_category] = category_results.get(predicted_category, {"passed": 0, "failed": 0})
+                category_results[predicted_category]["passed"] += 1
+            else:
+                print(f"File {idx} was NOT classified correctly. Expected category in file name, but got '{CATEGORY_MAP.get(predicted_category, predicted_category)}'.")
+                print(f"Error in file: {file_name}")
+                test_failed = True
+                all_tests_passed = False
+                if expected_category:
+                    category_results[expected_category] = category_results.get(expected_category, {"passed": 0, "failed": 0})
+                    category_results[expected_category]["failed"] += 1
+
+        # Print category-wise summary
+        print("\nTest Summary:")
+        total_passed = 0
+        total_failed = 0
+        for category, results in category_results.items():
+            passed = results["passed"]
+            failed = results["failed"]
+            total_passed += passed
+            total_failed += failed
+            print(f"Category '{CATEGORY_MAP.get(category, category)}': Passed - {passed}, Failed - {failed}")
+
+        print(f"\nTotal Tests: {total_passed + total_failed}")
+        print(f"Total Passed: {total_passed}")
+        print(f"Total Failed: {total_failed}")
+
+        # Fail the test if any file was classified incorrectly
         if test_failed:
             self.fail("One or more files were not classified correctly.")
 
-        # הדפסת סיכום אם כל הבדיקות עברו
+        # Print final test result
         if all_tests_passed:
             print("\nAll tests passed successfully!")
         else:
