@@ -11,7 +11,7 @@ const initDB = async () => {
         await db.execAsync('PRAGMA foreign_keys = ON;');
         return db;
     } catch (error) {
-        console.error('Database initialization error:');
+        console.error('Database initialization error:', error);
         throw error;
     }
 };

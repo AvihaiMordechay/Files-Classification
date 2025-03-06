@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     greetingText: {
-        fontSize: 14,
+        fontSize: 16,
         color: '#777',
         fontWeight: 'normal',
         writingDirection: 'rtl',

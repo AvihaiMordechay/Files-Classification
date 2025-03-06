@@ -73,7 +73,13 @@ class User {
         return folderNames;
     }
 
+    async setUserName(name) {
+        try {
 
+        } catch (error) {
+
+        }
+    }
     async printData() {
         await printDB();
     }

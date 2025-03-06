@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import HomeStackNavigator from './HomeNav';
 import FavoritesScreen from '../../screens/FavoritesScreen';
-import SettingsScreen from '../../screens/SettingsScreen';
+import SettingsNavigator from './SettingsNav';
 import AddFiles from '../../components/AddFiles';
 
 
@@ -48,12 +48,13 @@ const ApplicationNavigator = ({ route }) => {
                 initialParams={{ user }}
                 options={{ title: 'מועדפים' }}
             />
+
             <Tab.Screen
                 name="Settings"
-                component={SettingsScreen}
-                initialParams={{ user }}
                 options={{ title: 'הגדרות' }}
-            />
+            >
+                {() => <SettingsNavigator user={user} />}
+            </Tab.Screen>
             <Tab.Screen
                 name="Add"
                 component={AddFiles}
