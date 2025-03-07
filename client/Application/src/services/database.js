@@ -166,7 +166,7 @@ export const isFirstTime = async () => {
 
 
 export const getUserDetails = async () => {
-    return await getTable(USER)[0];
+    return (await getTable(USER))[0];
 }
 
 // FOLDERS:

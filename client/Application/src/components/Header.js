@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, SafeAreaView, Platform, StatusBar } from 'react-native';
+import theme from '../styles/theme';
 
 const Header = ({ user }) => {
     const greeting = user.gender === 'male' ? 'ברוך הבא' : 'ברוכה הבאה';
@@ -41,7 +42,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     greetingText: {
-        fontSize: 16,
+        fontSize: theme.sizes.font.medium,
         color: '#777',
         fontWeight: 'normal',
         writingDirection: 'rtl',

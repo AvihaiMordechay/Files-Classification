@@ -1,12 +1,13 @@
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import theme from '../styles/theme';
 
 const FileButton = ({ file, onPress }) => {
     return (
         <TouchableOpacity style={styles.button} onPress={onPress}>
             <View style={styles.iconContainer}>
-                <Ionicons name="document-outline" size={40} color="#00C7BE" />
+                <Ionicons name="document-outline" size={theme.sizes.icon} color={theme.colors.primary} />
             </View>
             <Text style={styles.buttonText}>{file.name}</Text>
         </TouchableOpacity>
@@ -18,11 +19,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 15,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: theme.colors.backgroundButton,
         borderRadius: 12,
         margin: 6,
-        width: 100,
-        height: 120,
+        width: theme.sizes.button.width,
+        height: theme.sizes.button.height,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     buttonText: {
-        fontSize: 14,
+        fontSize: theme.sizes.font.medium,
         fontWeight: '600',
         color: '#333',
         textAlign: 'center',

@@ -9,7 +9,7 @@ const HomeScreen = ({ route, navigation }) => {
 
     const handleFolderPress = (folder) => {
         navigation.navigate('Folder', {
-            folderName: folder.tagName,
+            folderName: folder.name,
             files: folder.files
         });
     };

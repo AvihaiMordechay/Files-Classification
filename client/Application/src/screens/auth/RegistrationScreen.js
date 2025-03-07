@@ -217,8 +217,8 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     logoBox: {
-        width: 50,
-        height: 50,
+        width: theme.sizes.logoBox.width,
+        height: theme.sizes.logoBox.height,
         backgroundColor: theme.colors.primary,
         borderRadius: 8,
     },
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
         marginLeft: -15,
     },
     title: {
-        fontSize: 24,
+        fontSize: theme.sizes.font.large,
         fontWeight: 'bold',
         marginBottom: 20,
     },
@@ -234,14 +234,14 @@ const styles = StyleSheet.create({
         width: '80%',
     },
     inputContainer: {
-        backgroundColor: '#F1F5F9',
+        backgroundColor: theme.colors.backgroundInput,
         borderRadius: 8,
         marginBottom: 15,
         paddingHorizontal: 10,
         paddingVertical: 8,
     },
     input: {
-        fontSize: 17,
+        fontSize: theme.sizes.font.medium,
         textAlign: 'right',
     },
     button: {
@@ -253,19 +253,19 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     buttonText: {
-        color: '#FFFFFF',
-        fontSize: 16,
+        color: theme.colors.backgroundButton,
+        fontSize: theme.sizes.font.medium,
         fontWeight: 'bold',
     },
     errorText: {
         color: theme.colors.danger,
-        fontSize: 12,
+        fontSize: theme.sizes.font.small,
         marginTop: 5,
         textAlign: 'right',
     },
     genderContainer: {
         flexDirection: 'row',
-        backgroundColor: '#F1F5F9',
+        backgroundColor: theme.colors.backgroundInput,
         borderRadius: 10,
         overflow: 'hidden',
         alignItems: 'center',
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.primary,
     },
     genderText: {
-        fontSize: 16,
+        fontSize: theme.sizes.font.medium,
         color: 'gray',
     },
     selectedText: {
