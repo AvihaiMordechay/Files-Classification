@@ -1,5 +1,5 @@
 import React from 'react';
-import theme from '../../styles/theme';
+import constats from '../../styles/constats';
 import {
     View,
     Text,
@@ -16,6 +16,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { createUserWithEmailAndPassword, deleteUser } from 'firebase/auth';
 import { auth } from '../../services/firebase';
+import theme from '../../styles/theme';
 
 
 const validationSchema = Yup.object().shape({
@@ -198,7 +199,7 @@ const RegistrationScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
     background: {
-        backgroundColor: theme.colors.background,
+        backgroundColor: constats.colors.background,
         flex: 1,
     },
     container: {
@@ -216,56 +217,30 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 20,
     },
-    logoBox: {
-        width: theme.sizes.logoBox.width,
-        height: theme.sizes.logoBox.height,
-        backgroundColor: theme.colors.primary,
-        borderRadius: 8,
-    },
+    logoBox: theme.authLogoBox,
     logoBoxOverlap: {
         marginLeft: -15,
     },
     title: {
-        fontSize: theme.sizes.font.large,
+        fontSize: constats.sizes.font.large,
         fontWeight: 'bold',
         marginBottom: 20,
     },
     form: {
         width: '80%',
     },
-    inputContainer: {
-        backgroundColor: theme.colors.backgroundInput,
-        borderRadius: 8,
-        marginBottom: 15,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
-    },
-    input: {
-        fontSize: theme.sizes.font.medium,
-        textAlign: 'right',
-    },
-    button: {
-        backgroundColor: theme.colors.primary,
-        borderRadius: 8,
-        paddingVertical: 12,
-        alignItems: 'center',
-        marginTop: 10,
-        elevation: 2,
-    },
+    inputContainer: theme.inputContainer,
+    input: theme.input,
+    button: theme.authButton,
     buttonText: {
-        color: theme.colors.backgroundButton,
-        fontSize: theme.sizes.font.medium,
+        color: constats.colors.backgroundButton,
+        fontSize: constats.sizes.font.medium,
         fontWeight: 'bold',
     },
-    errorText: {
-        color: theme.colors.danger,
-        fontSize: theme.sizes.font.small,
-        marginTop: 5,
-        textAlign: 'right',
-    },
+    errorText: theme.errorText,
     genderContainer: {
         flexDirection: 'row',
-        backgroundColor: theme.colors.backgroundInput,
+        backgroundColor: constats.colors.backgroundInput,
         borderRadius: 10,
         overflow: 'hidden',
         alignItems: 'center',
@@ -279,10 +254,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     selectedGender: {
-        backgroundColor: theme.colors.primary,
+        backgroundColor: constats.colors.primary,
     },
     genderText: {
-        fontSize: theme.sizes.font.medium,
+        fontSize: constats.sizes.font.medium,
         color: 'gray',
     },
     selectedText: {

@@ -1,30 +1,37 @@
+import constats from "./constats"
+
 const theme = {
-    colors: {
-        primary: '#00C7BE',
-        backgroundButton: '#FFFFFF',
-        backgroundInput: '#F1F5F9',
-        background: '#F9FAFB',
-        danger: '#EF4444',
-        success: '#10B981',
+    inputContainer: {
+        backgroundColor: constats.colors.backgroundInput,
+        borderRadius: 8,
+        marginBottom: 15,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
     },
-    sizes: {
-        font: {
-            small: 12,
-            medium: 16,
-            large: 24,
-            xl: 32,
-        },
-        button: {
-            width: 120,
-            height: 140
-        },
-        logoBox: {
-            width: 50,
-            height: 50,
-        },
-        icon: 50
+    input: {
+        fontSize: 17,
+        textAlign: 'right',
+    },
+    errorText: {
+        color: constats.colors.danger,
+        fontSize: constats.sizes.font.small,
+        marginTop: 5,
+        textAlign: 'right',
+    },
+    authButton: {
+        backgroundColor: constats.colors.primary,
+        borderRadius: 8,
+        paddingVertical: 12,
+        alignItems: 'center',
+        marginTop: 10,
+        elevation: 2,
+    },
+    authLogoBox: {
+        width: constats.sizes.logoBox.width,
+        height: constats.sizes.logoBox.height,
+        backgroundColor: constats.colors.primary,
+        borderRadius: 8,
+    },
+}
 
-    }
-
-};
 export default theme;

@@ -7,6 +7,7 @@ import UserSettingsScreen from '../../screens/settings/UserSettings';
 const Stack = createStackNavigator();
 
 const SettingsNavigator = ({ user }) => {
+    console.log(user.name);
     return (
         <Stack.Navigator>
             <Stack.Screen

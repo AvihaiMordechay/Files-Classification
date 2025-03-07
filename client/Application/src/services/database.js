@@ -150,7 +150,7 @@ export const deleteDB = async () => {
         throw error;
     }
 };
-// USERS:
+// USER:
 export const isFirstTime = async () => {
     try {
         const db = await initDB();
@@ -164,7 +164,16 @@ export const isFirstTime = async () => {
     }
 };
 
-
+export const getUserEmail = async () => {
+    try {
+        const db = await initDB();
+        const result = await db.getFirstAsync(`SELECT email FROM ${USER}`);
+        return result.email;
+    } catch (error) {
+        console.error("Error with get email:", error);
+        throw error;
+    }
+}
 export const getUserDetails = async () => {
     return (await getTable(USER))[0];
 }

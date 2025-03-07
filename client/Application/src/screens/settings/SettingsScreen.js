@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../../components/Header';
-import theme from '../../styles/theme';
+import constats from '../../styles/constats';
 
 const settingsOptions = [
     { id: '1', title: 'הגדרות משתמש', screen: 'UserSettings', icon: 'person-outline' },
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     title: {
-        fontSize: theme.sizes.font.large,
+        fontSize: constats.sizes.font.large,
         fontWeight: 'bold',
         textAlign: 'right',
         marginVertical: 20,

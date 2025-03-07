@@ -1,5 +1,5 @@
 import React from 'react';
-import theme from '../../styles/theme';
+import constats from '../../styles/constats';
 import {
     View,
     Text,
@@ -15,6 +15,8 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/firebase';
+import theme from '../../styles/theme';
+import { getUserEmail } from '../../services/database';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -33,6 +35,9 @@ const LoginScreen = ({ route, navigation }) => {
 
     const handleLogin = async (values) => {
         try {
+            // TODO: COMPERE THE EMAIL HERE WITH THE EMAIL IN THE DATABASE FOR UNIQUE 
+            // const dbUserEmail = await getUserEmail();
+            // if (dbUserEmail === values.email){}
             await signInWithEmailAndPassword(auth, values.email, values.password);
             await user.initDB();
             navigation.replace('Application', { user: user });
@@ -130,7 +135,7 @@ const LoginScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
     background: {
-        backgroundColor: theme.colors.background,
+        backgroundColor: constats.colors.background,
         flex: 1,
     },
     container: {
@@ -148,60 +153,34 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 20,
     },
-    logoBox: {
-        width: theme.sizes.logoBox.width,
-        height: theme.sizes.logoBox.height,
-        backgroundColor: theme.colors.primary,
-        borderRadius: 8,
-    },
+    logoBox: theme.authLogoBox,
     logoBoxOverlap: {
         marginLeft: -15,
     },
     title: {
-        fontSize: theme.sizes.font.large,
+        fontSize: constats.sizes.font.large,
         fontWeight: 'bold',
         marginBottom: 20,
     },
     form: {
         width: '80%',
     },
-    inputContainer: {
-        backgroundColor: theme.colors.backgroundInput,
-        borderRadius: 8,
-        marginBottom: 15,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
-    },
-    input: {
-        fontSize: 17,
-        textAlign: 'right',
-    },
-    button: {
-        backgroundColor: theme.colors.primary,
-        borderRadius: 8,
-        paddingVertical: 12,
-        alignItems: 'center',
-        marginTop: 10,
-        elevation: 2,
-    },
+    inputContainer: theme.inputContainer,
+    input: theme.input,
+    button: theme.authButton,
     buttonText: {
-        color: theme.colors.backgroundButton,
-        fontSize: theme.sizes.font.medium,
+        color: constats.colors.backgroundButton,
+        fontSize: constats.sizes.font.medium,
         fontWeight: 'bold',
     },
-    errorText: {
-        color: theme.colors.danger,
-        fontSize: theme.sizes.font.small,
-        marginTop: 5,
-        textAlign: 'right',
-    },
+    errorText: theme.errorText,
     linkButton: {
         marginTop: 15,
         alignItems: 'center',
     },
     linkText: {
-        color: theme.colors.primary,
-        fontSize: theme.sizes.font.small,
+        color: constats.colors.primary,
+        fontSize: constats.sizes.font.small,
     },
 });
 

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import theme from '../styles/theme';
+import constats from '../styles/constats';
 
 const FileButton = ({ file, onPress }) => {
     return (
         <TouchableOpacity style={styles.button} onPress={onPress}>
             <View style={styles.iconContainer}>
-                <Ionicons name="document-outline" size={theme.sizes.icon} color={theme.colors.primary} />
+                <Ionicons name="document-outline" size={constats.sizes.icon} color={constats.colors.primary} />
             </View>
             <Text style={styles.buttonText}>{file.name}</Text>
         </TouchableOpacity>
@@ -19,11 +19,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 15,
-        backgroundColor: theme.colors.backgroundButton,
+        backgroundColor: constats.colors.backgroundButton,
         borderRadius: 12,
         margin: 6,
-        width: theme.sizes.button.width,
-        height: theme.sizes.button.height,
+        width: constats.sizes.button.width,
+        height: constats.sizes.button.height,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     buttonText: {
-        fontSize: theme.sizes.font.medium,
+        fontSize: constats.sizes.font.medium,
         fontWeight: '600',
         color: '#333',
         textAlign: 'center',

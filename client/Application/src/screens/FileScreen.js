@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import theme from '../styles/theme';
+import constats from '../styles/constats';
 
 const FileScreen = ({ route }) => {
     const { file } = route.params || {};
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     errorText: {
-        fontSize: theme.sizes.font.medium,
+        fontSize: constats.sizes.font.medium,
         color: 'red',
     },
 });
