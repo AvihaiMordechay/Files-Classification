@@ -33,15 +33,8 @@ const LoginScreen = ({ route, navigation }) => {
 
     const handleLogin = async (values) => {
         try {
-            const userCredential = await signInWithEmailAndPassword(
-                auth,
-                values.email,
-                values.password
-            );
-            const firebaseUserAuth = userCredential.user;
-
+            await signInWithEmailAndPassword(auth, values.email, values.password);
             await user.initDB();
-            console.log(user.name);
             navigation.replace('Application', { user: user });
         } catch (error) {
             console.error('Error signing in:', error.message);

@@ -8,7 +8,8 @@ import {
     StyleSheet,
     ScrollView,
     KeyboardAvoidingView,
-    Platform
+    Platform,
+    Alert
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
@@ -40,19 +41,16 @@ const RegistrationScreen = ({ route, navigation }) => {
 
     const handleRegister = async (values, { setFieldError }) => {
         try {
-
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
                 values.email,
                 values.password,
             );
             const firebaseUserAuth = userCredential.user;
-
             try {
                 await user.createDB(firebaseUserAuth.uid, values.name, values.email, values.gender);
                 navigation.replace('Application', { user: user });
             } catch (dbError) {
-                console.error('Database creation failed:', dbError.message);
                 await deleteUser(firebaseUserAuth);
             }
         } catch (error) {
@@ -61,6 +59,7 @@ const RegistrationScreen = ({ route, navigation }) => {
                 setFieldError('email', 'האימייל כבר קיים במערכת');
             } else {
                 console.error('Error creating user:', error.message);
+                Alert.alert('שגיאה', "לא ניתן להירשם כעת, אנא נסה שנית");
             }
         }
     };

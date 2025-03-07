@@ -5,84 +5,15 @@ const FOLDERS = "folders";
 const FILES = "files";
 const FAVORITES = "favorites";
 
+// --------------------- base functions -------------------------
+
 const initDB = async () => {
     try {
         const db = await SQLite.openDatabaseAsync('myapp.db');
         await db.execAsync('PRAGMA foreign_keys = ON;');
         return db;
     } catch (error) {
-        console.error('Database initialization error:', error);
-        throw error;
-    }
-};
-
-
-const getTable = async (tableName) => {
-    try {
-        const db = await initDB();
-        const result = await db.getAllAsync(`SELECT * FROM ${tableName}`);
-        return result;
-    } catch (error) {
-        console.error(`Error fetching data from table: ${tableName}`, error);
-        return [];
-    }
-};
-
-
-export const printDB = async () => {
-    const user = await getTable(USER);
-    const folders = await getTable(FOLDERS);
-    const files = await getTable(FILES);
-    const favorite = await getTable(FAVORITES);
-
-    console.log("User Table:", user);
-    console.log("Folders Table:", folders);
-    console.log("Files Table:", files);
-    console.log("Favorites Table:", favorite);
-}
-
-const deleteRow = async (tableName, elementid) => {
-    try {
-        const db = await initDB();
-
-        await db.runAsync(`DELETE FROM ${tableName} WHERE id = ?`, [elementid]);
-
-        console.log(`Element with ID ${elementid} deleted successfully.`);
-        return true;
-    } catch (error) {
-        console.error('Error deleting element:');
-        throw error;
-    }
-};
-
-export const deleteDB = async () => {
-    try {
-        const db = await initDB();
-
-        await db.execAsync(`DROP TABLE IF EXISTS ${USER}`);
-
-        await db.execAsync(`DROP TABLE IF EXISTS ${FILES}`);
-
-        await db.execAsync(`DROP TABLE IF EXISTS ${FOLDERS}`);
-
-        await db.execAsync(`DROP TABLE IF EXISTS ${FAVORITES}`);
-
-        console.log("The DB deleted successfully!");
-        return true;
-    } catch (error) {
-        throw error;
-    }
-};
-
-
-export const isFirstTime = async () => {
-    try {
-        const db = await initDB();
-        const result = await db.getAllAsync(`
-            SELECT name FROM sqlite_master WHERE type='table' AND name='${USER}'
-        `);
-        return result.length === 0;
-    } catch (error) {
+        console.error(error);
         throw error;
     }
 };
@@ -118,7 +49,7 @@ export const createDB = async (id, name, email, gender) => {
                 name TEXT NOT NULL, 
                 folderId INTEGER NOT NULL,
                 type TEXT NOT NULL,
-                path TEXT NOT NULL,
+                path TEXT NOT NULL UNIQUE,
                 FOREIGN KEY (folderId) REFERENCES ${FOLDERS} (id) ON DELETE CASCADE,
                 UNIQUE (folderId, name)
             );
@@ -132,71 +63,143 @@ export const createDB = async (id, name, email, gender) => {
             );
         `);
 
+        await db.execAsync(`
+            CREATE TRIGGER IF NOT EXISTS increment_files_count
+            AFTER INSERT ON ${FILES}
+            FOR EACH ROW
+            BEGIN
+                UPDATE ${FOLDERS} 
+                SET filesCount = filesCount + 1 
+                WHERE id = NEW.folderId;
+            END;
+        `);
+
+        await db.execAsync(`
+            CREATE TRIGGER IF NOT EXISTS decrement_files_count
+            AFTER DELETE ON ${FILES}
+            FOR EACH ROW
+            BEGIN
+                UPDATE ${FOLDERS} 
+                SET filesCount = filesCount - 1 
+                WHERE id = OLD.folderId;
+            END;
+        `);
+
         await db.runAsync(`INSERT INTO ${USER} (id ,name, email, gender) VALUES (?, ?, ?, ?)`, [id, name, email, gender]);
 
         console.log("The Application created successfully!");
-        return true;
     } catch (error) {
+        console.error(error);
         throw error;
     }
 };
 
-export const getUserDetails = async () => {
-    const users = await getTable(USER);
-    return users[0];
+const getTable = async (tableName) => {
+    try {
+        const db = await initDB();
+        const result = await db.getAllAsync(`SELECT * FROM ${tableName}`);
+        return result;
+    } catch (error) {
+        console.error(`Error fetching data from table: ${tableName}`, error);
+        throw error;
+    }
+};
+
+const updateElement = async (tableName, column, columnValue, where, whereValue) => {
+    try {
+        const db = await initDB();
+        await db.runAsync(
+            `UPDATE ${tableName} SET ${column} = ? WHERE ${where} = ?`,
+            [columnValue, whereValue]
+        );
+    } catch (error) {
+        console.error(`Error changing data from table: ${tableName}`, error);
+        throw error;
+    }
 }
 
+
+const deleteRow = async (tableName, elementid) => {
+    try {
+        const db = await initDB();
+
+        await db.runAsync(`DELETE FROM ${tableName} WHERE id = ?`, [elementid]);
+
+        console.log(`Element with ID ${elementid} deleted successfully.`);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+
+
+// --------------------------------------------------------------
+
+// TEMP FUNCTION!!!!!!!!!!!!
+export const deleteDB = async () => {
+    try {
+        const db = await initDB();
+        await db.execAsync(`DROP TABLE IF EXISTS ${USER}`);
+        await db.execAsync(`DROP TABLE IF EXISTS ${FILES}`);
+        await db.execAsync(`DROP TABLE IF EXISTS ${FOLDERS}`);
+        await db.execAsync(`DROP TABLE IF EXISTS ${FAVORITES}`);
+        console.log("The DB deleted successfully!");
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+// USERS:
+export const isFirstTime = async () => {
+    try {
+        const db = await initDB();
+        const result = await db.getAllAsync(`
+            SELECT name FROM sqlite_master WHERE type='table' AND name='${USER}'
+        `);
+        return result.length === 0;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+
+export const getUserDetails = async () => {
+    return await getTable(USER)[0];
+}
+
+// FOLDERS:
 export const createFolder = async (folderName) => {
     try {
         if (!folderName) {
             throw new Error('The folderName parameter are required');
         }
-
         const db = await initDB();
-
         await db.runAsync(`INSERT INTO ${FOLDERS} (name , filesCount) VALUES (?, ?)`, [folderName, 0]);
-
         console.log(`The ${folderName} folder created successfully.`);
-        return true;
     } catch (error) {
         console.error("Error with createFolder in DB:", error);
-        return error; // To handle errors differently in the GUI
+        throw error;
     }
-
 }
 
 export const getFoldersDetails = async () => {
-    try {
-        const result = getTable(FOLDERS);
-        return result;
-    } catch (error) {
-        console.error('Error fetching categories:', error);
-        return null;
-    }
+    return getTable(FOLDERS);
 }
 
-export const changeFolderName = async (oldName, newName) => {
-    try {
-        if (!oldName || !newName) {
-            throw new Error('Both oldName and newName are required');
-        }
-
-        const db = await initDB();
-
-        await db.runAsync(`
-            UPDATE ${FOLDERS} 
-            SET name = ? 
-            WHERE name = ?
-        `, [newName, oldName]);
-
-        console.log(`Folder name updated from '${oldName}' to '${newName}'.`);
-        return true;
-    } catch (error) {
-        console.error('Error updating folder name:', error);
-        return false;
-    }
+export const changeFolderName = async (newName, id) => {
+    await updateElement(FOLDERS, "name", newName, "id", id);
+    console.log(`Folder name updated to ${newName} on id: ${id}.`);
 }
 
+export const deleteFolder = async (folderId) => {
+    // TODO: Delete the files that contains in folder? Or send a meassage that impossibole to delete the folder!
+    await deleteRow(FOLDERS, folderId);
+    console.log(`Folder: '${folderId}' removed successfully!`);
+}
+
+// FILES:
 export const addFileToFolder = async (name, folderId, type, path) => {
     try {
         if (!name || !folderId || !type || !path) {
@@ -210,11 +213,6 @@ export const addFileToFolder = async (name, folderId, type, path) => {
             [name, folderId, type, path]
         );
 
-        await db.runAsync(
-            `UPDATE ${FOLDERS} SET filesCount = filesCount + 1 WHERE id = ?`,
-            [folderId]
-        );
-
         console.log(`File '${name}' added successfully to folder '${folderId}'.`);
         return true;
     } catch (error) {
@@ -223,36 +221,33 @@ export const addFileToFolder = async (name, folderId, type, path) => {
     }
 };
 
-export const deleteFolder = async (folderId) => {
-    try {
-        // TODO: Delete the files that contains in folder? Or send a meassage that impossibole to delete the folder!
-        const result = deleteRow(`${FOLDERS}`, folderId);
-        console.log(`Folder: '${folderId}' removed successfully!`);
-        return true;
-    } catch (error) {
-        console.error('Error with delete folder:', error);
-        return false;
-    }
-}
-
 export const getFilesByFolder = async (folderId) => {
     try {
         const db = await initDB();
-
         const result = await db.getAllAsync(`
             SELECT ${FILES}.id, ${FILES}.name, ${FILES}.type, ${FILES}.path
             FROM ${FILES}
             JOIN ${FOLDERS} ON ${FILES}.folderId = ${FOLDERS}.id
             WHERE ${FOLDERS}.id = ?
         `, [folderId]);
-
         return result;
     } catch (error) {
         console.error('Error fetching files by category:', error);
-        return [];
+        throw error;
     }
 };
 
+export const changeFileName = async (newName, id) => {
+    await updateElement(FILES, "name", newName, "id", id);
+    console.log(`File name updated to '${newName} on id: ${id}.`);
+}
+
+export const deleteFileFromFolder = async (fileId) => {
+    await deleteRow(FILES, fileId);
+    console.log(`File: '${fileId}' removed successfully!`);
+};
+
+// FAVORITES:
 export const addFileToFavorites = async (fileId) => {
     try {
         const db = await initDB();
@@ -261,12 +256,10 @@ export const addFileToFavorites = async (fileId) => {
             `INSERT INTO ${FAVORITES} (fileId) VALUES (?)`,
             [fileId]
         );
-
         console.log(`File '${fileId}' added to ${FAVORITES}.`);
-        return true;
     } catch (error) {
         console.error("Error with addFileToFavorites in DB:", error);
-        return error; // To handle errors differently in the GUI
+        throw error;
     }
 };
 
@@ -286,63 +279,27 @@ export const getAllFavoritesFiles = async () => {
             JOIN ${FOLDERS} ON ${FILES}.folderId = ${FOLDERS}.id
             ORDER BY ${FAVORITES}.id DESC
         `);
-
         return result;
     } catch (error) {
         console.error('Error fetching favorites:', error);
-        return [];
+        throw error;
     }
 };
 
-
-export const changeFileName = async (oldName, newName) => {
-    try {
-        if (!oldName || !newName) {
-            throw new Error('Both oldName and newName are required');
-        }
-
-        const db = await initDB();
-
-        await db.runAsync(`
-            UPDATE ${FILES} 
-            SET name = ? 
-            WHERE name = ?
-        `, [newName, oldName]);
-
-        console.log(`File name updated from '${oldName}' to '${newName}'.`);
-        return true;
-    } catch (error) {
-        console.error('Error updating file name:', error);
-        return false;
-    }
+export const deleteFavoriteFile = async (favoriteFileId) => {
+    await deleteRow(FAVORITES, favoriteFileId);
+    console.log(`File: '${favoriteFileId}' removed successfully!`);
 }
 
-export const deleteFile = async (fileId) => {
-    try {
-        const db = await initDB();
+// OTHERS:
+export const printDB = async () => {
+    const user = await getTable(USER);
+    const folders = await getTable(FOLDERS);
+    const files = await getTable(FILES);
+    const favorite = await getTable(FAVORITES);
 
-        const file = await db.getFirstAsync(`SELECT folderId FROM ${FILES} WHERE id = ?`, [fileId]);
-        if (!file) {
-            console.log(`File with ID '${fileId}' not found.`);
-            return false;
-        }
-
-        const folderId = file.folderId;
-
-        await deleteRow(`${FILES}`, fileId);
-
-        await db.runAsync(
-            `UPDATE ${FOLDERS} SET filesCount = filesCount - 1 WHERE id = ? AND filesCount > 0`,
-            [folderId]
-        );
-
-        console.log(`File: '${fileId}' removed successfully!`);
-        return true;
-    } catch (error) {
-        console.error('Error with delete file:', error);
-        return false;
-    }
-};
-
-
-
+    console.log("User Table:", user);
+    console.log("Folders Table:", folders);
+    console.log("Files Table:", files);
+    console.log("Favorites Table:", favorite);
+}

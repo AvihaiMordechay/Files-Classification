@@ -21,7 +21,7 @@ class User {
             this.favoritesFiles = await getAllFavoritesFiles();
             console.log("The DB init passed!");
         } catch (error) {
-            Alert.alert(error);
+            Alert.alert('שגיאה', "לא ניתן לגשת לנתוני משתמש, אנא נסה שנית");
             throw error;
         }
     }
@@ -36,33 +36,26 @@ class User {
             this.folders = [];
             this.favoritesFiles = [];
         } catch (error) {
-            Alert.alert('Error', error.message);
+            Alert.alert('שגיאה', "לא ניתן להירשם כעת, אנא נסה שנית");
             throw error;
         }
     }
 
 
     async loadFoldersFromDB() {
-        try {
-            const foldersDetails = await getFoldersDetails();
-
-            const folders = await Promise.all(
-                foldersDetails.map(async (folder) => {
-                    const files = await getFilesByFolder(folder.id);
-
-                    return {
-                        id: folder.id,
-                        name: folder.name,
-                        filesCount: folder.filesCount,
-                        files: files
-                    };
-                })
-            )
-            return folders;
-        } catch (error) {
-            console.error("Error with load folder from DB: ", error);
-            return [];
-        }
+        const foldersDetails = await getFoldersDetails();
+        const folders = await Promise.all(
+            foldersDetails.map(async (folder) => {
+                const files = await getFilesByFolder(folder.id);
+                return {
+                    id: folder.id,
+                    name: folder.name,
+                    filesCount: folder.filesCount,
+                    files: files
+                };
+            })
+        )
+        return folders;
     }
 
     getFoldersNames() {
@@ -80,12 +73,10 @@ class User {
 
         }
     }
+
     async printData() {
         await printDB();
     }
-
-
-
 }
 
 export default User;
