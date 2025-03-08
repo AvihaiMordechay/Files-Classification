@@ -178,6 +178,11 @@ export const getUserDetails = async () => {
     return (await getTable(USER))[0];
 }
 
+export const changeUserName = async (name, userId) => {
+    updateElement(USER, "name", name, "id", userId);
+    console.log("The user name changed successfully.");
+}
+
 // FOLDERS:
 export const createFolder = async (folderName) => {
     try {

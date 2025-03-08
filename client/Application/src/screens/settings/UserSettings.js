@@ -4,55 +4,85 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import theme from '../../styles/theme';
 import constats from '../../styles/constats';
 
-const UserSettingsScreen = ({ route }) => {
+const UserSettingsScreen = ({ route, navigation }) => {
     const { user } = route.params || {};
-    const [userName, setUserName] = useState(user?.name || '');
-    const [email, setEmail] = useState(user?.email || '');
-    const [password, setPassword] = useState('');
+    const [userName, setUserName] = useState(user.name || '');
+    const [email, setEmail] = useState(user.email || '');
+    const [isChanged, setIsChanged] = useState(false);
 
-    const handleSaveChanges = () => {
-        // כאן תוסיף את הלוגיקה שלך לעדכון הנתונים
+
+    const handleUpdateName = async () => {
+        try {
+            await user.setUserName(userName);
+        } catch (error) {
+            setUserName(user.name);
+        }
+        setIsChanged(false);
     };
 
+    const handleUpdateEmail = () => {
+        navigation.navigate('UpdateEmailScreen', { email });
+    };
+
+    const handleUpdatePassword = () => {
+        navigation.navigate('UpdatePasswordScreen');
+    };
+
+    const handleEnable2FA = () => {
+        navigation.navigate('TwoFactorAuthScreen');
+    };
+
+
+
     return (
-        <SafeAreaProvider style={styles.background}>
+        <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    style={styles.keyboardAvoidingView}
-                >
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
                     <ScrollView contentContainerStyle={styles.scrollView}>
                         <View style={styles.formContainer}>
-                            <Text style={styles.label}>שם מלא</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder={userName}
-                                onChangeText={setUserName}
-                                value={userName}
-                            />
+
+                            <Text style={styles.label}>שם משתמש</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="הכנס שם משתמש חדש"
+                                    onChangeText={(text) => {
+                                        setUserName(text);
+                                        setIsChanged(text !== user.name);
+                                    }}
+                                    value={userName}
+                                />
+                            </View>
+
+                            {isChanged && (
+                                <TouchableOpacity style={styles.saveButton} onPress={handleUpdateName}>
+                                    <Text style={styles.saveButtonText}>שמור שם</Text>
+                                </TouchableOpacity>
+                            )}
+
 
                             <Text style={styles.label}>אימייל</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder={email}
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                onChangeText={setEmail}
-                                value={email}
-                            />
+                            <View style={[styles.inputContainer, styles.disabledInputContainer]}>
+                                <TextInput
+                                    style={styles.input}
+                                    value={email}
+                                    editable={false}
+                                    selectTextOnFocus={false}
+                                />
+                            </View>
 
-                            <Text style={styles.label}>סיסמה חדשה</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="********"
-                                secureTextEntry
-                                onChangeText={setPassword}
-                                value={password}
-                            />
-
-                            <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
-                                <Text style={styles.saveButtonText}>שמירה</Text>
+                            <TouchableOpacity style={styles.actionButton} onPress={handleUpdateEmail}>
+                                <Text style={styles.actionButtonText}>שינוי כתובת אימייל</Text>
                             </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.actionButton} onPress={handleUpdatePassword}>
+                                <Text style={styles.actionButtonText}>שינוי סיסמה</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.actionButton} onPress={handleEnable2FA}>
+                                <Text style={styles.actionButtonText}>הפעלת אימות דו-שלבי</Text>
+                            </TouchableOpacity>
+
                         </View>
                     </ScrollView>
                 </KeyboardAvoidingView>
@@ -62,16 +92,12 @@ const UserSettingsScreen = ({ route }) => {
 };
 
 export default UserSettingsScreen;
-
 const styles = StyleSheet.create({
-    background: {
-        backgroundColor: constats.colors.background,
-        flex: 1,
-    },
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: 'stretch',
+        justifyContent: 'flex-start',
+        paddingTop: 20,
     },
     keyboardAvoidingView: {
         flex: 1,
@@ -79,39 +105,49 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         flexGrow: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+        paddingHorizontal: 20,
         paddingVertical: 20,
+        alignItems: 'stretch',
     },
     formContainer: {
-        width: '80%',
+        width: '100%',
     },
     label: {
-        fontSize: 16,
+        fontSize: constats.sizes.font.medium + 1,
         fontWeight: 'bold',
-        marginBottom: 5,
+        marginBottom: 6,
         color: '#333',
+        textAlign: 'right',
     },
-    input: {
-        height: 50,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        fontSize: 16,
-        backgroundColor: '#fff',
-        marginBottom: 15,
+    inputContainer: theme.inputContainer,
+    disabledInputContainer: {
+        opacity: 0.5,
     },
-    saveButton: {
+    input: theme.input,
+    actionButton: {
         backgroundColor: constats.colors.primary,
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',
         marginTop: 10,
     },
+    actionButtonText: {
+        color: '#fff',
+        fontSize: constats.sizes.font.medium,
+        fontWeight: 'bold',
+    },
+    saveButton: {
+        backgroundColor: constats.colors.primary,
+        paddingVertical: 8,
+        paddingHorizontal: 15,
+        borderRadius: 20,
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        marginTop: 4,
+    },
     saveButtonText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: constats.sizes.font.small,
         fontWeight: 'bold',
     },
 });

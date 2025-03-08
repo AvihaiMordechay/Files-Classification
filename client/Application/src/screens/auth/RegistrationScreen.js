@@ -67,14 +67,13 @@ const RegistrationScreen = ({ route, navigation }) => {
 
 
     return (
-        <SafeAreaProvider style={styles.background}>
+        <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={styles.keyboardAvoidingView}
                 >
                     <ScrollView contentContainerStyle={styles.scrollView}>
-                        {/* לוגו */}
                         <View style={styles.logoContainer}>
                             <View style={styles.logoBox}></View>
                             <View style={[styles.logoBox, styles.logoBoxOverlap]}></View>
@@ -198,10 +197,6 @@ const RegistrationScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    background: {
-        backgroundColor: constats.colors.background,
-        flex: 1,
-    },
     container: {
         flex: 1,
     },

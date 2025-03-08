@@ -4,8 +4,8 @@ import {
     getUserDetails,
     getAllFavoritesFiles,
     createDB,
-    printDB
-
+    printDB,
+    changeUserName
 } from "../services/database";
 import { Alert } from 'react-native';
 
@@ -13,6 +13,7 @@ class User {
     async initDB() {
         try {
             const userDetails = await getUserDetails();
+            this.id = userDetails.id;
             this.name = userDetails.name;
             this.gender = userDetails.gender;
             this.email = userDetails.email;
@@ -68,9 +69,11 @@ class User {
 
     async setUserName(name) {
         try {
-
+            console.log(this.id);
+            await changeUserName(name, this.id);
+            this.name = name;
         } catch (error) {
-
+            Alert.alert("שגיאה", "לא ניתן לערוך את שם המשתמש");
         }
     }
 

@@ -1,15 +1,19 @@
-import constats from "./constats"
+import { Platform } from 'react-native';
+import constats from "./constats";
 
+console.log(Platform.select({ ios: 15, android: 8 }));
 const theme = {
     inputContainer: {
-        backgroundColor: constats.colors.backgroundInput,
+        backgroundColor: '#FFF',
         borderRadius: 8,
         marginBottom: 15,
         paddingHorizontal: 10,
-        paddingVertical: 8,
+        paddingVertical: Platform.select({ ios: 15, android: 8 }), // שינוי דינמי
+        borderBottomWidth: 1,
+        borderColor: '#E0E0E0',
     },
     input: {
-        fontSize: 17,
+        fontSize: constats.sizes.font.medium + 1,
         textAlign: 'right',
     },
     errorText: {
@@ -32,6 +36,6 @@ const theme = {
         backgroundColor: constats.colors.primary,
         borderRadius: 8,
     },
-}
+};
 
 export default theme;

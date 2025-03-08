@@ -9,6 +9,7 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Platform,
+    Alert,
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
@@ -42,12 +43,16 @@ const LoginScreen = ({ route, navigation }) => {
             await user.initDB();
             navigation.replace('Application', { user: user });
         } catch (error) {
+            if (error.message === 'auth/network-request-failed') {
+                Alert.alert("שגיאה", "אין חיבור לאינטרנט");
+            }
             console.error('Error signing in:', error.message);
+            Alert.alert("שגיאה", error.message);
         }
     };
 
     return (
-        <SafeAreaProvider style={styles.background}>
+        <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -134,10 +139,6 @@ const LoginScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    background: {
-        backgroundColor: constats.colors.background,
-        flex: 1,
-    },
     container: {
         flex: 1,
     },

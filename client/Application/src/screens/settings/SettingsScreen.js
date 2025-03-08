@@ -7,9 +7,7 @@ import constats from '../../styles/constats';
 
 const settingsOptions = [
     { id: '1', title: 'הגדרות משתמש', screen: 'UserSettings', icon: 'person-outline' },
-    { id: '2', title: 'התראות', screen: 'NotificationsSettings', icon: 'notifications-outline' },
-    { id: '3', title: 'שפה', screen: 'LanguageSettings', icon: 'globe-outline' },
-    { id: '4', title: 'פרטיות ואבטחה', screen: 'PrivacySettings', icon: 'lock-closed-outline' },
+    { id: '2', title: 'נגישות', screen: 'NotificationsSettings', icon: 'accessibility-outline' },
 ];
 
 const SettingsScreen = ({ user }) => {
