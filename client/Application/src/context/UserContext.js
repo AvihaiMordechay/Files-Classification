@@ -1,49 +1,119 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import User from '../user/user';
 import { auth } from '../services/firebase';
+import {
+    getUserDetails,
+    getAllFavoritesFiles,
+    changeUserName,
+    isFirstTime,
+    getFoldersDetails,
+    getFilesByFolder,
+    createDB
+} from '../services/database';
+import { Alert } from 'react-native';
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState(new User());
-    const [userStatus, setUserStatus] = useState(null); // 'new', 'authenticated', 'unauthenticated'
+    const [user, setUser] = useState(null);
+    const [userStatus, setUserStatus] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        initApplication();
-    }, []);
-
-    const isAuthenticated = async () => {
-        return false;
-        return new Promise((resolve) => {
-            const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
-                unsubscribe();
-                if (firebaseUser) {
-                    await user.initDB();
-                    resolve(true);
-                } else {
-                    resolve(false);
+        const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+            if (firebaseUser) {
+                try {
+                    const userDetails = await getUserDetails();
+                    const favorites = await getAllFavoritesFiles();
+                    const folders = await loadFoldersFromDB();
+                    setUser({
+                        id: userDetails.id,
+                        name: userDetails.name,
+                        gender: userDetails.gender,
+                        email: userDetails.email,
+                        folders: folders,
+                        imgPath: null,
+                        favoritesFiles: favorites,
+                    });
+                    setUserStatus('authenticated');
+                } catch (error) {
+                    console.error("Error loading user:", error);
+                    setUserStatus('unauthenticated');
                 }
-            });
-        });
-    };
-
-    const initApplication = async () => {
-        try {
-            if (await isAuthenticated()) {
-                setUserStatus('authenticated');
+            } else if (await isFirstTime()) {
+                setUser(null);
+                setUserStatus('new');
             } else {
+                setUser(null);
                 setUserStatus('unauthenticated');
             }
-        } catch (error) {
-            console.error('Error:', error);
-        } finally {
             setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    const updateUserName = async (newName) => {
+        if (!user) return;
+        try {
+            await changeUserName(newName, user.id);
+            setUser((prevUser) => ({ ...prevUser, name: newName }));
+        } catch (error) {
+            Alert.alert("שגיאה", "לא ניתן לעדכן את שם המשתמש");
         }
     };
 
+    const loadFoldersFromDB = async () => {
+        let foldersDetails = [];
+        try {
+            foldersDetails = await getFoldersDetails();
+        } catch (error) {
+            Alert.alert("שגיאה", "לא ניתן לגשת לנתוני המשתמש");
+            return [];
+        }
+
+        const folders = await Promise.all(
+            foldersDetails.map(async (folder) => {
+                let files = [];
+                try {
+                    files = await getFilesByFolder(folder.id);
+                } catch (error) {
+                    console.error("Error loading files for folder", folder.id, error);
+                    files = [];
+                }
+                return {
+                    id: folder.id,
+                    name: folder.name,
+                    filesCount: folder.filesCount,
+                    files: files
+                };
+            })
+        );
+        return folders;
+    };
+
+
+    const createUser = async (id, name, gender, email) => {
+        try {
+            await createDB(id, name, gender, email);
+
+            setUser({
+                id: id,
+                name: name,
+                gender: gender,
+                email: email,
+                imgPath: null,
+                folders: [],
+                favoritesFiles: [],
+            });
+        } catch (error) {
+            Alert.alert('שגיאה', "לא ניתן להירשם כעת, אנא נסה שנית");
+            throw error;
+        }
+    };
+
+
     return (
-        <UserContext.Provider value={{ user, setUser, userStatus, setUserStatus }}>
+        <UserContext.Provider value={{ user, setUser, userStatus, updateUserName, createUser }}>
             {!loading && children}
         </UserContext.Provider>
     );

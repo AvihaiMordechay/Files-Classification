@@ -8,7 +8,7 @@ const FavoritesScreen = () => {
     return (
         <>
             <View>
-                <Header user={user} />
+                <Header />
                 <Text>מועדפים</Text>
             </View>
         </>

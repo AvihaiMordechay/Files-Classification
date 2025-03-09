@@ -39,25 +39,22 @@ const validationSchema = Yup.object().shape({
 });
 
 const RegistrationScreen = ({ navigation }) => {
-    const { user } = useUser();
+    const { createUser } = useUser();
 
     const handleRegister = async (values, { setFieldError }) => {
         try {
-            const userCredential = await createUserWithEmailAndPassword(
-                auth,
-                values.email,
-                values.password,
-            );
+            const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
             const firebaseUserAuth = userCredential.user;
+
             try {
-                await user.createDB(firebaseUserAuth.uid, values.name, values.email, values.gender);
+                await createUser(firebaseUserAuth.uid, values.name, values.gender, values.email);
                 navigation.replace('Application');
             } catch (dbError) {
                 await deleteUser(firebaseUserAuth);
             }
         } catch (error) {
             if (error.code === 'auth/email-already-in-use') {
-                console.log(error)
+                console.log(error);
                 setFieldError('email', 'האימייל כבר קיים במערכת');
             } else {
                 console.error('Error creating user:', error.message);
@@ -65,6 +62,7 @@ const RegistrationScreen = ({ navigation }) => {
             }
         }
     };
+
 
 
     return (

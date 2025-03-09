@@ -34,18 +34,11 @@ const validationSchema = Yup.object().shape({
 });
 
 const LoginScreen = ({ navigation }) => {
-    const { user } = useUser();
-    console.log(user.name);
 
     const handleLogin = async (values) => {
         try {
-            // TODO: COMPERE THE EMAIL HERE WITH THE EMAIL IN THE DATABASE FOR UNIQUE 
-            // const dbUserEmail = await getUserEmail();
-            // if (dbUserEmail === values.email){}
             await signInWithEmailAndPassword(auth, values.email, values.password);
-            await user.initDB();
-            console.log(user.name);
-            console.log(user.printData());
+
             navigation.replace('Application');
         } catch (error) {
             if (error.message === 'auth/network-request-failed') {
@@ -129,7 +122,7 @@ const LoginScreen = ({ navigation }) => {
                                     {/* קישור להרשמה */}
                                     <TouchableOpacity
                                         style={styles.linkButton}
-                                        onPress={() => navigation.navigate('Registration', { user })}
+                                        onPress={() => navigation.navigate('Registration')}
                                     >
                                         <Text style={styles.linkText}>אין לך חשבון? הירשם כאן</Text>
                                     </TouchableOpacity>
@@ -142,6 +135,7 @@ const LoginScreen = ({ navigation }) => {
         </SafeAreaProvider>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {

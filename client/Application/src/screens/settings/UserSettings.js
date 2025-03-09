@@ -6,21 +6,19 @@ import constats from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
 
 const UserSettingsScreen = ({ navigation }) => {
-    const { user, setUser } = useUser();
+    const { user, updateUserName } = useUser();
     const [userName, setUserName] = useState(user.name || '');
     const [email, setEmail] = useState(user.email || '');
     const [isChanged, setIsChanged] = useState(false);
 
     const handleUpdateName = async () => {
-        await user.printData();
         try {
-            await user.setUserName(userName);
-            setUser({ ...user, name: userName });
+            await updateUserName(userName);
+            setIsChanged(false);
         } catch (error) {
             console.log(error);
-            setUserName(user.name);
+            setUserName(user?.name);
         }
-        setIsChanged(false);
     };
 
     const handleUpdateEmail = () => {

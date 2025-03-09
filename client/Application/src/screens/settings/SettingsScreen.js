@@ -23,7 +23,7 @@ const SettingsScreen = ({ user }) => {
 
     return (
         <View >
-            <Header user={user} />
+            <Header />
             <Text style={styles.title}>הגדרות</Text>
             <FlatList
                 data={settingsOptions}
