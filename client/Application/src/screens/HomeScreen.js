@@ -3,9 +3,10 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Header from '../components/Header';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import FolderButton from '../components/FolderButton';
+import { useUser } from '../context/UserContext';
 
-const HomeScreen = ({ route, navigation }) => {
-    const { user } = route.params || {};
+const HomeScreen = ({ navigation }) => {
+    const { user } = useUser();
 
     const handleFolderPress = (folder) => {
         navigation.navigate('Folder', {
@@ -17,7 +18,7 @@ const HomeScreen = ({ route, navigation }) => {
     return (
         <>
             <View>
-                <Header user={user} />
+                <Header />
             </View>
             <SafeAreaProvider>
                 <SafeAreaView style={styles.container}>

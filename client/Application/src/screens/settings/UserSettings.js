@@ -3,18 +3,21 @@ import { View, StyleSheet, TextInput, KeyboardAvoidingView, Platform, ScrollView
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import theme from '../../styles/theme';
 import constats from '../../styles/constats';
+import { useUser } from '../../context/UserContext';
 
-const UserSettingsScreen = ({ route, navigation }) => {
-    const { user } = route.params || {};
+const UserSettingsScreen = ({ navigation }) => {
+    const { user, setUser } = useUser();
     const [userName, setUserName] = useState(user.name || '');
     const [email, setEmail] = useState(user.email || '');
     const [isChanged, setIsChanged] = useState(false);
 
-
     const handleUpdateName = async () => {
+        await user.printData();
         try {
             await user.setUserName(userName);
+            setUser({ ...user, name: userName });
         } catch (error) {
+            console.log(error);
             setUserName(user.name);
         }
         setIsChanged(false);

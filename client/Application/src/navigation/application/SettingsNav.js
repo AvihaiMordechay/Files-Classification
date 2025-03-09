@@ -6,22 +6,19 @@ import UserSettingsScreen from '../../screens/settings/UserSettings';
 
 const Stack = createStackNavigator();
 
-const SettingsNavigator = ({ user }) => {
-    console.log(user.name);
+const SettingsNavigator = () => {
     return (
         <Stack.Navigator>
             <Stack.Screen
                 name="SettingsMain"
                 options={{ headerShown: false }}
-            >
-                {props => <SettingsScreen {...props} user={user} />}
-            </Stack.Screen>
+                component={SettingsScreen}  // הסר את העברת ה-user כ-prop
+            />
 
             <Stack.Screen
                 name="UserSettings"
                 component={UserSettingsScreen}
-                initialParams={{ user }}
-                options={({ route }) => ({
+                options={{
                     title: 'הגדרות משתמש',
                     headerTitleAlign: 'center',
                     headerTitleStyle: {
@@ -30,7 +27,7 @@ const SettingsNavigator = ({ user }) => {
                         fontWeight: 'bold',
                         color: 'black',
                     },
-                })}
+                }}
             />
         </Stack.Navigator>
     );

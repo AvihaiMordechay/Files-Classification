@@ -11,8 +11,7 @@ import AddFiles from '../../components/AddFiles';
 
 const Tab = createBottomTabNavigator();
 
-const ApplicationNavigator = ({ route }) => {
-    const { user } = route.params || {};
+const ApplicationNavigator = () => {
 
     return (
         <Tab.Navigator
@@ -40,12 +39,11 @@ const ApplicationNavigator = ({ route }) => {
                 name="HomeTab"
                 options={{ title: 'דף הבית' }}
             >
-                {() => <HomeStackNavigator user={user} />}
+                {() => <HomeStackNavigator />}
             </Tab.Screen>
             <Tab.Screen
                 name="Favorites"
                 component={FavoritesScreen}
-                initialParams={{ user }}
                 options={{ title: 'מועדפים' }}
             />
 
@@ -53,12 +51,11 @@ const ApplicationNavigator = ({ route }) => {
                 name="Settings"
                 options={{ title: 'הגדרות' }}
             >
-                {() => <SettingsNavigator user={user} />}
+                {() => <SettingsNavigator />}
             </Tab.Screen>
             <Tab.Screen
                 name="Add"
                 component={AddFiles}
-                initialParams={{ user }}
                 options={{
                     title: 'הוספה',
                     tabBarButton: (props) => (

@@ -17,6 +17,7 @@ import * as Yup from 'yup';
 import { createUserWithEmailAndPassword, deleteUser } from 'firebase/auth';
 import { auth } from '../../services/firebase';
 import theme from '../../styles/theme';
+import { useUser } from '../../context/UserContext';
 
 
 const validationSchema = Yup.object().shape({
@@ -37,8 +38,8 @@ const validationSchema = Yup.object().shape({
     gender: Yup.string().required('יש לבחור מגדר'),
 });
 
-const RegistrationScreen = ({ route, navigation }) => {
-    const { user } = route.params || {};
+const RegistrationScreen = ({ navigation }) => {
+    const { user } = useUser();
 
     const handleRegister = async (values, { setFieldError }) => {
         try {
@@ -50,7 +51,7 @@ const RegistrationScreen = ({ route, navigation }) => {
             const firebaseUserAuth = userCredential.user;
             try {
                 await user.createDB(firebaseUserAuth.uid, values.name, values.email, values.gender);
-                navigation.replace('Application', { user: user });
+                navigation.replace('Application');
             } catch (dbError) {
                 await deleteUser(firebaseUserAuth);
             }

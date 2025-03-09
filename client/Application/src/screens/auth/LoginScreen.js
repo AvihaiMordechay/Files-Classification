@@ -18,6 +18,8 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/firebase';
 import theme from '../../styles/theme';
 import { getUserEmail } from '../../services/database';
+import { useUser } from '../../context/UserContext';
+import { use } from 'react';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -31,8 +33,9 @@ const validationSchema = Yup.object().shape({
         .min(8, 'הסיסמה חייבת להיות באורך של לפחות 8 תווים')
 });
 
-const LoginScreen = ({ route, navigation }) => {
-    const { user } = route.params || {};
+const LoginScreen = ({ navigation }) => {
+    const { user } = useUser();
+    console.log(user.name);
 
     const handleLogin = async (values) => {
         try {
@@ -41,7 +44,9 @@ const LoginScreen = ({ route, navigation }) => {
             // if (dbUserEmail === values.email){}
             await signInWithEmailAndPassword(auth, values.email, values.password);
             await user.initDB();
-            navigation.replace('Application', { user: user });
+            console.log(user.name);
+            console.log(user.printData());
+            navigation.replace('Application');
         } catch (error) {
             if (error.message === 'auth/network-request-failed') {
                 Alert.alert("שגיאה", "אין חיבור לאינטרנט");

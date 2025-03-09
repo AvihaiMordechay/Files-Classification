@@ -1,8 +1,9 @@
 import { View, Text } from 'react-native';
 import Header from '../components/Header';
+import { useUser } from '../context/UserContext';
 
-const FavoritesScreen = ({ route }) => {
-    const { user } = route.params || {};
+const FavoritesScreen = () => {
+    const { user } = useUser();
 
     return (
         <>

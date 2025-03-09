@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, SafeAreaView, Platform, StatusBar } from 'react-native';
 import constats from '../styles/constats';
+import { useUser } from '../context/UserContext';
 
-const Header = ({ user }) => {
+const Header = () => {
+    const { user } = useUser();
     const greeting = user.gender === 'male' ? 'ברוך הבא' : 'ברוכה הבאה';
     return (
         <SafeAreaView style={styles.safeArea}>

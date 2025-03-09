@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Button, Alert } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
+import { useUser } from '../context/UserContext';
 
-const AddFiles = ({ route }) => {
-    const { user } = route.params || {};
+const AddFiles = () => {
+    const { user } = useUser();
 
     const handleFileUpload = async () => {
         try {

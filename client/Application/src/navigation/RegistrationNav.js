@@ -5,12 +5,12 @@ import ApplicationNavigator from './application/ApplicationNav';
 
 const AuthStack = createStackNavigator();
 
-const RegistrationNavigator = ({ user }) => {
+const RegistrationNavigator = () => {
     return (
         <AuthStack.Navigator screenOptions={{ headerShown: false }}>
             {/* <AuthStack.Screen name="Onboarding" component={OnboardingScreen} /> */}
-            <AuthStack.Screen name="Registration" component={RegistrationScreen} initialParams={{ user }} />
-            <AuthStack.Screen name="Application" component={ApplicationNavigator} initialParams={{ user }} />
+            <AuthStack.Screen name="Registration" component={RegistrationScreen} />
+            <AuthStack.Screen name="Application" component={ApplicationNavigator} />
         </AuthStack.Navigator>
     );
 };
