@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Header from '../components/Header';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import FolderButton from '../components/FolderButton';
 import { useUser } from '../context/UserContext';
+import Spinner from '../components/Spinner';
 
 const HomeScreen = ({ navigation }) => {
     const { user } = useUser();
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        if (user) {
+            setIsLoading(false);
+        }
+    }, [user]);
 
     const handleFolderPress = (folder) => {
         navigation.navigate('Folder', {
@@ -14,6 +22,10 @@ const HomeScreen = ({ navigation }) => {
             files: folder.files
         });
     };
+
+    if (isLoading) {
+        return <Spinner text="טוען את הנתונים..." />;
+    }
 
     return (
         <>

@@ -7,7 +7,9 @@ import {
     isFirstTime,
     getFoldersDetails,
     getFilesByFolder,
-    createDB
+    createDB,
+    getLastLogin,
+    deleteDB
 } from '../services/database';
 import { Alert } from 'react-native';
 
@@ -18,30 +20,37 @@ export const UserProvider = ({ children }) => {
     const [userStatus, setUserStatus] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const isUserLoggedIn = async () => {
+        try {
+            const lastLogin = await getLastLogin();
+            if (!lastLogin) return false;
+
+            const lastLoginDate = new Date(lastLogin);
+            const now = new Date();
+
+            const diffInMs = now - lastLoginDate;
+            const diffInHours = diffInMs / (1000 * 60 * 60);
+            console.log(diffInHours);
+
+            return diffInHours >= 3;
+        } catch (error) {
+            console.error("Error checking last login:", error);
+            return false;
+        }
+    };
+
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
-            if (firebaseUser) {
-                try {
-                    const userDetails = await getUserDetails();
-                    const favorites = await getAllFavoritesFiles();
-                    const folders = await loadFoldersFromDB();
-                    setUser({
-                        id: userDetails.id,
-                        name: userDetails.name,
-                        gender: userDetails.gender,
-                        email: userDetails.email,
-                        folders: folders,
-                        imgPath: null,
-                        favoritesFiles: favorites,
-                    });
-                    setUserStatus('authenticated');
-                } catch (error) {
-                    console.error("Error loading user:", error);
-                    setUserStatus('unauthenticated');
-                }
-            } else if (await isFirstTime()) {
+            if (await isFirstTime()) {
                 setUser(null);
                 setUserStatus('new');
+            } else if (await isUserLoggedIn() && firebaseUser) {
+                try {
+                    await loadUser();
+                    setUserStatus('authenticated');
+                } catch (error) {
+                    setUserStatus('unauthenticated');
+                }
             } else {
                 setUser(null);
                 setUserStatus('unauthenticated');
@@ -52,13 +61,32 @@ export const UserProvider = ({ children }) => {
         return () => unsubscribe();
     }, []);
 
-    const updateUserName = async (newName) => {
-        if (!user) return;
+    const loadUser = async () => {
         try {
-            await changeUserName(newName, user.id);
-            setUser((prevUser) => ({ ...prevUser, name: newName }));
+            const userDetails = await getUserDetails();
+            const favorites = await getAllFavoritesFiles();
+            const folders = await loadFoldersFromDB();
+            setUser({
+                id: userDetails.id,
+                name: userDetails.name,
+                gender: userDetails.gender,
+                email: userDetails.email,
+                folders: folders,
+                imgPath: null,
+                favoritesFiles: favorites,
+            });
         } catch (error) {
-            Alert.alert("שגיאה", "לא ניתן לעדכן את שם המשתמש");
+            console.error("Error loading user:", error);
+            throw error;
+        }
+    }
+
+    const createUser = async (id, name, gender, email) => {
+        try {
+            await createDB(id, name, gender, email);
+        } catch (error) {
+            Alert.alert('שגיאה', "לא ניתן להירשם כעת, אנא נסה שנית");
+            throw error;
         }
     };
 
@@ -91,29 +119,18 @@ export const UserProvider = ({ children }) => {
         return folders;
     };
 
-
-    const createUser = async (id, name, gender, email) => {
+    const updateUserName = async (newName) => {
+        if (!user) return;
         try {
-            await createDB(id, name, gender, email);
-
-            setUser({
-                id: id,
-                name: name,
-                gender: gender,
-                email: email,
-                imgPath: null,
-                folders: [],
-                favoritesFiles: [],
-            });
+            await changeUserName(newName, user.id);
+            setUser((prevUser) => ({ ...prevUser, name: newName }));
         } catch (error) {
-            Alert.alert('שגיאה', "לא ניתן להירשם כעת, אנא נסה שנית");
-            throw error;
+            Alert.alert("שגיאה", "לא ניתן לעדכן את שם המשתמש");
         }
     };
 
-
     return (
-        <UserContext.Provider value={{ user, setUser, userStatus, updateUserName, createUser }}>
+        <UserContext.Provider value={{ user, setUser, userStatus, createUser, updateUserName, loadUser }}>
             {!loading && children}
         </UserContext.Provider>
     );

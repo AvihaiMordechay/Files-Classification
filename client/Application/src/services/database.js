@@ -23,7 +23,7 @@ export const createDB = async (id, name, email, gender) => {
         if (!id || !name || !email || !gender) {
             throw new Error('id, Name, gender and email are required');
         }
-
+        console.log("START:");
         const db = await initDB();
 
         await db.execAsync(`
@@ -31,7 +31,8 @@ export const createDB = async (id, name, email, gender) => {
                 id TEXT PRIMARY KEY NOT NULL,
                 name TEXT NOT NULL, 
                 email TEXT NOT NULL,
-                gender TEXT NOT NULL
+                gender TEXT NOT NULL,
+                lastLogin TEXT NOT NULL
             );
         `);
 
@@ -85,7 +86,9 @@ export const createDB = async (id, name, email, gender) => {
             END;
         `);
 
-        await db.runAsync(`INSERT INTO ${USER} (id ,name, email, gender) VALUES (?, ?, ?, ?)`, [id, name, email, gender]);
+        const lastLogin = new Date().toISOString();
+        await db.runAsync(`INSERT INTO ${USER} (id ,name, email, gender, lastLogin) VALUES (?, ?, ?, ?, ?)`,
+            [id, name, email, gender, lastLogin]);
 
         console.log("The Application created successfully!");
     } catch (error) {
@@ -179,8 +182,37 @@ export const getUserDetails = async () => {
 }
 
 export const changeUserName = async (name, userId) => {
-    updateElement(USER, "name", name, "id", userId);
+    await updateElement(USER, "name", name, "id", userId);
     console.log("The user name changed successfully.");
+}
+
+export const updateLastLogin = async () => {
+    const lastLogin = new Date().toISOString();
+    const userId = await getUserId();
+    await updateElement(USER, "lastLogin", lastLogin, "id", userId);
+    console.log("Login time successfully recorded.");
+};
+
+export const getLastLogin = async () => {
+    try {
+        const db = await initDB();
+        const result = await db.getFirstAsync(`SELECT lastLogin FROM ${USER}`);
+        return result.lastLogin;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const getUserId = async () => {
+    try {
+        const db = await initDB();
+        const result = await db.getFirstAsync(`SELECT id FROM ${USER}`);
+        return result.id;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 }
 
 // FOLDERS:

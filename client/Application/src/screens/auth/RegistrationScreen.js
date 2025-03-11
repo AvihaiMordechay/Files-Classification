@@ -39,7 +39,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const RegistrationScreen = ({ navigation }) => {
-    const { createUser } = useUser();
+    const { createUser, loadUser } = useUser();
 
     const handleRegister = async (values, { setFieldError }) => {
         try {
@@ -48,9 +48,11 @@ const RegistrationScreen = ({ navigation }) => {
 
             try {
                 await createUser(firebaseUserAuth.uid, values.name, values.gender, values.email);
+                await loadUser();
                 navigation.replace('Application');
             } catch (dbError) {
                 await deleteUser(firebaseUserAuth);
+                console.log("Delete user from firebase");
             }
         } catch (error) {
             if (error.code === 'auth/email-already-in-use') {
@@ -234,7 +236,7 @@ const styles = StyleSheet.create({
     errorText: theme.errorText,
     genderContainer: {
         flexDirection: 'row',
-        backgroundColor: constats.colors.backgroundInput,
+        backgroundColor: constats.colors.backgroundButton,
         borderRadius: 10,
         overflow: 'hidden',
         alignItems: 'center',
