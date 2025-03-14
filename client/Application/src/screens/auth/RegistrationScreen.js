@@ -51,17 +51,21 @@ const RegistrationScreen = ({ navigation }) => {
                 await loadUser();
                 navigation.replace('Application');
             } catch (dbError) {
+                if (dbError.code === 'ERR_UNEXPECTED') {
+                    Alert.alert('שגיאה', 'לא ניתן ליצור את המשתמש כעת, אנא נסה שנית')
+                }
                 await deleteUser(firebaseUserAuth);
                 console.log("Delete user from firebase");
             }
         } catch (error) {
-            if (error.code === 'auth/email-already-in-use') {
-                console.log(error);
+            if (error.code === 'auth/network-request-failed') {
+                Alert.alert("שגיאה", "אין חיבור לאינטרנט");
+            } else if (error.code === 'auth/email-already-in-use') {
                 setFieldError('email', 'האימייל כבר קיים במערכת');
             } else {
-                console.error('Error creating user:', error.message);
                 Alert.alert('שגיאה', "לא ניתן להירשם כעת, אנא נסה שנית");
             }
+            console.error('Error creating user:', error.message);
         }
     };
 

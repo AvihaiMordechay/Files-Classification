@@ -177,6 +177,12 @@ export const getUserEmail = async () => {
         throw error;
     }
 }
+
+export const changeUserEmail = async (newEmail, userId) => {
+    await updateElement(USER, "email", newEmail, "id", userId);
+    console.log("The user email changed successfully.");
+}
+
 export const getUserDetails = async () => {
     return (await getTable(USER))[0];
 }

@@ -35,7 +35,7 @@ const validationSchema = Yup.object().shape({
 
 const LoginScreen = ({ navigation }) => {
     const { loadUser } = useUser();
-    const handleLogin = async (values) => {
+    const handleLogin = async (values, { setFieldError }) => {
         try {
             // todo: add check if the values email === email in the database!!
             await signInWithEmailAndPassword(auth, values.email, values.password);
@@ -43,11 +43,16 @@ const LoginScreen = ({ navigation }) => {
             await updateLastLogin();
             navigation.replace('Application');
         } catch (error) {
-            if (error.message === 'auth/network-request-failed') {
+            if (error.code === 'ERR_UNEXPECTED') {
+                Alert.alert('שגיאה', 'לא ניתן לטעון את המשתמש כעת, אנא נסה שנית')
+            } else if (error.code === 'auth/network-request-failed') {
                 Alert.alert("שגיאה", "אין חיבור לאינטרנט");
+            } else if (error.code === 'auth/invalid-credential') {
+                setFieldError('email', 'האימייל או הסיסמה אינם נכונים');
+            } else {
+                console.log(error.code);
+                Alert.alert("שגיאה", error.message);
             }
-            console.error('Error signing in:', error.message);
-            Alert.alert("שגיאה", error.message);
         }
     };
 

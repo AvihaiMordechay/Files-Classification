@@ -1,7 +1,6 @@
 import { Platform } from 'react-native';
 import constats from "./constats";
 
-console.log(Platform.select({ ios: 15, android: 8 }));
 const theme = {
     inputContainer: {
         backgroundColor: '#FFF',

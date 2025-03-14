@@ -36,13 +36,14 @@ const HomeScreen = ({ navigation }) => {
                 <SafeAreaView style={styles.container}>
                     <Text style={styles.baseText}>התיקיות שלי:</Text>
                     <ScrollView contentContainerStyle={styles.foldersContainer}>
-                        {user.folders?.map((folder, index) => (
-                            <FolderButton
-                                key={index}
-                                folder={folder}
-                                onPress={() => handleFolderPress(folder)}
-                            />
-                        ))}
+                        {user.folders &&
+                            Object.entries(user.folders).map(([name, folder]) => (
+                                <FolderButton
+                                    key={folder.id}
+                                    folder={{ name, ...folder }}
+                                    onPress={() => handleFolderPress({ name, ...folder })}
+                                />
+                            ))}
                     </ScrollView>
                 </SafeAreaView>
             </SafeAreaProvider>

@@ -9,7 +9,10 @@ import {
     getFilesByFolder,
     createDB,
     getLastLogin,
-    deleteDB
+    deleteDB,
+    createFolder,
+    addFileToFolder,
+    changeUserEmail
 } from '../services/database';
 import { Alert } from 'react-native';
 
@@ -30,9 +33,8 @@ export const UserProvider = ({ children }) => {
 
             const diffInMs = now - lastLoginDate;
             const diffInHours = diffInMs / (1000 * 60 * 60);
-            console.log(diffInHours);
 
-            return diffInHours >= 3;
+            return diffInHours <= 3;
         } catch (error) {
             console.error("Error checking last login:", error);
             return false;
@@ -44,7 +46,7 @@ export const UserProvider = ({ children }) => {
             if (await isFirstTime()) {
                 setUser(null);
                 setUserStatus('new');
-            } else if (await isUserLoggedIn() && firebaseUser) {
+            } else if (await isUserLoggedIn() && (firebaseUser !== null)) {
                 try {
                     await loadUser();
                     setUserStatus('authenticated');
@@ -63,6 +65,7 @@ export const UserProvider = ({ children }) => {
 
     const loadUser = async () => {
         try {
+            debugger;
             const userDetails = await getUserDetails();
             const favorites = await getAllFavoritesFiles();
             const folders = await loadFoldersFromDB();
@@ -109,14 +112,16 @@ export const UserProvider = ({ children }) => {
                     files = [];
                 }
                 return {
-                    id: folder.id,
-                    name: folder.name,
-                    filesCount: folder.filesCount,
-                    files: files
+                    [folder.name]: {
+                        id: folder.id,
+                        filesCount: folder.filesCount,
+                        files: files
+                    }
                 };
             })
         );
-        return folders;
+
+        return Object.assign({}, ...folders);
     };
 
     const updateUserName = async (newName) => {
@@ -129,8 +134,18 @@ export const UserProvider = ({ children }) => {
         }
     };
 
+    const updateUserEmail = async (newEmail) => {
+        if (!user) return;
+        try {
+            await changeUserEmail(newEmail, user.id);
+            setUser((prevUser) => ({ ...prevUser, email: newEmail }));
+        } catch (error) {
+            Alert.alert("שגיאה", "לא ניתן לעדכן את שם המשתמש");
+        }
+    }
+
     return (
-        <UserContext.Provider value={{ user, setUser, userStatus, createUser, updateUserName, loadUser }}>
+        <UserContext.Provider value={{ user, setUser, userStatus, createUser, updateUserName, updateUserEmail, loadUser }}>
             {!loading && children}
         </UserContext.Provider>
     );

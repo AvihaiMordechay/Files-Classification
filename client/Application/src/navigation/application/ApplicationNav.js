@@ -7,6 +7,7 @@ import HomeStackNavigator from './HomeNav';
 import FavoritesScreen from '../../screens/FavoritesScreen';
 import SettingsNavigator from './SettingsNav';
 import AddFiles from '../../components/AddFiles';
+import constats from '../../styles/constats';
 
 
 const Tab = createBottomTabNavigator();
@@ -18,7 +19,7 @@ const ApplicationNavigator = () => {
             screenOptions={({ route }) => ({
                 headerShown: false,
                 tabBarStyle: { backgroundColor: '#fff', height: 75 },
-                tabBarActiveTintColor: '#00C7BE',
+                tabBarActiveTintColor: constats.colors.primary,
                 tabBarInactiveTintColor: 'gray',
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
@@ -63,7 +64,7 @@ const ApplicationNavigator = () => {
                             {...props}
                             style={styles.addButton}
                         >
-                            <Ionicons name="add-circle" size={80} color="#00C7BE" />
+                            <Ionicons name="add-circle" size={80} color={constats.colors.primary} />
                         </TouchableOpacity>
                     ),
                 }}

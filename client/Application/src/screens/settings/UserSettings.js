@@ -5,6 +5,7 @@ import theme from '../../styles/theme';
 import constats from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
 import { printDB } from '../../services/database';
+import EmailUpdateModal from '../../components/EmailUpdateModal';
 
 const UserSettingsScreen = ({ navigation }) => {
     const { user, updateUserName, updateUserEmail } = useUser();
@@ -93,64 +94,14 @@ const UserSettingsScreen = ({ navigation }) => {
 
                         </View>
                     </ScrollView>
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
+                    <EmailUpdateModal
                         visible={modalVisible}
-                        onRequestClose={() => {
-                            setModalVisible(false);
-                        }}
-                    >
-                        <TouchableOpacity
-                            style={styles.modalOverlay}
-                            activeOpacity={1}
-                            onPress={() => setModalVisible(false)}
-                        >
-                            <View style={styles.centeredView}>
-                                <Pressable style={styles.modalView} onPress={(e) => e.stopPropagation()}>
-                                    <Text style={styles.modalTitle}>עדכון כתובת אימייל</Text>
-
-                                    <Text style={styles.modalLabel}>אימייל נוכחי</Text>
-                                    <View style={styles.modalInputContainer}>
-                                        <TextInput
-                                            style={styles.modalInput}
-                                            value={email}
-                                            editable={false}
-                                            selectTextOnFocus={false}
-                                        />
-                                    </View>
-
-                                    <Text style={styles.modalLabel}>אימייל חדש</Text>
-                                    <View style={styles.modalInputContainer}>
-                                        <TextInput
-                                            style={styles.modalInput}
-                                            placeholder="הכנס אימייל חדש"
-                                            placeholderTextColor="#999"
-                                            keyboardType="email-address"
-                                            onChangeText={(text) => {
-                                                setNewEmail(text);
-                                            }}
-                                            value={newEmail}
-                                        />
-                                    </View>
-
-                                    <View style={styles.modalButtonsContainer}>
-                                        <TouchableOpacity style={styles.modalCancelButton} onPress={() => setModalVisible(false)}>
-                                            <Text style={styles.modalCancelButtonText}>ביטול</Text>
-                                        </TouchableOpacity>
-
-                                        <TouchableOpacity
-                                            style={[styles.modalSaveButton, !newEmail && styles.disabledButton]}
-                                            onPress={handleUpdateEmail}
-                                            disabled={!newEmail}
-                                        >
-                                            <Text style={styles.modalSaveButtonText}>שמור</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </Pressable>
-                            </View>
-                        </TouchableOpacity>
-                    </Modal>
+                        onClose={() => setModalVisible(false)}
+                        email={email}
+                        newEmail={newEmail}
+                        setNewEmail={setNewEmail}
+                        handleUpdateEmail={handleUpdateEmail}
+                    />
                 </KeyboardAvoidingView>
             </SafeAreaView>
         </SafeAreaProvider>

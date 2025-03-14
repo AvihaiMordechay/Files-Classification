@@ -10,7 +10,7 @@ const settingsOptions = [
     { id: '2', title: 'נגישות', screen: 'NotificationsSettings', icon: 'accessibility-outline' },
 ];
 
-const SettingsScreen = ({ user }) => {
+const SettingsScreen = () => {
     const navigation = useNavigation();
 
     const renderItem = ({ item }) => (

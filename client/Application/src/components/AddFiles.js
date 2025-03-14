@@ -1,10 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Button, Alert } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { useUser } from '../context/UserContext';
+import FileUploadModal from './FileUploadModal';
 
 const AddFiles = () => {
     const { user } = useUser();
+    const [modalVisible, setModalVisible] = useState(false);
+
+
+    const handleFileRecognitionSuccess = async (category) => {
+        if (user.folders[category]) {
+            setModalVisible(true);
+        } else {
+        }
+    };
+
+    const handleButtonPress = (action) => {
+        console.log(`Action selected: ${action}`);
+        setModalVisible(false);
+    };
 
     const handleFileUpload = async () => {
         try {
@@ -38,13 +53,13 @@ const AddFiles = () => {
             // const data = JSON.parse(responseText);
             // const category = data.category;
 
-            if (user.getFoldersNames().includes("רפואה")) {
+            // if (user.getFoldersNames().includes("רפואה")) {
 
-            } else {
-                const wantStr = user.gender === "male" ? "תרצה" : "תרצי";
+            // } else {
+            //     const wantStr = user.gender === "male" ? "תרצה" : "תרצי";
 
 
-            }
+            // }
 
             // Alert.alert('Success', `Category: ${data.category}`);
             // } else {
@@ -59,7 +74,29 @@ const AddFiles = () => {
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Button title="העלה קובץ" onPress={handleFileUpload} />
+            <Button title="העלה קובץ" onPress={() => { handleFileRecognitionSuccess("רפואה") }} />
+
+            <FileUploadModal
+                visible={modalVisible}
+                title="בחר פעולה"
+                content="בחר אם ברצונך ליצור תיקייה חדשה או לשמור בתיקייה קיימת"
+                buttons={[
+                    {
+                        text: 'צור תיקייה חדשה - רפואה',
+                        onPress: () => handleButtonPress('createFolderMedicine'),
+                    },
+                    {
+                        text: 'צור תיקייה חדשה',
+                        icon: 'folder-outline',
+                        onPress: () => handleButtonPress('createFolder'),
+                    },
+                    {
+                        text: 'שמור בתיקייה קיימת',
+                        onPress: () => handleButtonPress('saveToExisting'),
+                    },
+                ]}
+                onClose={() => setModalVisible(false)}
+            />
         </View>
     );
 };
