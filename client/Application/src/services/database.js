@@ -23,7 +23,6 @@ export const createDB = async (id, name, email, gender) => {
         if (!id || !name || !email || !gender) {
             throw new Error('id, Name, gender and email are required');
         }
-        console.log("START:");
         const db = await initDB();
 
         await db.execAsync(`

@@ -6,19 +6,51 @@ import FileUploadModal from './FileUploadModal';
 
 const AddFiles = () => {
     const { user } = useUser();
-    const [modalVisible, setModalVisible] = useState(false);
+    const [newCategoryModalVisible, setNewCategoryModalVisible] = useState(false);
+    const [existCategoryModalVisible, setExistCategoryModalVisible] = useState(false);
+    const [failedRecognitionModelVisible, setFailedRecognitionModelVisible] = useState(false);
+    const [category, setCategory] = useState(undefined);
 
-
-    const handleFileRecognitionSuccess = async (category) => {
+    const handleFileRecognitionSuccess = async () => {
         if (user.folders[category]) {
-            setModalVisible(true);
+            setExistCategoryModalVisible(true);
         } else {
+            setNewCategoryModalVisible(true);
         }
     };
 
-    const handleButtonPress = (action) => {
+    const handleFileRecognitionFailed = async () => {
+        setNewCategoryModalVisible(true);
+    }
+
+    const handleButtonPress = (action, modal) => {
         console.log(`Action selected: ${action}`);
-        setModalVisible(false);
+        console.log(`model selected: ${modal}`);
+        switch (action) {
+            case "createNewFolder":
+
+                break;
+            case "saveToExisting":
+
+                break;
+            case "createCategoryFolder":
+
+                break;
+            case "saveToExistingCategory":
+
+                break;
+        }
+
+        switch (modal) {
+            case "existCategoryModal":
+                setExistCategoryModalVisible(false);
+                break;
+            case "newCategoryModal":
+                setNewCategoryModalVisible(false);
+                break;
+            case "failedRecognitionModel":
+                setFailedRecognitionModelVisible(false);
+        }
     };
 
     const handleFileUpload = async () => {
@@ -74,28 +106,72 @@ const AddFiles = () => {
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Button title="העלה קובץ" onPress={() => { handleFileRecognitionSuccess("רפואה") }} />
+            <Button title="העלה קובץ" onPress={() => { handleFileRecognitionFailed() }} />
 
             <FileUploadModal
-                visible={modalVisible}
-                title="בחר פעולה"
-                content="בחר אם ברצונך ליצור תיקייה חדשה או לשמור בתיקייה קיימת"
+                visible={newCategoryModalVisible}
+                content={`המערכת זיהתה מסמך מקטגוריה חדשה בשם: ${category}, מה ברצונך לעשות?`}
                 buttons={[
                     {
-                        text: 'צור תיקייה חדשה - רפואה',
-                        onPress: () => handleButtonPress('createFolderMedicine'),
-                    },
-                    {
                         text: 'צור תיקייה חדשה',
-                        icon: 'folder-outline',
-                        onPress: () => handleButtonPress('createFolder'),
+                        icon: 'add-outline',
+                        onPress: () => handleButtonPress('createNewFolder', "newCategoryModal"),
                     },
                     {
-                        text: 'שמור בתיקייה קיימת',
-                        onPress: () => handleButtonPress('saveToExisting'),
+                        icon: 'save-outline',
+                        text: 'שמור בתיקייה אחרת',
+                        onPress: () => handleButtonPress('saveToExisting', "newCategoryModal"),
+                    },
+                    {
+                        icon: 'folder-outline',
+                        isPrimary: true,
+                        text: `צור תיקייה ${category}`,
+                        onPress: () => handleButtonPress('createCategoryFolder', "newCategoryModal"),
                     },
                 ]}
-                onClose={() => setModalVisible(false)}
+                onClose={() => setNewCategoryModalVisible(false)}
+            />
+
+            <FileUploadModal
+                visible={existCategoryModalVisible}
+                content={`המערכת זיהתה מסמך מקטגורית: ${category}, מה ברצונך לעשות?`}
+                buttons={[
+                    {
+                        text: 'צור תיקייה חדשה',
+                        icon: 'add-outline',
+                        onPress: () => handleButtonPress('createNewFolder', "existCategoryModal"),
+                    },
+                    {
+                        icon: 'save-outline',
+                        text: 'שמור בתיקייה אחרת',
+                        onPress: () => handleButtonPress('saveToExisting', "existCategoryModal"),
+                    },
+                    {
+                        icon: 'save-outline',
+                        isPrimary: true,
+                        text: `שמור בתיקיית ${category}`,
+                        onPress: () => handleButtonPress('saveToExistingCategory', "existCategoryModal"),
+                    },
+                ]}
+                onClose={() => setExistCategoryModalVisible(false)}
+            />
+
+            <FileUploadModal
+                visible={failedRecognitionModelVisible}
+                content={'לא הצלחנו לזהות את סוג המסמך. מה ברצונך לעשות?'}
+                buttons={[
+                    {
+                        text: 'צור תיקייה חדשה',
+                        icon: 'add-outline',
+                        onPress: () => handleButtonPress('createNewFolder', "failedRecognitionModel"),
+                    },
+                    {
+                        icon: 'save-outline',
+                        text: 'שמור בתיקייה קיימת',
+                        onPress: () => handleButtonPress('saveToExisting', "failedRecognitionModel"),
+                    },
+                ]}
+                onClose={() => setFailedRecognitionModelVisible(false)}
             />
         </View>
     );

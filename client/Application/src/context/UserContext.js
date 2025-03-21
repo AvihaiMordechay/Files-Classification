@@ -86,7 +86,7 @@ export const UserProvider = ({ children }) => {
 
     const createUser = async (id, name, gender, email) => {
         try {
-            await createDB(id, name, gender, email);
+            await createDB(id, name, email, gender);
         } catch (error) {
             Alert.alert('שגיאה', "לא ניתן להירשם כעת, אנא נסה שנית");
             throw error;
