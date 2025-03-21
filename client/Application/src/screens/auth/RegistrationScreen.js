@@ -1,5 +1,5 @@
 import React from 'react';
-import theme from '../styles/theme';
+import constats from '../../styles/constats';
 import {
     View,
     Text,
@@ -9,12 +9,15 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Platform,
+    Alert
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../services/firebase';
+import { createUserWithEmailAndPassword, deleteUser } from 'firebase/auth';
+import { auth } from '../../services/firebase';
+import theme from '../../styles/theme';
+import { useUser } from '../../context/UserContext';
 
 
 const validationSchema = Yup.object().shape({
@@ -32,39 +35,50 @@ const validationSchema = Yup.object().shape({
     confirmPassword: Yup.string()
         .oneOf([Yup.ref('password')], 'הסיסמאות אינן תואמות')
         .required('יש לאמת את הסיסמה'),
+    gender: Yup.string().required('יש לבחור מגדר'),
 });
 
-const RegistrationScreen = ({ route, navigation }) => {
-    const { user } = route.params || {};
+const RegistrationScreen = ({ navigation }) => {
+    const { createUser, loadUser } = useUser();
 
-
-    const handleRegister = async (values) => {
+    const handleRegister = async (values, { setFieldError }) => {
         try {
-            const userCredential = await createUserWithEmailAndPassword(
-                auth,
-                values.email,
-                values.password
-            );
+            const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
             const firebaseUserAuth = userCredential.user;
 
-            await user.createDB(firebaseUserAuth.uid, values.name, values.email, "male");
-
-            navigation.replace('Application', { user: user });
+            try {
+                await createUser(firebaseUserAuth.uid, values.name, values.gender, values.email);
+                await loadUser();
+                navigation.replace('Application');
+            } catch (dbError) {
+                if (dbError.code === 'ERR_UNEXPECTED') {
+                    Alert.alert('שגיאה', 'לא ניתן ליצור את המשתמש כעת, אנא נסה שנית')
+                }
+                await deleteUser(firebaseUserAuth);
+                console.log("Delete user from firebase");
+            }
         } catch (error) {
+            if (error.code === 'auth/network-request-failed') {
+                Alert.alert("שגיאה", "אין חיבור לאינטרנט");
+            } else if (error.code === 'auth/email-already-in-use') {
+                setFieldError('email', 'האימייל כבר קיים במערכת');
+            } else {
+                Alert.alert('שגיאה', "לא ניתן להירשם כעת, אנא נסה שנית");
+            }
             console.error('Error creating user:', error.message);
         }
     };
 
 
+
     return (
-        <SafeAreaProvider style={styles.background}>
+        <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={styles.keyboardAvoidingView}
                 >
                     <ScrollView contentContainerStyle={styles.scrollView}>
-                        {/* לוגו */}
                         <View style={styles.logoContainer}>
                             <View style={styles.logoBox}></View>
                             <View style={[styles.logoBox, styles.logoBoxOverlap]}></View>
@@ -77,6 +91,7 @@ const RegistrationScreen = ({ route, navigation }) => {
                                 email: '',
                                 password: '',
                                 confirmPassword: '',
+                                gender: 'male',
                             }}
                             validationSchema={validationSchema}
                             onSubmit={handleRegister}
@@ -88,6 +103,7 @@ const RegistrationScreen = ({ route, navigation }) => {
                                 values,
                                 errors,
                                 touched,
+                                setFieldValue,
                             }) => (
                                 <View style={styles.form}>
                                     <View style={styles.inputContainer}>
@@ -102,6 +118,26 @@ const RegistrationScreen = ({ route, navigation }) => {
                                             <Text style={styles.errorText}>{errors.name}</Text>
                                         )}
                                     </View>
+
+                                    <View style={styles.genderContainer}>
+                                        <TouchableOpacity
+                                            style={[styles.genderButton, values.gender === 'female' && styles.selectedGender]}
+                                            onPress={() => setFieldValue('gender', 'female')}
+                                        >
+                                            <Text style={[styles.genderText, values.gender === 'female' && styles.selectedText]}>נקבה</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity
+                                            style={[styles.genderButton, values.gender === 'male' && styles.selectedGender]}
+                                            onPress={() => setFieldValue('gender', 'male')}
+                                        >
+                                            <Text style={[styles.genderText, values.gender === 'male' && styles.selectedText]}>זכר</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    {touched.gender && errors.gender && (
+                                        <Text style={styles.errorText}>{errors.gender}</Text>
+                                    )}
+
 
                                     <View style={styles.inputContainer}>
                                         <TextInput
@@ -153,7 +189,7 @@ const RegistrationScreen = ({ route, navigation }) => {
                                             }
                                         }}
                                     >
-                                        <Text style={styles.buttonText}>המשך</Text>
+                                        <Text style={styles.buttonText}>הרשם</Text>
                                     </TouchableOpacity>
                                 </View>
                             )}
@@ -166,10 +202,6 @@ const RegistrationScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    background: {
-        backgroundColor: theme.colors.background,
-        flex: 1,
-    },
     container: {
         flex: 1,
     },
@@ -185,53 +217,52 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 20,
     },
-    logoBox: {
-        width: 50,
-        height: 50,
-        backgroundColor: theme.colors.primary,
-        borderRadius: 8,
-    },
+    logoBox: theme.authLogoBox,
     logoBoxOverlap: {
         marginLeft: -15,
     },
     title: {
-        fontSize: 24,
+        fontSize: constats.sizes.font.large,
         fontWeight: 'bold',
         marginBottom: 20,
     },
     form: {
         width: '80%',
     },
-    inputContainer: {
-        backgroundColor: '#F1F5F9',
-        borderRadius: 8,
-        marginBottom: 15,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
-    },
-    input: {
-        fontSize: 17,
-        textAlign: 'right',
-    },
-    button: {
-        backgroundColor: theme.colors.primary,
-        borderRadius: 8,
-        paddingVertical: 12,
-        alignItems: 'center',
-        marginTop: 10,
-        elevation: 2,
-    },
+    inputContainer: theme.inputContainer,
+    input: theme.input,
+    button: theme.authButton,
     buttonText: {
-        color: '#FFFFFF',
-        fontSize: 16,
+        color: constats.colors.backgroundButton,
+        fontSize: constats.sizes.font.medium,
         fontWeight: 'bold',
     },
-    errorText: {
-        color: theme.colors.danger,
-        fontSize: 12,
-        marginTop: 5,
-        textAlign: 'right',
+    errorText: theme.errorText,
+    genderContainer: {
+        flexDirection: 'row',
+        backgroundColor: constats.colors.backgroundButton,
+        borderRadius: 10,
+        overflow: 'hidden',
+        alignItems: 'center',
+        borderRadius: 8,
+        marginBottom: 15,
     },
+    genderButton: {
+        flex: 1,
+        paddingVertical: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    selectedGender: {
+        backgroundColor: constats.colors.primary,
+    },
+    genderText: {
+        fontSize: constats.sizes.font.medium,
+        color: 'gray',
+    },
+    selectedText: {
+        color: 'white',
+    }
 });
 
 export default RegistrationScreen;

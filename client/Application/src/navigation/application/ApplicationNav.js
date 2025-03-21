@@ -5,21 +5,21 @@ import { Ionicons } from '@expo/vector-icons';
 
 import HomeStackNavigator from './HomeNav';
 import FavoritesScreen from '../../screens/FavoritesScreen';
-import SettingsScreen from '../../screens/SettingsScreen';
-import AddFiles from '../../components/AddFilesComponent';
+import SettingsNavigator from './SettingsNav';
+import AddFiles from '../../components/AddFiles';
+import constats from '../../styles/constats';
 
 
 const Tab = createBottomTabNavigator();
 
-const ApplicationNavigator = ({ route }) => {
-    const { user } = route.params || {};
+const ApplicationNavigator = () => {
 
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
                 headerShown: false,
                 tabBarStyle: { backgroundColor: '#fff', height: 75 },
-                tabBarActiveTintColor: '#00C7BE',
+                tabBarActiveTintColor: constats.colors.primary,
                 tabBarInactiveTintColor: 'gray',
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
@@ -40,24 +40,23 @@ const ApplicationNavigator = ({ route }) => {
                 name="HomeTab"
                 options={{ title: 'דף הבית' }}
             >
-                {() => <HomeStackNavigator user={user} />}
+                {() => <HomeStackNavigator />}
             </Tab.Screen>
             <Tab.Screen
                 name="Favorites"
                 component={FavoritesScreen}
-                initialParams={{ user }}
                 options={{ title: 'מועדפים' }}
             />
+
             <Tab.Screen
                 name="Settings"
-                component={SettingsScreen}
-                initialParams={{ user }}
                 options={{ title: 'הגדרות' }}
-            />
+            >
+                {() => <SettingsNavigator />}
+            </Tab.Screen>
             <Tab.Screen
                 name="Add"
                 component={AddFiles}
-                initialParams={{ user }}
                 options={{
                     title: 'הוספה',
                     tabBarButton: (props) => (
@@ -65,7 +64,7 @@ const ApplicationNavigator = ({ route }) => {
                             {...props}
                             style={styles.addButton}
                         >
-                            <Ionicons name="add-circle" size={80} color="#00C7BE" />
+                            <Ionicons name="add-circle" size={80} color={constats.colors.primary} />
                         </TouchableOpacity>
                     ),
                 }}

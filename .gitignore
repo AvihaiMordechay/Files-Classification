@@ -7,3 +7,5 @@ __pycache__/
 .env
 *.safetensors
 focus-fold*.json
+*.apk
+.vscode/

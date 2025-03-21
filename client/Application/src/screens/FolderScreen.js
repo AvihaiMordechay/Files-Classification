@@ -6,7 +6,6 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 const FolderScreen = ({ route, navigation }) => {
     const { files } = route.params || {};
 
-    console.log(files);
     const handleFilePress = (file) => {
         navigation.navigate('File', {
             file: file

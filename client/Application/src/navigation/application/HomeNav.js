@@ -7,13 +7,12 @@ import FileScreen from '../../screens/FileScreen';
 
 const Stack = createStackNavigator();
 
-const HomeStackNavigator = ({ user }) => {
+const HomeStackNavigator = () => {
     return (
         <Stack.Navigator>
             <Stack.Screen
                 name="Home"
                 component={HomeScreen}
-                initialParams={{ user }}
                 options={{ headerShown: false }}
             />
             <Stack.Screen

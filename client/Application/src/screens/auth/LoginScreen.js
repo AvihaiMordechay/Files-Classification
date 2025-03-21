@@ -1,5 +1,5 @@
 import React from 'react';
-import theme from '../styles/theme';
+import constats from '../../styles/constats';
 import {
     View,
     Text,
@@ -9,12 +9,17 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Platform,
+    Alert,
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../services/firebase';
+import { auth } from '../../services/firebase';
+import theme from '../../styles/theme';
+import { getUserEmail, updateLastLogin } from '../../services/database';
+import { useUser } from '../../context/UserContext';
+import { use } from 'react';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -28,28 +33,31 @@ const validationSchema = Yup.object().shape({
         .min(8, 'הסיסמה חייבת להיות באורך של לפחות 8 תווים')
 });
 
-const LoginScreen = ({ route, navigation }) => {
-    const { user } = route.params || {};
-
-    const handleLogin = async (values) => {
+const LoginScreen = ({ navigation }) => {
+    const { loadUser } = useUser();
+    const handleLogin = async (values, { setFieldError }) => {
         try {
-            const userCredential = await signInWithEmailAndPassword(
-                auth,
-                values.email,
-                values.password
-            );
-            const firebaseUserAuth = userCredential.user;
-
-            await user.initDB();
-            console.log(user.name);
-            navigation.replace('Application', { user: user });
+            // todo: add check if the values email === email in the database!!
+            await signInWithEmailAndPassword(auth, values.email, values.password);
+            await loadUser();
+            await updateLastLogin();
+            navigation.replace('Application');
         } catch (error) {
-            console.error('Error signing in:', error.message);
+            if (error.code === 'ERR_UNEXPECTED') {
+                Alert.alert('שגיאה', 'לא ניתן לטעון את המשתמש כעת, אנא נסה שנית')
+            } else if (error.code === 'auth/network-request-failed') {
+                Alert.alert("שגיאה", "אין חיבור לאינטרנט");
+            } else if (error.code === 'auth/invalid-credential') {
+                setFieldError('email', 'האימייל או הסיסמה אינם נכונים');
+            } else {
+                console.log(error.code);
+                Alert.alert("שגיאה", error.message);
+            }
         }
     };
 
     return (
-        <SafeAreaProvider style={styles.background}>
+        <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -121,7 +129,7 @@ const LoginScreen = ({ route, navigation }) => {
                                     {/* קישור להרשמה */}
                                     <TouchableOpacity
                                         style={styles.linkButton}
-                                        onPress={() => navigation.navigate('Registration', { user })}
+                                        onPress={() => navigation.navigate('Registration')}
                                     >
                                         <Text style={styles.linkText}>אין לך חשבון? הירשם כאן</Text>
                                     </TouchableOpacity>
@@ -135,11 +143,8 @@ const LoginScreen = ({ route, navigation }) => {
     );
 };
 
+
 const styles = StyleSheet.create({
-    background: {
-        backgroundColor: theme.colors.background,
-        flex: 1,
-    },
     container: {
         flex: 1,
     },
@@ -155,60 +160,34 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 20,
     },
-    logoBox: {
-        width: 50,
-        height: 50,
-        backgroundColor: theme.colors.primary,
-        borderRadius: 8,
-    },
+    logoBox: theme.authLogoBox,
     logoBoxOverlap: {
         marginLeft: -15,
     },
     title: {
-        fontSize: 24,
+        fontSize: constats.sizes.font.large,
         fontWeight: 'bold',
         marginBottom: 20,
     },
     form: {
         width: '80%',
     },
-    inputContainer: {
-        backgroundColor: '#F1F5F9',
-        borderRadius: 8,
-        marginBottom: 15,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
-    },
-    input: {
-        fontSize: 17,
-        textAlign: 'right',
-    },
-    button: {
-        backgroundColor: theme.colors.primary,
-        borderRadius: 8,
-        paddingVertical: 12,
-        alignItems: 'center',
-        marginTop: 10,
-        elevation: 2,
-    },
+    inputContainer: theme.inputContainer,
+    input: theme.input,
+    button: theme.authButton,
     buttonText: {
-        color: '#FFFFFF',
-        fontSize: 16,
+        color: constats.colors.backgroundButton,
+        fontSize: constats.sizes.font.medium,
         fontWeight: 'bold',
     },
-    errorText: {
-        color: theme.colors.danger,
-        fontSize: 12,
-        marginTop: 5,
-        textAlign: 'right',
-    },
+    errorText: theme.errorText,
     linkButton: {
         marginTop: 15,
         alignItems: 'center',
     },
     linkText: {
-        color: theme.colors.primary,
-        fontSize: 14,
+        color: constats.colors.primary,
+        fontSize: constats.sizes.font.small,
     },
 });
 

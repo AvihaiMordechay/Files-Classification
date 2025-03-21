@@ -4,14 +4,13 @@ import ApplicationNavigator from './application/ApplicationNav';
 
 const Stack = createStackNavigator();
 
-const AuthenticatedNavigator = ({ user }) => {
+const AuthenticatedNavigator = () => {
 
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen
                 name="Application"
                 component={ApplicationNavigator}
-                initialParams={{ user }}
             />
         </Stack.Navigator>
     );

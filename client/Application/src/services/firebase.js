@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';  // ייבוא AsyncStorage
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
     REACT_APP_FIREBASE_API_KEY,
@@ -19,6 +19,7 @@ const firebaseConfig = {
     messagingSenderId: REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
     appId: REACT_APP_FIREBASE_APP_ID,
 };
+
 
 const app = initializeApp(firebaseConfig);
 
