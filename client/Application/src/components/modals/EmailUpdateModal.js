@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet } from 'react-native';
-import theme from '../styles/theme';
-import constats from '../styles/constats';
+import theme from '../../styles/theme';
+import constats from '../../styles/constats';
 
 const EmailUpdateModal = ({ visible, onClose, email, newEmail, setNewEmail, handleUpdateEmail }) => {
     return (

@@ -1,13 +1,14 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 import HomeStackNavigator from './HomeNav';
 import FavoritesScreen from '../../screens/FavoritesScreen';
 import SettingsNavigator from './SettingsNav';
-import AddFiles from '../../components/AddFiles';
+import UploadFile from '../../components/UploadFile';
 import constats from '../../styles/constats';
+import ActionMenu from '../../components/ActionMenu';
 
 
 const Tab = createBottomTabNavigator();
@@ -56,16 +57,11 @@ const ApplicationNavigator = () => {
             </Tab.Screen>
             <Tab.Screen
                 name="Add"
-                component={AddFiles}
+                component={View}
                 options={{
                     title: 'הוספה',
-                    tabBarButton: (props) => (
-                        <TouchableOpacity
-                            {...props}
-                            style={styles.addButton}
-                        >
-                            <Ionicons name="add-circle" size={80} color={constats.colors.primary} />
-                        </TouchableOpacity>
+                    tabBarButton: () => (
+                        <ActionMenu />
                     ),
                 }}
             />

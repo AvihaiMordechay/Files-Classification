@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, Button, Alert } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { useUser } from '../context/UserContext';
-import FileUploadModal from './FileUploadModal';
+import FileUploadModal from './modals/FileUploadModal';
 
-const AddFiles = () => {
+const UploadFile = () => {
     const { user } = useUser();
     const [newCategoryModalVisible, setNewCategoryModalVisible] = useState(false);
     const [existCategoryModalVisible, setExistCategoryModalVisible] = useState(false);
@@ -177,4 +177,4 @@ const AddFiles = () => {
     );
 };
 
-export default AddFiles;
+export default UploadFile;

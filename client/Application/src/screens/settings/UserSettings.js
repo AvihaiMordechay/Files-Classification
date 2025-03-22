@@ -5,7 +5,7 @@ import theme from '../../styles/theme';
 import constats from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
 import { printDB } from '../../services/database';
-import EmailUpdateModal from '../../components/EmailUpdateModal';
+import EmailUpdateModal from '../../components/modals/EmailUpdateModal';
 
 const UserSettingsScreen = ({ navigation }) => {
     const { user, updateUserName, updateUserEmail } = useUser();
