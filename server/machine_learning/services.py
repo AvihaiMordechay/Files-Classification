@@ -39,6 +39,13 @@ def predict_category(text: str) -> str:
         )
         with torch.no_grad():
             outputs = model(**inputs)
+        probabilities = torch.softmax(outputs.logits, dim=-1).squeeze()
+        
+        #using a threshold of 0.4 to return undefined if the max probability is less than 0.4
+    
+        if torch.max(probabilities).item() < 0.4:
+            return "undefined"
+        
         predicted_id = torch.argmax(outputs.logits, dim=-1).item()
         return category_mapping.get(str(predicted_id), "Unknown")
     except Exception as e:
