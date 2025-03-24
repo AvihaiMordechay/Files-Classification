@@ -1,96 +1,130 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, View, Pressable, Text } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { SafeAreaView, StyleSheet, View, Pressable, Text, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, { useSharedValue, withSpring, useAnimatedStyle, withDelay, withTiming, interpolate } from 'react-native-reanimated';
 import constats from '../styles/constats';
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+import CreateFolderModel from './modals/CreateFolderModal';
+import UploadFile from './UploadFile';
 
 const OFFSET = 60;
 
-const FloatingActionButton = ({ isExpanded, index, labal, icon }) => {
-    const animatedStyles = useAnimatedStyle(() => {
-        const moveValue = isExpanded.value ? OFFSET * index : 0;
-        const translateValue = withSpring(-moveValue, { duration: 1200, overshootClamping: true, dampingRatio: 0.8 });
-        const delay = index * 100;
-        const scaleValue = isExpanded.value ? 1 : 0;
+const FloatingActionButton = ({ isExpanded, index, label, icon, myOnPress }) => {
+    const translateY = useRef(new Animated.Value(0)).current;
+    const scale = useRef(new Animated.Value(0)).current;
 
-        return {
-            transform: [
-                { translateY: translateValue },
-                { scale: withDelay(delay, withTiming(scaleValue)) },
-            ],
-        };
-    });
+    React.useEffect(() => {
+        Animated.parallel([
+            Animated.spring(translateY, {
+                toValue: isExpanded ? -OFFSET * index : 0,
+                useNativeDriver: true,
+            }),
+            Animated.timing(scale, {
+                toValue: isExpanded ? 1 : 0,
+                duration: 200,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    }, [isExpanded]);
 
     return (
-        <Animated.View style={[animatedStyles, { position: 'absolute' }]}>
+        <Animated.View style={[{ transform: [{ translateY }, { scale }] }, styles.floatingButtonContainer]}>
             <View style={styles.buttonView}>
-                <Animated.Text style={styles.labal}>{labal}</Animated.Text>
-                <AnimatedPressable style={[styles.button, styles.shadow]}>
-                    <Animated.Text style={[styles.content]}>
-                        <Ionicons name={icon} size={28} />
-                    </Animated.Text>
-                </AnimatedPressable>
+                <Text style={styles.label}>{label}</Text>
+                <Pressable onPress={myOnPress} style={[styles.button, styles.shadow]}>
+                    <Ionicons name={icon} size={28} />
+                </Pressable>
             </View>
         </Animated.View>
     );
 };
 
 const ActionMenu = () => {
-    const isExpanded = useSharedValue(false);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [createFolderModalVisible, setCreateFolderModalVisible] = useState(false);
+    const [file, setFile] = useState(null);
+    const rotateAnim = useRef(new Animated.Value(0)).current;
 
-    const handlePress = () => {
-        isExpanded.value = !isExpanded.value;
+    const handlePlusPress = () => {
+        setIsExpanded(!isExpanded);
+        Animated.timing(rotateAnim, {
+            toValue: isExpanded ? 0 : 1,
+            duration: 200,
+            useNativeDriver: true,
+        }).start();
     };
 
-    const plusIconStyle = useAnimatedStyle(() => {
-        const moveValue = interpolate(Number(isExpanded.value), [0, 1], [0, 2]);
-        const translateValue = withTiming(moveValue);
-        const rotateValue = isExpanded.value ? '45deg' : '0deg';
+    const handleCreateFolderPress = () => {
+        setCreateFolderModalVisible(true);
+    };
 
-        return {
-            transform: [
-                { translateX: translateValue },
-                { rotate: withTiming(rotateValue) },
-            ],
-        };
-    });
+
+    const uploadFileFromGallery = () => {
+        console.log("uploadFileFromGallery");
+    }
+
+    const uploadFileFromFiles = () => {
+        console.log("uploadFileFromFiles");
+    }
+
+    const rotateStyle = {
+        transform: [
+            {
+                rotate: rotateAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '45deg'],
+                }),
+            },
+            {
+                translateX: rotateAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 2],
+                }),
+            },
+        ],
+
+    };
+
     return (
         <SafeAreaView>
             <View style={styles.mainContainer}>
                 <View style={styles.buttonContainer}>
-                    <AnimatedPressable
-                        onPress={handlePress}
-                        style={[styles.shadow, mainButtonStyles.button]}>
-                        <Animated.Text style={[plusIconStyle, mainButtonStyles.content]}>
-                            +
-                        </Animated.Text>
-                    </AnimatedPressable>
+                    <Pressable onPress={handlePlusPress} style={[styles.shadow, mainButtonStyles.button]}>
+                        <Animated.Text style={[rotateStyle, mainButtonStyles.content]}>+</Animated.Text>
+                    </Pressable>
 
-                    <FloatingActionButton
-                        isExpanded={isExpanded}
-                        index={1}
-                        labal={'צור תיקייה \nחדשה'}
-                        icon={'folder-outline'}
-                    />
-
-                    <FloatingActionButton
-                        isExpanded={isExpanded}
-                        index={2}
-                        labal={'העלה קובץ מהקבצים'}
-                        icon={'cloud-upload-outline'}
-                    />
-
-                    <FloatingActionButton
-                        isExpanded={isExpanded}
-                        index={3}
-                        labal={'העלה קובץ מהגלרייה'}
-                        icon={'cloud-upload-outline'}
-                    />
-
+                    {isExpanded && (
+                        <>
+                            <FloatingActionButton
+                                isExpanded={isExpanded}
+                                index={1}
+                                label={'צור תיקייה \nחדשה'}
+                                icon={'folder-outline'}
+                                myOnPress={handleCreateFolderPress}
+                            />
+                            <FloatingActionButton
+                                isExpanded={isExpanded}
+                                index={2}
+                                label={'העלה קובץ מהקבצים'}
+                                icon={'cloud-upload-outline'}
+                                myOnPress={uploadFileFromFiles}
+                            />
+                            <FloatingActionButton
+                                isExpanded={isExpanded}
+                                index={3}
+                                label={'העלה קובץ מהגלרייה'}
+                                icon={'cloud-upload-outline'}
+                                myOnPress={uploadFileFromGallery}
+                            />
+                        </>
+                    )}
                 </View>
             </View>
+
+            <CreateFolderModel
+                visible={createFolderModalVisible}
+                onClose={() => setCreateFolderModalVisible(false)}
+            />
+
+            {file && <UploadFile file={file} />}
         </SafeAreaView>
     );
 };
@@ -109,6 +143,7 @@ const mainButtonStyles = StyleSheet.create({
     content: {
         fontSize: 50,
         color: '#f8f9ff',
+        marginTop: -3,
     },
 });
 
@@ -119,6 +154,9 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'flex-end',
         alignItems: 'center',
+    },
+    floatingButtonContainer: {
+        position: 'absolute',
     },
     button: {
         width: 50,
@@ -133,16 +171,15 @@ const styles = StyleSheet.create({
     buttonView: {
         marginLeft: -70,
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
     },
-    labal: {
+    label: {
         writingDirection: 'rtl',
         textAlign: 'right',
         marginRight: 6,
         fontSize: 15,
         fontWeight: 'bold',
-        color: '#595959FF'
-
+        color: '#595959FF',
     },
     buttonContainer: {
         position: 'absolute',
@@ -158,7 +195,7 @@ const styles = StyleSheet.create({
     },
     content: {
         color: constats.colors.primary,
-        fontWeight: 500,
+        fontWeight: '500',
     },
 });
 

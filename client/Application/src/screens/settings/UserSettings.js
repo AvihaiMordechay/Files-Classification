@@ -12,12 +12,9 @@ import Spinner from '../../components/Spinner';
 
 const UserSettingsScreen = ({ navigation }) => {
     const { user, updateUserName, updateUserEmail } = useUser();
-    const existEmail = user.email || '';
     const [userName, setUserName] = useState(user.name || '');
-    const [newEmail, setNewEmail] = useState('');
     const [saveNameButtonVisible, setSaveNameButtonVisible] = useState(false);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [password, setPassword] = useState("");
+    const [emailModalVisible, setEmailModelVisible] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const handleUpdateName = async () => {
@@ -30,34 +27,6 @@ const UserSettingsScreen = ({ navigation }) => {
         }
     };
 
-    const handleUpdateEmail = async () => {
-        setLoading(true);
-        try {
-            const auth = getAuth();
-            const firebaseUser = auth.currentUser;
-            if (firebaseUser) {
-                const credential = EmailAuthProvider.credential(firebaseUser.email, password);
-                await reauthenticateWithCredential(firebaseUser, credential);
-                await verifyBeforeUpdateEmail(firebaseUser, newEmail);
-
-                Alert.alert('אימות נדרש', 'נשלח מייל אימות לכתובת החדשה. אנא אשר את המייל כדי להשלים את העדכון.', [{ text: 'הבנתי', onPress: () => setModalVisible(false) }]);
-
-                const checkEmailVerification = setInterval(async () => {
-                    await firebaseUser.reload();
-                    if (firebaseUser.emailVerified) {
-                        clearInterval(checkEmailVerification);
-                        await updateUserEmail(newEmail);
-                        setLoading(false);
-                        Alert.alert('הצלחה', 'האימייל שלך עודכן בהצלחה!');
-                    }
-                }, 5000);
-            }
-        } catch (error) {
-            console.log(error);
-            Alert.alert('שגיאה', 'לא ניתן לעדכן את האימייל');
-            setLoading(false);
-        }
-    };
 
     const handleUpdatePassword = () => {
     };
@@ -98,13 +67,13 @@ const UserSettingsScreen = ({ navigation }) => {
                             <View style={[styles.inputContainer, styles.disabledInputContainer]}>
                                 <TextInput
                                     style={styles.input}
-                                    value={existEmail}
+                                    value={user.email || ''}
                                     editable={false}
                                     selectTextOnFocus={false}
                                 />
                             </View>
 
-                            <TouchableOpacity style={styles.actionButton} onPress={() => setModalVisible(true)}>
+                            <TouchableOpacity style={styles.actionButton} onPress={() => setEmailModelVisible(true)}>
                                 <Text style={styles.actionButtonText}>שינוי כתובת אימייל</Text>
                             </TouchableOpacity>
 
@@ -119,14 +88,8 @@ const UserSettingsScreen = ({ navigation }) => {
                         </View>
                     </ScrollView>
                     <EmailUpdateModal
-                        visible={modalVisible}
-                        onClose={() => setModalVisible(false)}
-                        email={existEmail}
-                        newEmail={newEmail}
-                        setNewEmail={setNewEmail}
-                        handleUpdateEmail={handleUpdateEmail}
-                        password={password}
-                        setPassword={setPassword}
+                        visible={emailModalVisible}
+                        onClose={() => setEmailModelVisible(false)}
                     />
                 </KeyboardAvoidingView>
             </SafeAreaView>
