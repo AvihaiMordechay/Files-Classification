@@ -78,7 +78,14 @@ const ActionMenu = () => {
                     <FloatingActionButton
                         isExpanded={isExpanded}
                         index={2}
-                        labal={'העלה קובץ'}
+                        labal={'העלה קובץ מהקבצים'}
+                        icon={'cloud-upload-outline'}
+                    />
+
+                    <FloatingActionButton
+                        isExpanded={isExpanded}
+                        index={3}
+                        labal={'העלה קובץ מהגלרייה'}
                         icon={'cloud-upload-outline'}
                     />
 
