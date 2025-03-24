@@ -1,35 +1,49 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Header from '../components/Header';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import FolderButton from '../components/FolderButton';
+import { useUser } from '../context/UserContext';
+import Spinner from '../components/Spinner';
 
-const HomeScreen = ({ route, navigation }) => {
-    const { user } = route.params || {};
+const HomeScreen = ({ navigation }) => {
+    const { user } = useUser();
+    const [isLoading, setIsLoading] = useState(true);
 
-    const handleCategoryPress = (category) => {
+    useEffect(() => {
+        if (user) {
+            setIsLoading(false);
+        }
+    }, [user]);
+
+    const handleFolderPress = (folder) => {
         navigation.navigate('Folder', {
-            folderName: category.tagName,
-            files: category.files
+            folderName: folder.name,
+            files: folder.files
         });
     };
+
+    if (isLoading) {
+        return <Spinner text="טוען את הנתונים..." />;
+    }
 
     return (
         <>
             <View>
-                <Header user={user} />
+                <Header />
             </View>
             <SafeAreaProvider>
                 <SafeAreaView style={styles.container}>
                     <Text style={styles.baseText}>התיקיות שלי:</Text>
-                    <ScrollView contentContainerStyle={styles.categoriesContainer}>
-                        {user.foldersCategories?.map((category, index) => (
-                            <FolderButton
-                                key={index}
-                                category={category}
-                                onPress={() => handleCategoryPress(category)}
-                            />
-                        ))}
+                    <ScrollView contentContainerStyle={styles.foldersContainer}>
+                        {user.folders &&
+                            Object.entries(user.folders).map(([name, folder]) => (
+                                <FolderButton
+                                    key={folder.id}
+                                    folder={{ name, ...folder }}
+                                    onPress={() => handleFolderPress({ name, ...folder })}
+                                />
+                            ))}
                     </ScrollView>
                 </SafeAreaView>
             </SafeAreaProvider>
@@ -50,7 +64,7 @@ const styles = StyleSheet.create({
         writingDirection: 'rtl',
         textAlign: 'right',
     },
-    categoriesContainer: {
+    foldersContainer: {
         marginTop: 20,
         flexDirection: 'row',
         flexWrap: 'wrap',

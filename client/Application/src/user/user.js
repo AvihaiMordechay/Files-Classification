@@ -1,15 +1,2 @@
-
-class User {
-    // For new user that registered
-    constructor(firstName, lastName, gender, email, imgPath, foldersCategories) {
-        this.firstName = firstName; // string
-        this.lastName = lastName; // string
-        this.gender = gender; // string: male / female
-        this.email = email; // string
-        this.imgPath = imgPath; // path to the profile icon
-        this.foldersCategories = foldersCategories; // json: [{name: {filesCount: int, }}]
-    }
-
-}
-
-export default User;
+// הטעות היא שאחרי הרשמה אני לא מצליח לרנדר את הfolders או id.
+// בנוסף צריך לבדוק את הפונקציונילות של הפונקציה של ההתחברות של 3 שעות בuser context.
