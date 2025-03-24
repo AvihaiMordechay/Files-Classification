@@ -71,7 +71,7 @@ const ActionMenu = () => {
                     <FloatingActionButton
                         isExpanded={isExpanded}
                         index={1}
-                        labal={'צור תיקייה'}
+                        labal={'צור תיקייה \nחדשה'}
                         icon={'folder-outline'}
                     />
 
@@ -116,7 +116,6 @@ const styles = StyleSheet.create({
     mainContainer: {
         position: 'relative',
         height: 50,
-        width: '100%',
         display: 'flex',
         justifyContent: 'flex-end',
         alignItems: 'center',
@@ -126,7 +125,6 @@ const styles = StyleSheet.create({
         height: 50,
         backgroundColor: '#FDFEFFFF',
         borderRadius: 100,
-        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         display: 'flex',
@@ -138,6 +136,8 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     labal: {
+        writingDirection: 'rtl',
+        textAlign: 'right',
         marginRight: 6,
         fontSize: 15,
         fontWeight: 'bold',
