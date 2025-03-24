@@ -70,12 +70,10 @@ const RegistrationScreen = ({ navigation }) => {
     };
 
 
-
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
                 <KeyboardAvoidingView
-                    // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={styles.keyboardAvoidingView}
                 >
                     <ScrollView contentContainerStyle={styles.scrollView}>

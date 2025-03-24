@@ -23,24 +23,6 @@ export const UserProvider = ({ children }) => {
     const [userStatus, setUserStatus] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const isUserLoggedIn = async () => {
-        try {
-            const lastLogin = await getLastLogin();
-            if (!lastLogin) return false;
-
-            const lastLoginDate = new Date(lastLogin);
-            const now = new Date();
-
-            const diffInMs = now - lastLoginDate;
-            const diffInHours = diffInMs / (1000 * 60 * 60);
-
-            return diffInHours <= 3;
-        } catch (error) {
-            console.error("Error checking last login:", error);
-            return false;
-        }
-    };
-
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
             if (await isFirstTime()) {
@@ -63,9 +45,26 @@ export const UserProvider = ({ children }) => {
         return () => unsubscribe();
     }, []);
 
+    const isUserLoggedIn = async () => {
+        try {
+            const lastLogin = await getLastLogin();
+            if (!lastLogin) return false;
+
+            const lastLoginDate = new Date(lastLogin);
+            const now = new Date();
+
+            const diffInMs = now - lastLoginDate;
+            const diffInHours = diffInMs / (1000 * 60 * 60);
+
+            return diffInHours <= 3;
+        } catch (error) {
+            console.error("Error checking last login:", error);
+            return false;
+        }
+    };
+
     const loadUser = async () => {
         try {
-            debugger;
             const userDetails = await getUserDetails();
             const favorites = await getAllFavoritesFiles();
             const folders = await loadFoldersFromDB();

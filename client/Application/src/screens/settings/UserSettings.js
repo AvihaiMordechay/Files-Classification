@@ -6,14 +6,19 @@ import constats from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
 import { printDB } from '../../services/database';
 import EmailUpdateModal from '../../components/modals/EmailUpdateModal';
+// import { auth } from '../../services/firebase';
+import { updateEmail, verifyBeforeUpdateEmail, getAuth, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import Spinner from '../../components/Spinner';
 
 const UserSettingsScreen = ({ navigation }) => {
     const { user, updateUserName, updateUserEmail } = useUser();
-    const email = user.email || '';
+    const existEmail = user.email || '';
     const [userName, setUserName] = useState(user.name || '');
     const [newEmail, setNewEmail] = useState('');
     const [saveNameButtonVisible, setSaveNameButtonVisible] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleUpdateName = async () => {
         try {
@@ -26,13 +31,31 @@ const UserSettingsScreen = ({ navigation }) => {
     };
 
     const handleUpdateEmail = async () => {
+        setLoading(true);
         try {
-            await updateUserEmail(newEmail);
-            setModalVisible(false);
-            setNewEmail('');
+            const auth = getAuth();
+            const firebaseUser = auth.currentUser;
+            if (firebaseUser) {
+                const credential = EmailAuthProvider.credential(firebaseUser.email, password);
+                await reauthenticateWithCredential(firebaseUser, credential);
+                await verifyBeforeUpdateEmail(firebaseUser, newEmail);
+
+                Alert.alert('אימות נדרש', 'נשלח מייל אימות לכתובת החדשה. אנא אשר את המייל כדי להשלים את העדכון.', [{ text: 'הבנתי', onPress: () => setModalVisible(false) }]);
+
+                const checkEmailVerification = setInterval(async () => {
+                    await firebaseUser.reload();
+                    if (firebaseUser.emailVerified) {
+                        clearInterval(checkEmailVerification);
+                        await updateUserEmail(newEmail);
+                        setLoading(false);
+                        Alert.alert('הצלחה', 'האימייל שלך עודכן בהצלחה!');
+                    }
+                }, 5000);
+            }
         } catch (error) {
             console.log(error);
             Alert.alert('שגיאה', 'לא ניתן לעדכן את האימייל');
+            setLoading(false);
         }
     };
 
@@ -44,6 +67,7 @@ const UserSettingsScreen = ({ navigation }) => {
     };
 
     return (
+
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
@@ -74,7 +98,7 @@ const UserSettingsScreen = ({ navigation }) => {
                             <View style={[styles.inputContainer, styles.disabledInputContainer]}>
                                 <TextInput
                                     style={styles.input}
-                                    value={email}
+                                    value={existEmail}
                                     editable={false}
                                     selectTextOnFocus={false}
                                 />
@@ -97,13 +121,18 @@ const UserSettingsScreen = ({ navigation }) => {
                     <EmailUpdateModal
                         visible={modalVisible}
                         onClose={() => setModalVisible(false)}
-                        email={email}
+                        email={existEmail}
                         newEmail={newEmail}
                         setNewEmail={setNewEmail}
                         handleUpdateEmail={handleUpdateEmail}
+                        password={password}
+                        setPassword={setPassword}
                     />
                 </KeyboardAvoidingView>
             </SafeAreaView>
+            {loading && (
+                <Spinner />
+            )}
         </SafeAreaProvider>
     );
 };
