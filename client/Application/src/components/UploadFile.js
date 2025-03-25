@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Button, Alert } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { useUser } from '../context/UserContext';
 import FileUploadModal from './modals/FileUploadModal';
 
-const UploadFile = () => {
+const UploadFile = ({ file }) => {
     const { user } = useUser();
     const [newCategoryModalVisible, setNewCategoryModalVisible] = useState(false);
     const [existCategoryModalVisible, setExistCategoryModalVisible] = useState(false);
     const [failedRecognitionModelVisible, setFailedRecognitionModelVisible] = useState(false);
     const [category, setCategory] = useState(undefined);
+
+    useEffect(() => {
+        const handleUploadFileToServer = async () => {
+            await uploadFileToServer(file);
+        }
+        handleUploadFileToServer();
+    }, [file])
+
 
     const handleFileRecognitionSuccess = async () => {
         if (user.folders[category]) {
@@ -53,16 +61,8 @@ const UploadFile = () => {
         }
     };
 
-
-    const handleFileUploadFromGlarey = async () => {
+    const uploadFileToServer = async (file) => {
         try {
-            // const result = await DocumentPicker.getDocumentAsync({
-            //     type: 'image/*'
-            // });
-
-            // if (!result.canceled) {
-            //     const file = result.assets[0];
-
             //     // Create form data
             //     const formData = new FormData();
             //     formData.append('file', {
