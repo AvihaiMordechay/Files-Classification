@@ -16,6 +16,7 @@ async function ensureAppDirectoryExists() {
 }
 
 export async function saveFileToAppStorage(fileUri, fileName) {
+    console.log(fileUri, " ", fileName);
     if (!fileUri || !fileName) {
         console.error('Invalid file URI or filename');
         return null;
@@ -48,7 +49,7 @@ export async function saveFileToAppStorage(fileUri, fileName) {
         return newFilePath;
     } catch (error) {
         console.error('Error saving file:', error);
-        return null;
+        throw error;
     }
 }
 
@@ -75,7 +76,7 @@ export async function getFileInfo(filePath) {
         return fileInfo;
     } catch (error) {
         console.error('Error getting file info:', error);
-        return null;
+        throw error;
     }
 }
 

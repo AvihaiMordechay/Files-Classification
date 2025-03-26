@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import constats from '../styles/constats';
 import CreateFolderModel from './modals/CreateFolderModal';
 import UploadFile from './UploadFile';
+import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
 
 const OFFSET = 60;
 
@@ -57,13 +59,39 @@ const ActionMenu = () => {
     };
 
 
-    const uploadFileFromGallery = () => {
-        console.log("uploadFileFromGallery");
-    }
 
-    const uploadFileFromFiles = () => {
-        console.log("uploadFileFromFiles");
-    }
+
+    const uploadFileFromGallery = async () => {
+        try {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                console.log("נדרשת הרשאה לגישה לגלריה!");
+                return;
+            }
+
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                quality: 1,
+            });
+            if (!result.canceled) setFile(result.assets);
+        } catch (error) {
+            console.error("שגיאה בפתיחת הגלריה: ", error);
+        }
+    };
+
+
+
+    const uploadFileFromFiles = async () => {
+        try {
+            const result = await DocumentPicker.getDocumentAsync({
+                type: '*/*',
+            });
+            if (!result.canceled) setFile(result.assets);
+        } catch (error) {
+            console.error("שגיאה בפתיחת מערכת הקבצים: ", error);
+        }
+    };
+
 
     const rotateStyle = {
         transform: [

@@ -249,12 +249,12 @@ export const addFileToFolder = async (name, folderId, type, path) => {
             `INSERT INTO ${FILES} (name, folderId, type, path) VALUES (?, ?, ?, ?)`,
             [name, folderId, type, path]
         );
-
+        const newFile = await db.getFirstAsync(`SELECT last_insert_rowid() AS id`);
         console.log(`File '${name}' added successfully to folder '${folderId}'.`);
-        return true;
+        return newFile.id;
     } catch (error) {
         console.error("Error with addFile in DB:", error);
-        return error; // To handle errors differently in the GUI
+        throw error;
     }
 };
 

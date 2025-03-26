@@ -16,7 +16,7 @@ const FileScreen = ({ route }) => {
     return (
         <View style={styles.container}>
             <Image
-                source={require('../../assets/data/image.jpeg')}
+                source={{ uri: file.path }}
                 style={styles.image}
                 resizeMode="contain"
             />

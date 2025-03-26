@@ -14,6 +14,7 @@ import {
     addFileToFolder,
 } from '../services/database';
 import { Alert } from 'react-native';
+import { deleteFile, saveFileToAppStorage } from '../services/localFileSystem';
 
 const UserContext = createContext();
 
@@ -155,8 +156,34 @@ export const UserProvider = ({ children }) => {
         }
     }
 
+    const addNewFile = async (name, folderId, type, tempPath) => {
+        if (!user) return;
+        try {
+            const newPath = await saveFileToAppStorage(tempPath, name);
+            const fileId = await addFileToFolder(name, folderId, type, newPath);
+
+            setUser((prevUser) => {
+                const updatedFolders = { ...prevUser.folders };
+                const folderEntry = Object.entries(updatedFolders).find(([key, value]) => value.id === folderId);
+
+                if (folderEntry) {
+                    const [folderName, folderData] = folderEntry;
+                    updatedFolders[folderName] = {
+                        ...folderData,
+                        filesCount: folderData.filesCount + 1,
+                        files: [...folderData.files, { id: fileId, name, type, path: newPath }],
+                    };
+                }
+
+                return { ...prevUser, folders: updatedFolders };
+            });
+        } catch (error) {
+            Alert.alert("שגיאה", "לא ניתן להוסיף את הקובץ כעת");
+        }
+    }
+
     return (
-        <UserContext.Provider value={{ user, setUser, userStatus, createUser, updateUserName, loadUser, createNewFolder }}>
+        <UserContext.Provider value={{ user, setUser, userStatus, createUser, updateUserName, loadUser, createNewFolder, addNewFile }}>
             {!loading && children}
         </UserContext.Provider>
     );
