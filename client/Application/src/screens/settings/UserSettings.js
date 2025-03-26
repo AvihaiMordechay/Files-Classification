@@ -1,21 +1,17 @@
 import { useState } from 'react';
-import { View, StyleSheet, TextInput, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, Alert, Modal, Pressable } from 'react-native';
+import { View, StyleSheet, TextInput, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import theme from '../../styles/theme';
 import constats from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
-import { printDB } from '../../services/database';
 import EmailUpdateModal from '../../components/modals/EmailUpdateModal';
-// import { auth } from '../../services/firebase';
-import { updateEmail, verifyBeforeUpdateEmail, getAuth, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
-import Spinner from '../../components/Spinner';
+import { auth } from '../../services/firebase';
 
 const UserSettingsScreen = ({ navigation }) => {
-    const { user, updateUserName, updateUserEmail } = useUser();
+    const { user, updateUserName } = useUser();
     const [userName, setUserName] = useState(user.name || '');
     const [saveNameButtonVisible, setSaveNameButtonVisible] = useState(false);
     const [emailModalVisible, setEmailModelVisible] = useState(false);
-    const [loading, setLoading] = useState(false);
 
     const handleUpdateName = async () => {
         try {
@@ -67,11 +63,12 @@ const UserSettingsScreen = ({ navigation }) => {
                             <View style={[styles.inputContainer, styles.disabledInputContainer]}>
                                 <TextInput
                                     style={styles.input}
-                                    value={user.email || ''}
+                                    value={auth.currentUser.email || ''}
                                     editable={false}
                                     selectTextOnFocus={false}
                                 />
                             </View>
+
 
                             <TouchableOpacity style={styles.actionButton} onPress={() => setEmailModelVisible(true)}>
                                 <Text style={styles.actionButtonText}>שינוי כתובת אימייל</Text>
@@ -93,9 +90,6 @@ const UserSettingsScreen = ({ navigation }) => {
                     />
                 </KeyboardAvoidingView>
             </SafeAreaView>
-            {loading && (
-                <Spinner />
-            )}
         </SafeAreaProvider>
     );
 };

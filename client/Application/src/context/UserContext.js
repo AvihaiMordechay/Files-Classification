@@ -12,7 +12,6 @@ import {
     deleteDB,
     createFolder,
     addFileToFolder,
-    changeUserEmail
 } from '../services/database';
 import { Alert } from 'react-native';
 
@@ -72,7 +71,6 @@ export const UserProvider = ({ children }) => {
                 id: userDetails.id,
                 name: userDetails.name,
                 gender: userDetails.gender,
-                email: userDetails.email,
                 folders: folders,
                 imgPath: null,
                 favoritesFiles: favorites,
@@ -83,9 +81,9 @@ export const UserProvider = ({ children }) => {
         }
     }
 
-    const createUser = async (id, name, gender, email) => {
+    const createUser = async (id, name, gender) => {
         try {
-            await createDB(id, name, email, gender);
+            await createDB(id, name, gender);
         } catch (error) {
             Alert.alert('שגיאה', "לא ניתן להירשם כעת, אנא נסה שנית");
             throw error;
@@ -133,18 +131,32 @@ export const UserProvider = ({ children }) => {
         }
     };
 
-    const updateUserEmail = async (newEmail) => {
+    const createNewFolder = async (newName) => {
         if (!user) return;
         try {
-            await changeUserEmail(newEmail, user.id);
-            setUser((prevUser) => ({ ...prevUser, email: newEmail }));
+            if (user.folders[newName]) {
+                Alert.alert("שגיאה", `התיקייה ${newName} כבר קיימת במערכת, אנא בחר שם אחר`);
+            } else {
+                const folderId = await createFolder(newName);
+                setUser((prevUser) => ({
+                    ...prevUser,
+                    folders: {
+                        ...prevUser.folders,
+                        [newName]: {
+                            id: folderId,
+                            filesCount: 0,
+                            files: [],
+                        },
+                    },
+                }));
+            }
         } catch (error) {
-            Alert.alert("שגיאה", "לא ניתן לעדכן את שם המשתמש");
+            Alert.alert("שגיאה", "לא ניתן לפתוח תיקייה חדשה");
         }
     }
 
     return (
-        <UserContext.Provider value={{ user, setUser, userStatus, createUser, updateUserName, updateUserEmail, loadUser }}>
+        <UserContext.Provider value={{ user, setUser, userStatus, createUser, updateUserName, loadUser, createNewFolder }}>
             {!loading && children}
         </UserContext.Provider>
     );

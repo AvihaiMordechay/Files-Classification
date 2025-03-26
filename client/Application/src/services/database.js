@@ -18,10 +18,10 @@ const initDB = async () => {
     }
 };
 
-export const createDB = async (id, name, email, gender) => {
+export const createDB = async (id, name, gender) => {
     try {
-        if (!id || !name || !email || !gender) {
-            throw new Error('id, Name, gender and email are required');
+        if (!id || !name || !gender) {
+            throw new Error('id, Name and gender are required');
         }
         const db = await initDB();
 
@@ -29,7 +29,6 @@ export const createDB = async (id, name, email, gender) => {
             CREATE TABLE IF NOT EXISTS ${USER}  ( 
                 id TEXT PRIMARY KEY NOT NULL,
                 name TEXT NOT NULL, 
-                email TEXT NOT NULL,
                 gender TEXT NOT NULL,
                 lastLogin TEXT NOT NULL
             );
@@ -86,8 +85,8 @@ export const createDB = async (id, name, email, gender) => {
         `);
 
         const lastLogin = new Date().toISOString();
-        await db.runAsync(`INSERT INTO ${USER} (id ,name, email, gender, lastLogin) VALUES (?, ?, ?, ?, ?)`,
-            [id, name, email, gender, lastLogin]);
+        await db.runAsync(`INSERT INTO ${USER} (id ,name, gender, lastLogin) VALUES (?, ?, ?, ?, ?)`,
+            [id, name, gender, lastLogin]);
 
         console.log("The Application created successfully!");
     } catch (error) {
@@ -166,22 +165,6 @@ export const isFirstTime = async () => {
     }
 };
 
-export const getUserEmail = async () => {
-    try {
-        const db = await initDB();
-        const result = await db.getFirstAsync(`SELECT email FROM ${USER}`);
-        return result.email;
-    } catch (error) {
-        console.error("Error with get email:", error);
-        throw error;
-    }
-}
-
-export const changeUserEmail = async (newEmail, userId) => {
-    await updateElement(USER, "email", newEmail, "id", userId);
-    console.log("The user email changed successfully.");
-}
-
 export const getUserDetails = async () => {
     return (await getTable(USER))[0];
 }
@@ -228,7 +211,10 @@ export const createFolder = async (folderName) => {
         }
         const db = await initDB();
         await db.runAsync(`INSERT INTO ${FOLDERS} (name , filesCount) VALUES (?, ?)`, [folderName, 0]);
-        console.log(`The ${folderName} folder created successfully.`);
+        const newFolder = await db.getFirstAsync(`SELECT last_insert_rowid() AS id`);
+
+        console.log(`The folder '${folderName}' created successfully with ID: ${newFolder.id}.`);
+        return newFolder.id;
     } catch (error) {
         console.error("Error with createFolder in DB:", error);
         throw error;

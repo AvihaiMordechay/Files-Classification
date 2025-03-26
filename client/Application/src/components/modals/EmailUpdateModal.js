@@ -1,41 +1,34 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import theme from '../../styles/theme';
 import { useUser } from '../../context/UserContext';
+import { updateEmail, verifyBeforeUpdateEmail, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { auth } from '../../services/firebase';
 
 const EmailUpdateModal = ({ visible, onClose }) => {
-    const { user } = useUser();
+    const { user, updateUserEmail } = useUser();
     const [newEmail, setNewEmail] = useState("");
     const [password, setPassword] = useState("");
-    const existEmail = user.email || '';
+    const existEmail = auth.currentUser.email || '';
 
 
+    // TODO: VERIFY PASSWORD 
     const handleUpdateEmail = async () => {
-        setLoading(true);
         try {
-            const auth = getAuth();
             const firebaseUser = auth.currentUser;
-            if (firebaseUser) {
-                const credential = EmailAuthProvider.credential(firebaseUser.email, password);
-                await reauthenticateWithCredential(firebaseUser, credential);
-                await verifyBeforeUpdateEmail(firebaseUser, newEmail);
+            const credential = EmailAuthProvider.credential(firebaseUser.email, password);
+            await reauthenticateWithCredential(firebaseUser, credential);
 
-                Alert.alert('אימות נדרש', 'נשלח מייל אימות לכתובת החדשה. אנא אשר את המייל כדי להשלים את העדכון.', [{ text: 'הבנתי', onPress: () => setModalVisible(false) }]);
+            await verifyBeforeUpdateEmail(firebaseUser, newEmail);
 
-                const checkEmailVerification = setInterval(async () => {
-                    await firebaseUser.reload();
-                    if (firebaseUser.emailVerified) {
-                        clearInterval(checkEmailVerification);
-                        await updateUserEmail(newEmail);
-                        setLoading(false);
-                        Alert.alert('הצלחה', 'האימייל שלך עודכן בהצלחה!');
-                    }
-                }, 5000);
-            }
+            Alert.alert(
+                'אימות נדרש',
+                'נשלח מייל אימות לכתובת החדשה. אנא אשר את המייל כדי להשלים את העדכון.',
+                [{ text: 'הבנתי', onPress: onClose }]
+            );
         } catch (error) {
             console.log(error);
             Alert.alert('שגיאה', 'לא ניתן לעדכן את האימייל');
-            setLoading(false);
         }
     };
 

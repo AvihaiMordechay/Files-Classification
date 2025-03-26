@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import theme from "../../styles/theme";
+import { useUser } from '../../context/UserContext';
 
 const CreateFolderModal = ({ visible, onClose }) => {
+    const { createNewFolder } = useUser();
     const [newFolderName, setNewFolderName] = useState("");
 
-    const handleNewFolder = () => {
+    const handleNewFolder = async () => {
         try {
+            await createNewFolder(newFolderName);
             console.log(newFolderName);
         } catch (error) {
             console.log(error);
