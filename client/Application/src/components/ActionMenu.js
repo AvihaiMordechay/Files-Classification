@@ -4,6 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import constats from '../styles/constats';
 import CreateFolderModel from './modals/CreateFolderModal';
 import UploadFile from './UploadFile';
+import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
+
+
+
+
 
 const OFFSET = 60;
 
@@ -57,13 +63,53 @@ const ActionMenu = () => {
     };
 
 
-    const uploadFileFromGallery = () => {
-        console.log("uploadFileFromGallery");
-    }
 
-    const uploadFileFromFiles = () => {
-        console.log("uploadFileFromFiles");
+
+    const uploadFileFromGallery = async () => {
+        try {
+            // בקשת הרשאה לגישה לגלריה
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                console.log("נדרשת הרשאה לגישה לגלריה!");
+                return;
+            }
+    
+            // פתיחת הגלריה ובחירת תמונה
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images, // רק תמונות
+                quality: 1, // איכות תמונה מירבית
+            });
+    
+            if (!result.canceled) {
+                setFile(result); // שמירת כל פרטי התמונה במשתנה ה-state
+                console.log("תמונה שנבחרה:", result);
+            } else {
+                console.log("המשתמש ביטל את הבחירה");
+            }
+        } catch (error) {
+            console.error("שגיאה בפתיחת הגלריה: ", error);
+        }
+    };
+
+
+    
+const uploadFileFromFiles = async () => {
+    try {
+        const result = await DocumentPicker.getDocumentAsync({
+            type: '*/*', // ניתן לשנות אם רוצים סוגים ספציפיים של קבצים
+        });
+
+        if (result.type === 'cancel') {
+        } else {
+            // עדכון ה-state עם פרטי הקובץ שנבחר
+            setFile(result);  // שמירת הקובץ במשתנה ה-state
+            console.log("קובץ שנבחר:", result);
+        }
+    } catch (error) {
+        console.error("שגיאה בפתיחת מערכת הקבצים: ", error);
     }
+};
+
 
     const rotateStyle = {
         transform: [
