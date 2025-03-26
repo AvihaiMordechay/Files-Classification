@@ -10,7 +10,6 @@ const CreateFolderModal = ({ visible, onClose }) => {
     const handleNewFolder = async () => {
         try {
             await createNewFolder(newFolderName);
-            console.log(newFolderName);
         } catch (error) {
             console.log(error);
         }
