@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth } from '../services/firebase';
 import {
     getUserDetails,
-    getAllFavoritesFiles,
     changeUserName,
     isFirstTime,
     getFoldersDetails,
@@ -12,9 +11,10 @@ import {
     deleteDB,
     createFolder,
     addFileToFolder,
+    printDB,
 } from '../services/database';
 import { Alert } from 'react-native';
-import { deleteFile, saveFileToAppStorage } from '../services/localFileSystem';
+import { saveFileToAppStorage } from '../services/localFileSystem';
 
 const UserContext = createContext();
 
@@ -28,7 +28,7 @@ export const UserProvider = ({ children }) => {
             if (await isFirstTime()) {
                 setUser(null);
                 setUserStatus('new');
-            } else if (await isUserLoggedIn() && (firebaseUser !== null)) {
+            } else if ((firebaseUser !== null) && await isUserLoggedIn()) {
                 try {
                     await loadUser();
                     setUserStatus('authenticated');
@@ -58,7 +58,6 @@ export const UserProvider = ({ children }) => {
 
             return diffInHours <= 3;
         } catch (error) {
-            console.error("Error checking last login:", error);
             return false;
         }
     };
@@ -66,7 +65,6 @@ export const UserProvider = ({ children }) => {
     const loadUser = async () => {
         try {
             const userDetails = await getUserDetails();
-            const favorites = await getAllFavoritesFiles();
             const folders = await loadFoldersFromDB();
             setUser({
                 id: userDetails.id,
@@ -74,7 +72,6 @@ export const UserProvider = ({ children }) => {
                 gender: userDetails.gender,
                 folders: folders,
                 imgPath: null,
-                favoritesFiles: favorites,
             });
         } catch (error) {
             console.error("Error loading user:", error);
@@ -183,7 +180,18 @@ export const UserProvider = ({ children }) => {
     }
 
     return (
-        <UserContext.Provider value={{ user, setUser, userStatus, createUser, updateUserName, loadUser, createNewFolder, addNewFile }}>
+        <UserContext.Provider value={{
+            user,
+            setUser,
+            userStatus,
+            setUserStatus,
+            createUser,
+            updateUserName,
+            loadUser,
+            createNewFolder,
+            addNewFile,
+            markAsFavorite
+        }}>
             {!loading && children}
         </UserContext.Provider>
     );

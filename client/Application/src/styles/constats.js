@@ -6,6 +6,7 @@ const constats = {
         background: '#F9FAFB',
         danger: '#EF4444',
         success: '#10B981',
+        starIcon: '#C0C1B8FF'
     },
     sizes: {
         font: {
@@ -23,7 +24,11 @@ const constats = {
             width: 50,
             height: 50,
         },
-        icon: 50
+        icon: {
+            folderButton: 50,
+            fileButton: 50,
+            star: 22
+        }
 
     }
 

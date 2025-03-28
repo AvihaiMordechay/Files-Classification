@@ -3,7 +3,6 @@ import * as SQLite from 'expo-sqlite';
 const USER = "user";
 const FOLDERS = "folders";
 const FILES = "files";
-const FAVORITES = "favorites";
 
 // --------------------- base functions -------------------------
 
@@ -49,16 +48,10 @@ export const createDB = async (id, name, gender) => {
                 folderId INTEGER NOT NULL,
                 type TEXT NOT NULL,
                 path TEXT NOT NULL UNIQUE,
+                isFavorite INTEGER NOT NULL DEFAULT 0, 
+                lastViewed TEXT DEFAULT NULL,
                 FOREIGN KEY (folderId) REFERENCES ${FOLDERS} (id) ON DELETE CASCADE,
                 UNIQUE (folderId, name)
-            );
-        `);
-
-        await db.execAsync(`
-            CREATE TABLE IF NOT EXISTS ${FAVORITES} (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                fileId INTEGER NOT NULL UNIQUE,
-                FOREIGN KEY (fileId) REFERENCES ${FILES} (id) ON DELETE CASCADE
             );
         `);
 
@@ -85,7 +78,7 @@ export const createDB = async (id, name, gender) => {
         `);
 
         const lastLogin = new Date().toISOString();
-        await db.runAsync(`INSERT INTO ${USER} (id ,name, gender, lastLogin) VALUES (?, ?, ?, ?, ?)`,
+        await db.runAsync(`INSERT INTO ${USER} (id ,name, gender, lastLogin) VALUES (?, ?, ?, ?)`,
             [id, name, gender, lastLogin]);
 
         console.log("The Application created successfully!");
@@ -144,7 +137,6 @@ export const deleteDB = async () => {
         await db.execAsync(`DROP TABLE IF EXISTS ${USER}`);
         await db.execAsync(`DROP TABLE IF EXISTS ${FILES}`);
         await db.execAsync(`DROP TABLE IF EXISTS ${FOLDERS}`);
-        await db.execAsync(`DROP TABLE IF EXISTS ${FAVORITES}`);
         console.log("The DB deleted successfully!");
     } catch (error) {
         console.error(error);
@@ -279,64 +271,29 @@ export const changeFileName = async (newName, id) => {
     console.log(`File name updated to '${newName} on id: ${id}.`);
 }
 
+export const updateLastViewed = async (fileId) => {
+    const timestamp = new Date().toISOString();
+    await updateElement(FILES, "lastViewed", timestamp, "id", fileId);
+    console.log(`Updated lastViewed for file ${fileId}`);
+};
+
+export const markFileAsFavorite = async (value, fileId) => {
+    await updateElement(FILES, "isFavorite", value, "id", fileId);
+    console.log(`Updated isFavorite for file ${fileId}`);
+};
+
 export const deleteFileFromFolder = async (fileId) => {
     await deleteRow(FILES, fileId);
     console.log(`File: '${fileId}' removed successfully!`);
 };
-
-// FAVORITES:
-export const addFileToFavorites = async (fileId) => {
-    try {
-        const db = await initDB();
-
-        await db.runAsync(
-            `INSERT INTO ${FAVORITES} (fileId) VALUES (?)`,
-            [fileId]
-        );
-        console.log(`File '${fileId}' added to ${FAVORITES}.`);
-    } catch (error) {
-        console.error("Error with addFileToFavorites in DB:", error);
-        throw error;
-    }
-};
-
-export const getAllFavoritesFiles = async () => {
-    try {
-        const db = await initDB();
-        const result = await db.getAllAsync(`
-            SELECT 
-                ${FAVORITES}.*,
-                ${FILES}.name, 
-                ${FILES}.path, 
-                ${FILES}.type, 
-                ${FILES}.folderId,  
-                ${FOLDERS}.name AS folderName
-            FROM ${FAVORITES}
-            JOIN ${FILES} ON ${FAVORITES}.fileId = ${FILES}.id
-            JOIN ${FOLDERS} ON ${FILES}.folderId = ${FOLDERS}.id
-            ORDER BY ${FAVORITES}.id DESC
-        `);
-        return result;
-    } catch (error) {
-        console.error('Error fetching favorites:', error);
-        throw error;
-    }
-};
-
-export const deleteFavoriteFile = async (favoriteFileId) => {
-    await deleteRow(FAVORITES, favoriteFileId);
-    console.log(`File: '${favoriteFileId}' removed successfully!`);
-}
 
 // OTHERS:
 export const printDB = async () => {
     const user = await getTable(USER);
     const folders = await getTable(FOLDERS);
     const files = await getTable(FILES);
-    const favorite = await getTable(FAVORITES);
 
     console.log("User Table:", user);
     console.log("Folders Table:", folders);
     console.log("Files Table:", files);
-    console.log("Favorites Table:", favorite);
 }
