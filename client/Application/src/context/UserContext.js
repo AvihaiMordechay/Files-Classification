@@ -189,8 +189,7 @@ export const UserProvider = ({ children }) => {
             updateUserName,
             loadUser,
             createNewFolder,
-            addNewFile,
-            markAsFavorite
+            addNewFile
         }}>
             {!loading && children}
         </UserContext.Provider>
