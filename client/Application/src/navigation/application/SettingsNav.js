@@ -12,7 +12,7 @@ const SettingsNavigator = () => {
             <Stack.Screen
                 name="SettingsMain"
                 options={{ headerShown: false }}
-                component={SettingsScreen}  // הסר את העברת ה-user כ-prop
+                component={SettingsScreen}
             />
 
             <Stack.Screen

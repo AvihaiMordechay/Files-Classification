@@ -125,7 +125,6 @@ const LoginScreen = ({ navigation }) => {
                                         <Text style={styles.buttonText}>התחבר</Text>
                                     </TouchableOpacity>
 
-                                    {/* קישור להרשמה */}
                                     <TouchableOpacity
                                         style={styles.linkButton}
                                         onPress={() => navigation.navigate('Registration')}

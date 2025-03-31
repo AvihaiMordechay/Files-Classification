@@ -9,14 +9,7 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal",
-      "android": {
-        "gradleCommand": ":app:assembleRelease",
-        "buildType": "apk",
-        "env": {
-          "KOTLIN_VERSION": "1.9.25"
-        }
-      }
+      "distribution": "internal"
     },
     "production": {
       "autoIncrement": true

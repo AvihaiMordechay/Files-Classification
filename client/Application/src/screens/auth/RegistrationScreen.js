@@ -19,7 +19,6 @@ import { auth } from '../../services/firebase';
 import theme from '../../styles/theme';
 import { useUser } from '../../context/UserContext';
 
-
 const validationSchema = Yup.object().shape({
     name: Yup.string().required('יש למלא שם מלא'),
     email: Yup.string()

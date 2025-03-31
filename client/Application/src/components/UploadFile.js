@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Button, Alert } from 'react-native';
-import * as DocumentPicker from 'expo-document-picker';
+import { View, Alert } from 'react-native';
 import { useUser } from '../context/UserContext';
 import FileUploadModal from './modals/FileUploadModal';
 
 const UploadFile = ({ file }) => {
-    const { user } = useUser();
+    const { user, addNewFile } = useUser();
     const [newCategoryModalVisible, setNewCategoryModalVisible] = useState(false);
     const [existCategoryModalVisible, setExistCategoryModalVisible] = useState(false);
     const [failedRecognitionModelVisible, setFailedRecognitionModelVisible] = useState(false);
@@ -63,6 +62,8 @@ const UploadFile = ({ file }) => {
 
     const uploadFileToServer = async (file) => {
         try {
+            console.log(file)
+            // await addNewFile(file[0].name, 3, "pdf", file[0].uri);
             //     // Create form data
             //     const formData = new FormData();
             //     formData.append('file', {
@@ -90,7 +91,8 @@ const UploadFile = ({ file }) => {
             //         throw new Error(responseText || 'Upload failed');
             //     }
             // }
-        } catch (error) {
+        }
+        catch (error) {
             console.error('Upload error:', error);
             Alert.alert('Error', error.message);
         }

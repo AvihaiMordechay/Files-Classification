@@ -1,22 +1,22 @@
 import { useState } from 'react';
-import { View, StyleSheet, TextInput, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, Alert, Modal, Pressable } from 'react-native';
+import { Alert } from 'react-native';
+import { View, StyleSheet, TextInput, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import theme from '../../styles/theme';
 import constats from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
-import { printDB } from '../../services/database';
 import EmailUpdateModal from '../../components/modals/EmailUpdateModal';
-// import { auth } from '../../services/firebase';
-import { updateEmail, verifyBeforeUpdateEmail, getAuth, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
-import Spinner from '../../components/Spinner';
+import { auth } from '../../services/firebase';
+import { deleteDB } from '../../services/database';
+import { reauthenticateWithCredential, EmailAuthProvider, deleteUser } from 'firebase/auth';
+import DeleteUserModal from '../../components/modals/DeleteUserModal';
 
-const UserSettingsScreen = ({ navigation }) => {
-    const { user, updateUserName, updateUserEmail } = useUser();
+const UserSettingsScreen = () => {
+    const { user, updateUserName } = useUser();
     const [userName, setUserName] = useState(user.name || '');
     const [saveNameButtonVisible, setSaveNameButtonVisible] = useState(false);
     const [emailModalVisible, setEmailModelVisible] = useState(false);
-    const [loading, setLoading] = useState(false);
-
+    const [deleteUserModalVisible, setDeleteUserModalVisible] = useState(false);
     const handleUpdateName = async () => {
         try {
             await updateUserName(userName);
@@ -32,8 +32,8 @@ const UserSettingsScreen = ({ navigation }) => {
     };
 
     const handleEnable2FA = () => {
-        navigation.navigate('TwoFactorAuthScreen');
     };
+
 
     return (
 
@@ -67,11 +67,12 @@ const UserSettingsScreen = ({ navigation }) => {
                             <View style={[styles.inputContainer, styles.disabledInputContainer]}>
                                 <TextInput
                                     style={styles.input}
-                                    value={user.email || ''}
+                                    value={auth.currentUser.email || ''}
                                     editable={false}
                                     selectTextOnFocus={false}
                                 />
                             </View>
+
 
                             <TouchableOpacity style={styles.actionButton} onPress={() => setEmailModelVisible(true)}>
                                 <Text style={styles.actionButtonText}>שינוי כתובת אימייל</Text>
@@ -85,17 +86,23 @@ const UserSettingsScreen = ({ navigation }) => {
                                 <Text style={styles.actionButtonText}>הפעלת אימות דו-שלבי</Text>
                             </TouchableOpacity>
 
+                            <TouchableOpacity style={[styles.deleteButton]} onPress={() => setDeleteUserModalVisible(true)}>
+                                <Text style={styles.actionButtonText}>מחיקת חשבון</Text>
+                            </TouchableOpacity>
+
+
                         </View>
                     </ScrollView>
                     <EmailUpdateModal
                         visible={emailModalVisible}
                         onClose={() => setEmailModelVisible(false)}
                     />
+                    <DeleteUserModal
+                        visible={deleteUserModalVisible}
+                        onClose={() => setDeleteUserModalVisible(false)}
+                    />
                 </KeyboardAvoidingView>
             </SafeAreaView>
-            {loading && (
-                <Spinner />
-            )}
         </SafeAreaProvider>
     );
 };
@@ -144,6 +151,13 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: constats.sizes.font.medium,
         fontWeight: 'bold',
+    },
+    deleteButton: {
+        backgroundColor: 'red',
+        padding: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+        marginTop: 20,
     },
     saveButton: {
         backgroundColor: constats.colors.primary,

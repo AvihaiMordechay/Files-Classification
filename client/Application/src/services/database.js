@@ -3,7 +3,6 @@ import * as SQLite from 'expo-sqlite';
 const USER = "user";
 const FOLDERS = "folders";
 const FILES = "files";
-const FAVORITES = "favorites";
 
 // --------------------- base functions -------------------------
 
@@ -18,10 +17,10 @@ const initDB = async () => {
     }
 };
 
-export const createDB = async (id, name, email, gender) => {
+export const createDB = async (id, name, gender) => {
     try {
-        if (!id || !name || !email || !gender) {
-            throw new Error('id, Name, gender and email are required');
+        if (!id || !name || !gender) {
+            throw new Error('id, Name and gender are required');
         }
         const db = await initDB();
 
@@ -29,7 +28,6 @@ export const createDB = async (id, name, email, gender) => {
             CREATE TABLE IF NOT EXISTS ${USER}  ( 
                 id TEXT PRIMARY KEY NOT NULL,
                 name TEXT NOT NULL, 
-                email TEXT NOT NULL,
                 gender TEXT NOT NULL,
                 lastLogin TEXT NOT NULL
             );
@@ -50,16 +48,10 @@ export const createDB = async (id, name, email, gender) => {
                 folderId INTEGER NOT NULL,
                 type TEXT NOT NULL,
                 path TEXT NOT NULL UNIQUE,
+                isFavorite INTEGER NOT NULL DEFAULT 0, 
+                lastViewed TEXT DEFAULT NULL,
                 FOREIGN KEY (folderId) REFERENCES ${FOLDERS} (id) ON DELETE CASCADE,
                 UNIQUE (folderId, name)
-            );
-        `);
-
-        await db.execAsync(`
-            CREATE TABLE IF NOT EXISTS ${FAVORITES} (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                fileId INTEGER NOT NULL UNIQUE,
-                FOREIGN KEY (fileId) REFERENCES ${FILES} (id) ON DELETE CASCADE
             );
         `);
 
@@ -86,8 +78,8 @@ export const createDB = async (id, name, email, gender) => {
         `);
 
         const lastLogin = new Date().toISOString();
-        await db.runAsync(`INSERT INTO ${USER} (id ,name, email, gender, lastLogin) VALUES (?, ?, ?, ?, ?)`,
-            [id, name, email, gender, lastLogin]);
+        await db.runAsync(`INSERT INTO ${USER} (id ,name, gender, lastLogin) VALUES (?, ?, ?, ?)`,
+            [id, name, gender, lastLogin]);
 
         console.log("The Application created successfully!");
     } catch (error) {
@@ -145,7 +137,6 @@ export const deleteDB = async () => {
         await db.execAsync(`DROP TABLE IF EXISTS ${USER}`);
         await db.execAsync(`DROP TABLE IF EXISTS ${FILES}`);
         await db.execAsync(`DROP TABLE IF EXISTS ${FOLDERS}`);
-        await db.execAsync(`DROP TABLE IF EXISTS ${FAVORITES}`);
         console.log("The DB deleted successfully!");
     } catch (error) {
         console.error(error);
@@ -165,22 +156,6 @@ export const isFirstTime = async () => {
         throw error;
     }
 };
-
-export const getUserEmail = async () => {
-    try {
-        const db = await initDB();
-        const result = await db.getFirstAsync(`SELECT email FROM ${USER}`);
-        return result.email;
-    } catch (error) {
-        console.error("Error with get email:", error);
-        throw error;
-    }
-}
-
-export const changeUserEmail = async (newEmail, userId) => {
-    await updateElement(USER, "email", newEmail, "id", userId);
-    console.log("The user email changed successfully.");
-}
 
 export const getUserDetails = async () => {
     return (await getTable(USER))[0];
@@ -228,7 +203,10 @@ export const createFolder = async (folderName) => {
         }
         const db = await initDB();
         await db.runAsync(`INSERT INTO ${FOLDERS} (name , filesCount) VALUES (?, ?)`, [folderName, 0]);
-        console.log(`The ${folderName} folder created successfully.`);
+        const newFolder = await db.getFirstAsync(`SELECT last_insert_rowid() AS id`);
+
+        console.log(`The folder '${folderName}' created successfully with ID: ${newFolder.id}.`);
+        return newFolder.id;
     } catch (error) {
         console.error("Error with createFolder in DB:", error);
         throw error;
@@ -263,12 +241,12 @@ export const addFileToFolder = async (name, folderId, type, path) => {
             `INSERT INTO ${FILES} (name, folderId, type, path) VALUES (?, ?, ?, ?)`,
             [name, folderId, type, path]
         );
-
+        const newFile = await db.getFirstAsync(`SELECT last_insert_rowid() AS id`);
         console.log(`File '${name}' added successfully to folder '${folderId}'.`);
-        return true;
+        return newFile.id;
     } catch (error) {
         console.error("Error with addFile in DB:", error);
-        return error; // To handle errors differently in the GUI
+        throw error;
     }
 };
 
@@ -293,64 +271,29 @@ export const changeFileName = async (newName, id) => {
     console.log(`File name updated to '${newName} on id: ${id}.`);
 }
 
+export const updateLastViewed = async (fileId) => {
+    const timestamp = new Date().toISOString();
+    await updateElement(FILES, "lastViewed", timestamp, "id", fileId);
+    console.log(`Updated lastViewed for file ${fileId}`);
+};
+
+export const markFileAsFavorite = async (value, fileId) => {
+    await updateElement(FILES, "isFavorite", value, "id", fileId);
+    console.log(`Updated isFavorite for file ${fileId}`);
+};
+
 export const deleteFileFromFolder = async (fileId) => {
     await deleteRow(FILES, fileId);
     console.log(`File: '${fileId}' removed successfully!`);
 };
-
-// FAVORITES:
-export const addFileToFavorites = async (fileId) => {
-    try {
-        const db = await initDB();
-
-        await db.runAsync(
-            `INSERT INTO ${FAVORITES} (fileId) VALUES (?)`,
-            [fileId]
-        );
-        console.log(`File '${fileId}' added to ${FAVORITES}.`);
-    } catch (error) {
-        console.error("Error with addFileToFavorites in DB:", error);
-        throw error;
-    }
-};
-
-export const getAllFavoritesFiles = async () => {
-    try {
-        const db = await initDB();
-        const result = await db.getAllAsync(`
-            SELECT 
-                ${FAVORITES}.*,
-                ${FILES}.name, 
-                ${FILES}.path, 
-                ${FILES}.type, 
-                ${FILES}.folderId,  
-                ${FOLDERS}.name AS folderName
-            FROM ${FAVORITES}
-            JOIN ${FILES} ON ${FAVORITES}.fileId = ${FILES}.id
-            JOIN ${FOLDERS} ON ${FILES}.folderId = ${FOLDERS}.id
-            ORDER BY ${FAVORITES}.id DESC
-        `);
-        return result;
-    } catch (error) {
-        console.error('Error fetching favorites:', error);
-        throw error;
-    }
-};
-
-export const deleteFavoriteFile = async (favoriteFileId) => {
-    await deleteRow(FAVORITES, favoriteFileId);
-    console.log(`File: '${favoriteFileId}' removed successfully!`);
-}
 
 // OTHERS:
 export const printDB = async () => {
     const user = await getTable(USER);
     const folders = await getTable(FOLDERS);
     const files = await getTable(FILES);
-    const favorite = await getTable(FAVORITES);
 
     console.log("User Table:", user);
     console.log("Folders Table:", folders);
     console.log("Files Table:", files);
-    console.log("Favorites Table:", favorite);
 }

@@ -7,7 +7,7 @@ const FolderButton = ({ folder, onPress }) => {
     return (
         <TouchableOpacity style={styles.button} onPress={onPress}>
             <View style={styles.iconContainer}>
-                <Ionicons name="folder-outline" size={constats.sizes.icon} color={constats.colors.primary} />
+                <Ionicons name="folder-outline" size={constats.sizes.icon.folderButton} color={constats.colors.primary} />
             </View>
             <Text style={styles.buttonText}>{folder.name}</Text>
             <Text style={styles.subButtonText}>{folder.filesCount} קבצים</Text>

@@ -38,8 +38,6 @@
         "projectId": "7499b5f8-2a0e-4f86-a5f3-407b71409f28"
       }
     },
-    "plugins": [
-      "expo-sqlite"
-    ]
+    "plugins": ["expo-sqlite"]
   }
 }

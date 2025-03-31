@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth } from '../services/firebase';
 import {
     getUserDetails,
-    getAllFavoritesFiles,
     changeUserName,
     isFirstTime,
     getFoldersDetails,
@@ -12,9 +11,10 @@ import {
     deleteDB,
     createFolder,
     addFileToFolder,
-    changeUserEmail
+    printDB,
 } from '../services/database';
 import { Alert } from 'react-native';
+import { saveFileToAppStorage } from '../services/localFileSystem';
 
 const UserContext = createContext();
 
@@ -28,7 +28,7 @@ export const UserProvider = ({ children }) => {
             if (await isFirstTime()) {
                 setUser(null);
                 setUserStatus('new');
-            } else if (await isUserLoggedIn() && (firebaseUser !== null)) {
+            } else if ((firebaseUser !== null) && await isUserLoggedIn()) {
                 try {
                     await loadUser();
                     setUserStatus('authenticated');
@@ -58,7 +58,6 @@ export const UserProvider = ({ children }) => {
 
             return diffInHours <= 3;
         } catch (error) {
-            console.error("Error checking last login:", error);
             return false;
         }
     };
@@ -66,16 +65,13 @@ export const UserProvider = ({ children }) => {
     const loadUser = async () => {
         try {
             const userDetails = await getUserDetails();
-            const favorites = await getAllFavoritesFiles();
             const folders = await loadFoldersFromDB();
             setUser({
                 id: userDetails.id,
                 name: userDetails.name,
                 gender: userDetails.gender,
-                email: userDetails.email,
                 folders: folders,
                 imgPath: null,
-                favoritesFiles: favorites,
             });
         } catch (error) {
             console.error("Error loading user:", error);
@@ -83,9 +79,9 @@ export const UserProvider = ({ children }) => {
         }
     }
 
-    const createUser = async (id, name, gender, email) => {
+    const createUser = async (id, name, gender) => {
         try {
-            await createDB(id, name, email, gender);
+            await createDB(id, name, gender);
         } catch (error) {
             Alert.alert('שגיאה', "לא ניתן להירשם כעת, אנא נסה שנית");
             throw error;
@@ -133,18 +129,68 @@ export const UserProvider = ({ children }) => {
         }
     };
 
-    const updateUserEmail = async (newEmail) => {
+    const createNewFolder = async (newName) => {
         if (!user) return;
         try {
-            await changeUserEmail(newEmail, user.id);
-            setUser((prevUser) => ({ ...prevUser, email: newEmail }));
+            if (user.folders[newName]) {
+                Alert.alert("שגיאה", `התיקייה ${newName} כבר קיימת במערכת, אנא בחר שם אחר`);
+            } else {
+                const folderId = await createFolder(newName);
+                setUser((prevUser) => ({
+                    ...prevUser,
+                    folders: {
+                        ...prevUser.folders,
+                        [newName]: {
+                            id: folderId,
+                            filesCount: 0,
+                            files: [],
+                        },
+                    },
+                }));
+            }
         } catch (error) {
-            Alert.alert("שגיאה", "לא ניתן לעדכן את שם המשתמש");
+            Alert.alert("שגיאה", "לא ניתן לפתוח תיקייה חדשה");
+        }
+    }
+
+    const addNewFile = async (name, folderId, type, tempPath) => {
+        if (!user) return;
+        try {
+            const newPath = await saveFileToAppStorage(tempPath, name);
+            const fileId = await addFileToFolder(name, folderId, type, newPath);
+
+            setUser((prevUser) => {
+                const updatedFolders = { ...prevUser.folders };
+                const folderEntry = Object.entries(updatedFolders).find(([key, value]) => value.id === folderId);
+
+                if (folderEntry) {
+                    const [folderName, folderData] = folderEntry;
+                    updatedFolders[folderName] = {
+                        ...folderData,
+                        filesCount: folderData.filesCount + 1,
+                        files: [...folderData.files, { id: fileId, name, type, path: newPath }],
+                    };
+                }
+
+                return { ...prevUser, folders: updatedFolders };
+            });
+        } catch (error) {
+            Alert.alert("שגיאה", "לא ניתן להוסיף את הקובץ כעת");
         }
     }
 
     return (
-        <UserContext.Provider value={{ user, setUser, userStatus, createUser, updateUserName, updateUserEmail, loadUser }}>
+        <UserContext.Provider value={{
+            user,
+            setUser,
+            userStatus,
+            setUserStatus,
+            createUser,
+            updateUserName,
+            loadUser,
+            createNewFolder,
+            addNewFile
+        }}>
             {!loading && children}
         </UserContext.Provider>
     );

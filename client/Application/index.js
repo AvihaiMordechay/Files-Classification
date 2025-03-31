@@ -7,8 +7,7 @@ import App from './App';
 
     console.log = (...args) => {
         const timestamp = new Date().toISOString();
-        const stackLine = new Error().stack.split("\n")[2].trim();
-        originalLog(`[${timestamp}] ${stackLine}:`, ...args);
+        originalLog(`[${timestamp}]`, ...args);
     };
 })();
 
