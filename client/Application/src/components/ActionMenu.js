@@ -65,9 +65,6 @@ const ActionMenu = () => {
         setCreateFolderModalVisible(true);
     };
 
-
-
-
     const uploadFileFromGallery = async () => {
         try {
             // בקשת הרשאה לגישה לגלריה
@@ -105,8 +102,6 @@ const ActionMenu = () => {
     
 
     
-
-
     const uploadFileFromFiles = async () => {    
         try {
             const result = await DocumentPicker.getDocumentAsync({
@@ -158,17 +153,9 @@ const ActionMenu = () => {
                 }
             }
         } catch (error) {
-            console.error("\nProblem opening the file system", error);
+            console.error("\nProblem opening the file system", error);//check why if i do cancle in the iphone i get an error Problem opening the file system [TypeError: Cannot convert null value to object]
         }
     };
-    
-    
-    
-    
-    
-    
-    
-
 
 
     const rotateStyle = {
