@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Alert, AppState } from 'react-native';
 import { auth } from '../services/firebase';
+import { saveFileToAppStorage } from '../services/localFileSystem';
 import {
     getUserDetails,
     changeUserName,
@@ -10,11 +12,10 @@ import {
     getLastLogin,
     deleteDB,
     createFolder,
+    closeDB,
     addFileToFolder,
     printDB,
 } from '../services/database';
-import { Alert } from 'react-native';
-import { saveFileToAppStorage } from '../services/localFileSystem';
 
 const UserContext = createContext();
 
@@ -22,6 +23,20 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [userStatus, setUserStatus] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const appStateSubscription = AppState.addEventListener('change', nextAppState => {
+            if (nextAppState === 'background' || nextAppState === 'inactive') {
+                console.log("123");
+                closeDB().catch(err => console.error("Error closing DB on app state change:", err));
+            }
+        });
+
+        return () => {
+            appStateSubscription.remove();
+            closeDB().catch(err => console.error("Error closing DB on component unmount:", err));
+        };
+    }, []);
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {

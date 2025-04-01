@@ -63,7 +63,7 @@ const UploadFile = ({ file }) => {
     const uploadFileToServer = async (file) => {
         try {
             console.log(file)
-            // await addNewFile(file[0].name, 3, "pdf", file[0].uri);
+            await addNewFile(file[0].name, 1, "pdf", file[0].uri);
             //     // Create form data
             //     const formData = new FormData();
             //     formData.append('file', {
