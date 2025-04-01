@@ -6,6 +6,13 @@ import CreateFolderModel from './modals/CreateFolderModal';
 import UploadFile from './UploadFile';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
+import { PDFDocument } from 'pdf-lib';
+import * as FileSystem from 'expo-file-system';
+
+
+
+
+
 
 const OFFSET = 60;
 
@@ -58,37 +65,95 @@ const ActionMenu = () => {
         setCreateFolderModalVisible(true);
     };
 
-
-
-
     const uploadFileFromGallery = async () => {
         try {
+            // בקשת הרשאה לגישה לגלריה
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (status !== 'granted') {
-                console.log("נדרשת הרשאה לגישה לגלריה!");
+                console.log("permission to access the gallery was denied");
+                // הצגת הודעה למשתמש על כך שאין הרשאות לגישה לגלריה
                 return;
             }
-
+    
+            // פתיחת הגלריה ובחירת תמונה
             const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                quality: 1,
+                mediaTypes: ImagePicker.MediaTypeOptions.Images, // רק תמונות
+                quality: 1, // איכות תמונה מירבית
             });
-            if (!result.canceled) setFile(result.assets);
+    
+            if (!result.canceled) {
+                // יצירת אובייקט חדש בשם file
+                const file = {
+                    name: result.assets[0]?.fileName || '',  // שם הקובץ
+                    uri: result.assets[0]?.uri || '',        // URI של הקובץ
+                    mimeType: result.assets[0]?.mimeType || '',  // סוג MIME
+                };
+    
+                // שמירת המידע במשתנה ה-state
+                setFile(file);  // שמירת המידע החדש במשתנה ה-state
+                console.log("\nThe photo", file);  // הדפסת המידע החדש
+            } else {
+                console.log("\nthe user cancel the action");  // הדפסת הודעה אם המשתמש ביטל את הבחירה
+            }
         } catch (error) {
-            console.error("שגיאה בפתיחת הגלריה: ", error);
+            console.error("\nProblem opening the album ", error);
         }
     };
+    
 
-
-
-    const uploadFileFromFiles = async () => {
+    
+    const uploadFileFromFiles = async () => {    
         try {
             const result = await DocumentPicker.getDocumentAsync({
-                type: '*/*',
+                type: ['application/pdf', 'image/*'], // קבצי PDF ותמונות (JPG, PNG וכו')
             });
-            if (!result.canceled) setFile(result.assets);
+    
+            if (result.type === 'cancel') {
+                console.log("\nThe user cancel the action"); // הדפסת הודעה אם המשתמש ביטל את הבחירה
+            } else {
+                // גישה ל-mimeType מתוך ה-asset
+                const mimeType = result.assets && result.assets[0] && result.assets[0].mimeType;
+    
+                // יצירת משתנה file שיכיל רק את השדות שצריכים
+                const file = {
+                    name: result.assets[0]?.name || '',  // שם הקובץ
+                    uri: result.assets[0]?.uri || '',    // URI של הקובץ
+                    mimeType: mimeType || '',            // סוג MIME
+                };
+    
+                if (mimeType === "application/pdf") {
+                    // קריאה לקובץ ה-PDF
+                    const uri = result.assets[0].uri;
+    
+                    // קריאת הקובץ באמצעות FileSystem כדי להוריד אותו למערכת
+                    const pdfBytes = await FileSystem.readAsStringAsync(uri, {
+                        encoding: FileSystem.EncodingType.Base64,
+                    });
+    
+                    // טעינת ה-PDF בעזרת pdf-lib
+                    const pdfDoc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
+    
+                    // קבלת מספר העמודים
+                    const numPages = pdfDoc.getPageCount();
+    
+                    // בדיקה אם מספר העמודים גדול מ-1
+                    if (numPages > 1) {
+                        console.log("\nThe user choose a PDF file with more than one page.");
+                        // הצגת הודעה למשתמש על כך שהקובץ הוא PDF עם יותר מעמוד אחד
+                        return; // יציאה מהפונקציה ומניעת שמירת הקובץ
+                    } else {
+                        // עדכון ה-state עם פרטי הקובץ שנבחר
+                        setFile(file);  // שמירת הקובץ במשתנה ה-state
+                        console.log("\nThe File:", file);
+                    }
+                } else {
+                    // אם הקובץ לא PDF, נשמור אותו כרגיל
+                    setFile(file);
+                    console.log("\nThe File", file);
+                }
+            }
         } catch (error) {
-            console.error("שגיאה בפתיחת מערכת הקבצים: ", error);
+            console.error("\nProblem opening the file system", error);//check why if i do cancle in the iphone i get an error Problem opening the file system [TypeError: Cannot convert null value to object]
         }
     };
 
