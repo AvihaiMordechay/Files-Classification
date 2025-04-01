@@ -84,7 +84,7 @@ def parse_text_from_image(file_path: str, credentials_path: str) -> str:
 
             return full_text.strip()
 
-        elif file_extension in ['png', 'jpg', 'jpeg', 'tiff']:
+        elif file_extension in ['png', 'jpg', 'jpeg', 'tiff']:#adding more image formats like in the client
             # If it's an image, process it directly
             with open(file_path, "rb") as image_file:
                 content = image_file.read()
