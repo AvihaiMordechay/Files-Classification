@@ -113,7 +113,6 @@ const ActionMenu = () => {
             } else {
                 // גישה ל-mimeType מתוך ה-asset
                 const mimeType = result.assets && result.assets[0] && result.assets[0].mimeType;
-    
                 // יצירת משתנה file שיכיל רק את השדות שצריכים
                 const file = {
                     name: result.assets[0]?.name || '',  // שם הקובץ

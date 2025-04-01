@@ -105,3 +105,4 @@ export async function deleteFile(filePath) {
 }
 
 
+//adding function name delete all files that run in a loop and delete all files in the 
