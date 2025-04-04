@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Alert, AppState } from 'react-native';
 import { auth } from '../services/firebase';
-import { saveFileToAppStorage } from '../services/localFileSystem';
+import { deleteFile, saveFileToAppStorage } from '../services/localFileSystem';
 import {
     getUserDetails,
     changeUserName,
@@ -27,7 +27,6 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         const appStateSubscription = AppState.addEventListener('change', nextAppState => {
             if (nextAppState === 'background' || nextAppState === 'inactive') {
-                console.log("123");
                 closeDB().catch(err => console.error("Error closing DB on app state change:", err));
             }
         });
@@ -194,6 +193,19 @@ export const UserProvider = ({ children }) => {
         }
     }
 
+    const deleteAccount = async () => {
+        try {
+            Object.values(user.folders).forEach(folder => {
+                folder.files.forEach(async (file) => {
+                    await deleteFile(file.path);
+                });
+            });
+            await deleteDB();
+        } catch (error) {
+            Alert.alert("שגיאה", "לא ניתן למחוק את המשתמש כעת");
+        }
+    }
+
     return (
         <UserContext.Provider value={{
             user,
@@ -204,7 +216,8 @@ export const UserProvider = ({ children }) => {
             updateUserName,
             loadUser,
             createNewFolder,
-            addNewFile
+            addNewFile,
+            deleteAccount
         }}>
             {!loading && children}
         </UserContext.Provider>

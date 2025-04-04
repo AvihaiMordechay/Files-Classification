@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, Pressable, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard, TextInput, BackHandler } from 'react-native';
 import theme from "../../styles/theme";
 import { auth } from '../../services/firebase';
-import { deleteDB } from '../../services/database';
 import { useUser } from '../../context/UserContext';
 import { EmailAuthProvider, reauthenticateWithCredential, deleteUser } from 'firebase/auth';
 
 const DeleteUserModal = ({ visible, onClose }) => {
-    const { setUserStatus } = useUser();
+    const { setUserStatus, deleteAccount } = useUser();
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
@@ -25,11 +24,11 @@ const DeleteUserModal = ({ visible, onClose }) => {
             const credential = EmailAuthProvider.credential(user.email, password);
             await reauthenticateWithCredential(user, credential);
 
-            // Delete the user account
+            // Delete the user account from firebase.
             await deleteUser(user);
 
-            // Delete user data from your custom database
-            await deleteDB();
+            // Delete the DB and local file system.
+            await deleteAccount();
 
             BackHandler.exitApp();
         } catch (error) {
