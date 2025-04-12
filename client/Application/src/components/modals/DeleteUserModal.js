@@ -34,6 +34,14 @@ const DeleteUserModal = ({ visible, onClose }) => {
         } catch (error) {
             console.error("Error deleting user:", error);
             setError("אירעה שגיאה בהסרת המשתמש");
+
+            if (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
+                setError("הסיסמה שהוזנה שגויה");
+            } else if (error.code === "auth/too-many-requests") {
+                setError("יותר מדי ניסיונות. נסה שוב מאוחר יותר");
+            } else {
+                setError("אירעה שגיאה בהסרת המשתמש");
+            }
         }
     };
 

@@ -3,6 +3,7 @@ import * as SQLite from 'expo-sqlite';
 const USER = "user";
 const FOLDERS = "folders";
 const FILES = "files";
+const DB_NAME = 'myapp.db';
 
 // Singleton Database instance
 let dbInstance = null;
@@ -15,7 +16,7 @@ export const initDB = async () => {
         }
 
         console.log("Starting database initialization");
-        const db = await SQLite.openDatabaseAsync('myapp.db');
+        const db = await SQLite.openDatabaseAsync(DB_NAME);
         await db.execAsync('PRAGMA foreign_keys = ON;');
         dbInstance = db;
         console.log("Database initialized successfully");
@@ -181,10 +182,8 @@ const deleteRow = async (tableName, elementId) => {
 // Delete database - consider removing in production
 export const deleteDB = async () => {
     try {
-        const db = await initDB();
-        await db.execAsync(`DROP TABLE IF EXISTS ${FILES}`);
-        await db.execAsync(`DROP TABLE IF EXISTS ${FOLDERS}`);
-        await db.execAsync(`DROP TABLE IF EXISTS ${USER}`);
+        await closeDB();
+        await SQLite.deleteDatabaseAsync(DB_NAME);
         console.log("Database deleted successfully!");
     } catch (error) {
         console.error("Error deleting database:", error);
@@ -370,7 +369,6 @@ export const addFileToFolder = async (name, folderId, type, path) => {
             console.log(`File '${name}' added to folder with ID: ${result.insertId}`);
             return result.insertId;
         } else {
-            // For expo-sqlite compatibility
             const newFile = await db.getFirstAsync(`SELECT last_insert_rowid() AS id`);
             console.log(`File '${name}' added to folder with ID: ${newFile.id}`);
             return newFile.id;

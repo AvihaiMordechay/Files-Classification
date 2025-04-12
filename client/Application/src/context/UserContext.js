@@ -161,6 +161,7 @@ export const UserProvider = ({ children }) => {
                         },
                     },
                 }));
+                return folderId;
             }
         } catch (error) {
             Alert.alert("שגיאה", "לא ניתן לפתוח תיקייה חדשה");
@@ -169,10 +170,18 @@ export const UserProvider = ({ children }) => {
 
     const addNewFile = async (name, folderId, type, tempPath) => {
         if (!user) return;
-        try {
-            const newPath = await saveFileToAppStorage(tempPath, name);
-            const fileId = await addFileToFolder(name, folderId, type, newPath);
 
+        let newPath;
+        let fileId;
+
+        try {
+            newPath = await saveFileToAppStorage(tempPath, name, folderId);
+            try {
+                fileId = await addFileToFolder(name, folderId, type, newPath);
+            } catch (error) {
+                await deleteFile(newPath);
+                throw error;
+            }
             setUser((prevUser) => {
                 const updatedFolders = { ...prevUser.folders };
                 const folderEntry = Object.entries(updatedFolders).find(([key, value]) => value.id === folderId);
@@ -188,6 +197,7 @@ export const UserProvider = ({ children }) => {
 
                 return { ...prevUser, folders: updatedFolders };
             });
+            Alert.alert("הצלחה", "הקובץ צורף לתיקייה בהצלחה");
         } catch (error) {
             Alert.alert("שגיאה", "לא ניתן להוסיף את הקובץ כעת");
         }

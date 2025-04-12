@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { View, Alert } from 'react-native';
 import { useUser } from '../context/UserContext';
 import FileUploadModal from './modals/FileUploadModal';
+import CreateFolderModal from './modals/CreateFolderModal';
+import CategoryListModel from './modals/CategoryListModel';
 
 const UploadFile = ({ file }) => {
     const { user, addNewFile } = useUser();
     const [newCategoryModalVisible, setNewCategoryModalVisible] = useState(false);
     const [existCategoryModalVisible, setExistCategoryModalVisible] = useState(false);
     const [failedRecognitionModelVisible, setFailedRecognitionModelVisible] = useState(false);
+    const [createFolderModalVisible, setCreateFolderModalVisible] = useState(false);
     const [category, setCategory] = useState(undefined);
+    const [categoryListModelVisible, setCategoryListModelVisible] = useState(false);
 
     useEffect(() => {
         const handleUploadFileToServer = async () => {
@@ -31,14 +35,12 @@ const UploadFile = ({ file }) => {
     }
 
     const handleButtonPress = (action, modal) => {
-        console.log(`Action selected: ${action}`);
-        console.log(`model selected: ${modal}`);
         switch (action) {
             case "createNewFolder":
-
+                setCreateFolderModalVisible(true);
                 break;
             case "saveToExisting":
-
+                setCategoryListModelVisible(true);
                 break;
             case "createCategoryFolder":
 
@@ -165,6 +167,18 @@ const UploadFile = ({ file }) => {
                     },
                 ]}
                 onClose={() => setFailedRecognitionModelVisible(false)}
+            />
+
+            <CreateFolderModal
+                visible={createFolderModalVisible}
+                onClose={() => setCreateFolderModalVisible(false)}
+                attachedFile={file}
+            />
+
+            <CategoryListModel
+                visible={categoryListModelVisible}
+                onClose={() => setCategoryListModelVisible(false)}
+                attachedFile={file}
             />
         </View>
     );

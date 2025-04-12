@@ -15,8 +15,7 @@ async function ensureAppDirectoryExists() {
     }
 }
 
-export async function saveFileToAppStorage(fileUri, fileName) {
-    console.log(fileUri, " ", fileName);
+export async function saveFileToAppStorage(fileUri, fileName, folderId) {
     if (!fileUri || !fileName) {
         console.error('Invalid file URI or filename');
         return null;
@@ -34,17 +33,25 @@ export async function saveFileToAppStorage(fileUri, fileName) {
             throw new Error('Source file does not exist');
         }
 
-        const newFilePath = APP_DIRECTORY + fileName;
+        const folderPath = APP_DIRECTORY + folderId + "/";
+        const newFilePath = folderPath + fileName;
+
+        // Check if the folder for the user exists, create if not
+        const folderInfo = await FileSystem.getInfoAsync(folderPath);
+        if (!folderInfo.exists) {
+            await FileSystem.makeDirectoryAsync(folderPath, { intermediates: true });
+        }
+
+        // Check if target file already exists
+        const existingFile = await FileSystem.getInfoAsync(newFilePath);
+        if (existingFile.exists) {
+            throw new Error('File with the same name already exists');
+        }
+
         await FileSystem.copyAsync({
             from: fileUri,
             to: newFilePath
         });
-
-        // Verify the file was copied successfully
-        const newFileExists = await FileSystem.getInfoAsync(newFilePath);
-        if (!newFileExists.exists) {
-            throw new Error('File copy failed');
-        }
 
         return newFilePath;
     } catch (error) {
@@ -52,6 +59,7 @@ export async function saveFileToAppStorage(fileUri, fileName) {
         throw error;
     }
 }
+
 
 /**
  * Reads the content of a given file and returns it as a string.

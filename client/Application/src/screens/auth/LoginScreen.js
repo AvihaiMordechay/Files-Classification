@@ -127,7 +127,7 @@ const LoginScreen = ({ navigation }) => {
 
                                     <TouchableOpacity
                                         style={styles.linkButton}
-                                        onPress={() => navigation.navigate('Registration')}
+                                        onPress={() => navigation.replace('Registration')}
                                     >
                                         <Text style={styles.linkText}>אין לך חשבון? הירשם כאן</Text>
                                     </TouchableOpacity>

@@ -9,11 +9,6 @@ import * as DocumentPicker from 'expo-document-picker';
 import { PDFDocument } from 'pdf-lib';
 import * as FileSystem from 'expo-file-system';
 
-
-
-
-
-
 const OFFSET = 60;
 
 const FloatingActionButton = ({ isExpanded, index, label, icon, myOnPress }) => {
@@ -67,75 +62,70 @@ const ActionMenu = () => {
 
     const uploadFileFromGallery = async () => {
         try {
-            // בקשת הרשאה לגישה לגלריה
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (status !== 'granted') {
                 console.log("permission to access the gallery was denied");
-                // הצגת הודעה למשתמש על כך שאין הרשאות לגישה לגלריה
                 return;
             }
-    
-            // פתיחת הגלריה ובחירת תמונה
+
             const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images, // רק תמונות
-                quality: 1, // איכות תמונה מירבית
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                quality: 1,
             });
-    
+
             if (!result.canceled) {
-                // יצירת אובייקט חדש בשם file
                 const file = {
-                    name: result.assets[0]?.fileName || '',  // שם הקובץ
-                    uri: result.assets[0]?.uri || '',        // URI של הקובץ
-                    mimeType: result.assets[0]?.mimeType || '',  // סוג MIME
+                    name: result.assets[0]?.fileName || '',
+                    uri: result.assets[0]?.uri || '',
+                    mimeType: result.assets[0]?.mimeType || '',
                 };
-    
-                // שמירת המידע במשתנה ה-state
-                setFile(file);  // שמירת המידע החדש במשתנה ה-state
-                console.log("\nThe photo", file);  // הדפסת המידע החדש
+
+                setFile(file);
+                console.log("The photo", file);
             } else {
-                console.log("\nthe user cancel the action");  // הדפסת הודעה אם המשתמש ביטל את הבחירה
+                console.log("the user cancel the action");
             }
         } catch (error) {
-            console.error("\nProblem opening the album ", error);
+            console.error("Problem opening the album ", error);
         }
     };
-    
 
-    
-    const uploadFileFromFiles = async () => {    
+
+
+    const uploadFileFromFiles = async () => {
         try {
             const result = await DocumentPicker.getDocumentAsync({
                 type: ['application/pdf', 'image/*'], // קבצי PDF ותמונות (JPG, PNG וכו')
             });
-    
+
             if (result.type === 'cancel') {
                 console.log("\nThe user cancel the action"); // הדפסת הודעה אם המשתמש ביטל את הבחירה
             } else {
                 // גישה ל-mimeType מתוך ה-asset
                 const mimeType = result.assets && result.assets[0] && result.assets[0].mimeType;
-    
+
                 // יצירת משתנה file שיכיל רק את השדות שצריכים
                 const file = {
                     name: result.assets[0]?.name || '',  // שם הקובץ
                     uri: result.assets[0]?.uri || '',    // URI של הקובץ
                     mimeType: mimeType || '',            // סוג MIME
                 };
-    
+
                 if (mimeType === "application/pdf") {
                     // קריאה לקובץ ה-PDF
                     const uri = result.assets[0].uri;
-    
+
                     // קריאת הקובץ באמצעות FileSystem כדי להוריד אותו למערכת
                     const pdfBytes = await FileSystem.readAsStringAsync(uri, {
                         encoding: FileSystem.EncodingType.Base64,
                     });
-    
+
                     // טעינת ה-PDF בעזרת pdf-lib
                     const pdfDoc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
-    
+
                     // קבלת מספר העמודים
                     const numPages = pdfDoc.getPageCount();
-    
+
                     // בדיקה אם מספר העמודים גדול מ-1
                     if (numPages > 1) {
                         console.log("\nThe user choose a PDF file with more than one page.");

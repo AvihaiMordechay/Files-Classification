@@ -1,15 +1,35 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Modal, Alert, View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import theme from "../../styles/theme";
 import { useUser } from '../../context/UserContext';
 
-const CreateFolderModal = ({ visible, onClose }) => {
-    const { createNewFolder } = useUser();
+const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
+    const { createNewFolder, addNewFile } = useUser();
     const [newFolderName, setNewFolderName] = useState("");
 
     const handleNewFolder = async () => {
         try {
-            await createNewFolder(newFolderName);
+            const folderId = await createNewFolder(newFolderName);
+            if (attachedFile) {
+                Alert.alert(
+                    "צרף קובץ",
+                    "האם לצרף את הקובץ לתיקייה החדשה?",
+                    [
+                        {
+                            text: "לא",
+                            style: "cancel"
+                        },
+                        {
+                            text: "כן",
+                            onPress: async () => {
+                                await addNewFile(attachedFile.name, folderId, attachedFile.mimeType, attachedFile.uri);
+                            }
+                        }
+                    ]
+                );
+            }
+            setNewFolderName("");
+            onClose();
         } catch (error) {
             console.log(error);
         }
