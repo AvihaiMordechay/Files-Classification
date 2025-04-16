@@ -19,7 +19,7 @@ import { auth } from '../../services/firebase';
 import theme from '../../styles/theme'; 
 import { getUserEmail, updateLastLogin } from '../../services/database'; 
 import { useUser } from '../../context/UserContext'; 
-import ChangePasswordModal from '../../components/modals/changePasswordModal'; // ייבוא קומפוננטת המודל שלך
+import ForgetPasswordModal from '../../components/modals/forgetPasswordModal';; // ייבוא קומפוננטת המודל שלך
 
 const validationSchema = Yup.object().shape({ 
     email: Yup.string() 
@@ -35,7 +35,7 @@ const validationSchema = Yup.object().shape({
 
 const LoginScreen = ({ navigation }) => { 
     const { loadUser } = useUser(); 
-    const [isChangePasswordModalVisible, setIsChangePasswordModalVisible] = useState(false); // הוספת state למודל
+    const [isForgetPasswordModalVisible, setIsForgetPasswordModalVisible] = useState(false); // הוספת state למודל
 
     const handleLogin = async (values, { setFieldError }) => { 
         try { 
@@ -58,15 +58,14 @@ const LoginScreen = ({ navigation }) => {
     };
 
     // פונקציה לפתיחת המודל
-    const openChangePasswordModal = () => {
-        setIsChangePasswordModalVisible(true);
-    };
+    const openForgetPasswordModal = () => {
+             setIsForgetPasswordModalVisible(true);
+         };
 
     // פונקציה לסגירת המודל
-    const closeChangePasswordModal = () => {
-        setIsChangePasswordModalVisible(false);
-    };
-
+     const closeForgetPasswordModal = () => {
+             setIsForgetPasswordModalVisible(false);
+        };
     return ( 
         <SafeAreaProvider> 
             <SafeAreaView style={styles.container}> 
@@ -136,7 +135,7 @@ const LoginScreen = ({ navigation }) => {
 
                                     <TouchableOpacity 
                                         style={styles.linkButton} 
-                                        onPress={openChangePasswordModal} // קריאה לפונקציה לפתיחת המודל
+                                        onPress={openForgetPasswordModal} // קריאה לפונקציה לפתיחת המודל
                                     > 
                                         <Text style={styles.linkText}>שכחתי סיסמה</Text> 
                                     </TouchableOpacity> 
@@ -147,9 +146,9 @@ const LoginScreen = ({ navigation }) => {
                 </KeyboardAvoidingView>
 
                 {/* מודל שינוי סיסמה */}
-                <ChangePasswordModal 
-                    visible={isChangePasswordModalVisible} 
-                    onClose={closeChangePasswordModal} 
+                <ForgetPasswordModal
+                visible={isForgetPasswordModalVisible}
+                onClose={closeForgetPasswordModal}
                 /> 
             </SafeAreaView> 
         </SafeAreaProvider> 

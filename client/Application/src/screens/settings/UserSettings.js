@@ -11,12 +11,18 @@ import { deleteDB } from '../../services/database';
 import { reauthenticateWithCredential, EmailAuthProvider, deleteUser } from 'firebase/auth';
 import DeleteUserModal from '../../components/modals/DeleteUserModal';
 
+// ייבוא חדש:
+import ForgotPasswordModal from '../../components/modals/changePasswordModal';
+
 const UserSettingsScreen = () => {
     const { user, updateUserName } = useUser();
     const [userName, setUserName] = useState(user.name || '');
     const [saveNameButtonVisible, setSaveNameButtonVisible] = useState(false);
     const [emailModalVisible, setEmailModelVisible] = useState(false);
     const [deleteUserModalVisible, setDeleteUserModalVisible] = useState(false);
+    // הוספתי את המשתנה למודל שינוי סיסמה
+    const [forgotPasswordModalVisible, setForgotPasswordModalVisible] = useState(false);
+
     const handleUpdateName = async () => {
         try {
             await updateUserName(userName);
@@ -27,16 +33,15 @@ const UserSettingsScreen = () => {
         }
     };
 
-
     const handleUpdatePassword = () => {
+        // פותח את המודל לשינוי סיסמה
+        setForgotPasswordModalVisible(true);
     };
 
     const handleEnable2FA = () => {
     };
 
-
     return (
-
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
@@ -62,7 +67,6 @@ const UserSettingsScreen = () => {
                                 </TouchableOpacity>
                             )}
 
-
                             <Text style={styles.label}>אימייל</Text>
                             <View style={[styles.inputContainer, styles.disabledInputContainer]}>
                                 <TextInput
@@ -72,7 +76,6 @@ const UserSettingsScreen = () => {
                                     selectTextOnFocus={false}
                                 />
                             </View>
-
 
                             <TouchableOpacity style={styles.actionButton} onPress={() => setEmailModelVisible(true)}>
                                 <Text style={styles.actionButtonText}>שינוי כתובת אימייל</Text>
@@ -90,9 +93,9 @@ const UserSettingsScreen = () => {
                                 <Text style={styles.actionButtonText}>מחיקת חשבון</Text>
                             </TouchableOpacity>
 
-
                         </View>
                     </ScrollView>
+
                     <EmailUpdateModal
                         visible={emailModalVisible}
                         onClose={() => setEmailModelVisible(false)}
@@ -101,6 +104,11 @@ const UserSettingsScreen = () => {
                         visible={deleteUserModalVisible}
                         onClose={() => setDeleteUserModalVisible(false)}
                     />
+                    {/* הוספתי את המודל לשינוי סיסמה */}
+                    <ForgotPasswordModal
+                        visible={forgotPasswordModalVisible}
+                        onClose={() => setForgotPasswordModalVisible(false)}
+                    />
                 </KeyboardAvoidingView>
             </SafeAreaView>
         </SafeAreaProvider>
@@ -108,6 +116,7 @@ const UserSettingsScreen = () => {
 };
 
 export default UserSettingsScreen;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
