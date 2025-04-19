@@ -8,7 +8,6 @@ import {
     StyleSheet,
     ScrollView,
     KeyboardAvoidingView,
-    Platform,
     Alert,
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
@@ -17,9 +16,8 @@ import * as Yup from 'yup';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/firebase';
 import theme from '../../styles/theme';
-import { getUserEmail, updateLastLogin } from '../../services/database';
+import { updateLastLogin } from '../../services/database';
 import { useUser } from '../../context/UserContext';
-import { use } from 'react';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -37,7 +35,6 @@ const LoginScreen = ({ navigation }) => {
     const { loadUser } = useUser();
     const handleLogin = async (values, { setFieldError }) => {
         try {
-            // todo: add check if the values email === email in the database!!
             await signInWithEmailAndPassword(auth, values.email, values.password);
             await loadUser();
             await updateLastLogin();

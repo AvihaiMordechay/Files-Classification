@@ -11,7 +11,7 @@ const FileButton = ({ file, onPress, initialFavorite = false }) => {
 
     const handleFavortite = async (event) => {
         event.stopPropagation();
-        await markAsFavorite();
+        // await markAsFavorite();
         setIsFavorite((prev) => !prev);
 
     };

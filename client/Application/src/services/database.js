@@ -41,7 +41,6 @@ export const closeDB = async () => {
     }
 };
 
-// Database setup function - call once at app startup
 export const createDB = async (id, name, gender) => {
     try {
         if (!id || !name || !gender) {
@@ -49,7 +48,6 @@ export const createDB = async (id, name, gender) => {
         }
         const db = await initDB();
 
-        // Create tables
         await db.execAsync(`
             CREATE TABLE IF NOT EXISTS ${USER}  ( 
                 id TEXT PRIMARY KEY NOT NULL,
@@ -376,9 +374,28 @@ export const addFileToFolder = async (name, folderId, type, path) => {
     } catch (error) {
         if (error.message && error.message.includes('UNIQUE constraint failed')) {
             console.error(`File with name '${name}' already exists in folder ${folderId} or path '${path}' is already used`);
-            throw new Error(`File with name '${name}' already exists in folder ${folderId} or path '${path}' is already used`);
+            throw new Error('File already exists');
         }
         console.error("Error adding file:", error);
+        throw error;
+    }
+};
+
+export const isFileExistInDB = async (folderId, fileName) => {
+    try {
+        if (!fileName || !folderId) {
+            throw new Error('File name and folder ID are required');
+        }
+
+        const db = await initDB();
+        const result = await db.getFirstAsync(
+            `SELECT COUNT(*) as count FROM ${FILES} WHERE name = ? AND folderId = ?`,
+            [fileName, folderId]
+        );
+
+        return result && result.count > 0;
+    } catch (error) {
+        console.error('Error checking if file exists by name and folder:', error);
         throw error;
     }
 };

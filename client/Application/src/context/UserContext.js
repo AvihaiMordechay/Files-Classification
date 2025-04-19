@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Alert, AppState } from 'react-native';
 import { auth } from '../services/firebase';
-import { deleteFile, saveFileToAppStorage } from '../services/localFileSystem';
+import { deleteFile, fileExistsInStorage, saveFileToAppStorage } from '../services/localFileSystem';
 import {
     getUserDetails,
     changeUserName,
@@ -15,6 +15,7 @@ import {
     closeDB,
     addFileToFolder,
     printDB,
+    isFileExistInDB,
 } from '../services/database';
 
 const UserContext = createContext();
@@ -143,28 +144,31 @@ export const UserProvider = ({ children }) => {
         }
     };
 
-    const createNewFolder = async (newName) => {
+    const createNewFolder = async (newName, withAlert = true) => {
         if (!user) return;
+        if (user.folders[newName]) {
+            throw new Error('already exist')
+        }
         try {
-            if (user.folders[newName]) {
-                Alert.alert("שגיאה", `התיקייה ${newName} כבר קיימת במערכת, אנא בחר שם אחר`);
-            } else {
-                const folderId = await createFolder(newName);
-                setUser((prevUser) => ({
-                    ...prevUser,
-                    folders: {
-                        ...prevUser.folders,
-                        [newName]: {
-                            id: folderId,
-                            filesCount: 0,
-                            files: [],
-                        },
+            const folderId = await createFolder(newName);
+            setUser((prevUser) => ({
+                ...prevUser,
+                folders: {
+                    ...prevUser.folders,
+                    [newName]: {
+                        id: folderId,
+                        filesCount: 0,
+                        files: [],
                     },
-                }));
-                return folderId;
+                },
+            }));
+            if (withAlert) {
+                Alert.alert("הצלחה", "התיקייה נוצרה בהצלחה");
             }
+            return folderId;
         } catch (error) {
             Alert.alert("שגיאה", "לא ניתן לפתוח תיקייה חדשה");
+            return false;
         }
     }
 
@@ -203,6 +207,15 @@ export const UserProvider = ({ children }) => {
         }
     }
 
+    const isFileExist = async (folderId, fileName) => {
+        try {
+            return await fileExistsInStorage(folderId, fileName) && await isFileExistInDB(folderId, fileName);
+        } catch (error) {
+            Alert.alert("שגיאה", "לא ניתן להוסיף את הקובץ כעת");
+            throw error;
+        }
+    }
+
     const deleteAccount = async () => {
         try {
             Object.values(user.folders).forEach(folder => {
@@ -227,6 +240,7 @@ export const UserProvider = ({ children }) => {
             loadUser,
             createNewFolder,
             addNewFile,
+            isFileExist,
             deleteAccount
         }}>
             {!loading && children}

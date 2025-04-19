@@ -95,58 +95,47 @@ const ActionMenu = () => {
     const uploadFileFromFiles = async () => {
         try {
             const result = await DocumentPicker.getDocumentAsync({
-                type: ['application/pdf', 'image/*'], // קבצי PDF ותמונות (JPG, PNG וכו')
+                type: ['application/pdf', 'image/*'],
             });
 
             if (result.type === 'cancel') {
-                console.log("\nThe user cancel the action"); // הדפסת הודעה אם המשתמש ביטל את הבחירה
+                console.log("\nThe user cancel the action");
             } else {
-                // גישה ל-mimeType מתוך ה-asset
                 const mimeType = result.assets && result.assets[0] && result.assets[0].mimeType;
 
-                // יצירת משתנה file שיכיל רק את השדות שצריכים
                 const file = {
-                    name: result.assets[0]?.name || '',  // שם הקובץ
-                    uri: result.assets[0]?.uri || '',    // URI של הקובץ
-                    mimeType: mimeType || '',            // סוג MIME
+                    name: result.assets[0]?.name || '',
+                    uri: result.assets[0]?.uri || '',
+                    mimeType: mimeType || '',
                 };
 
                 if (mimeType === "application/pdf") {
-                    // קריאה לקובץ ה-PDF
                     const uri = result.assets[0].uri;
 
-                    // קריאת הקובץ באמצעות FileSystem כדי להוריד אותו למערכת
                     const pdfBytes = await FileSystem.readAsStringAsync(uri, {
                         encoding: FileSystem.EncodingType.Base64,
                     });
 
-                    // טעינת ה-PDF בעזרת pdf-lib
                     const pdfDoc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
 
-                    // קבלת מספר העמודים
                     const numPages = pdfDoc.getPageCount();
 
-                    // בדיקה אם מספר העמודים גדול מ-1
                     if (numPages > 1) {
                         console.log("\nThe user choose a PDF file with more than one page.");
-                        // הצגת הודעה למשתמש על כך שהקובץ הוא PDF עם יותר מעמוד אחד
-                        return; // יציאה מהפונקציה ומניעת שמירת הקובץ
+                        return;
                     } else {
-                        // עדכון ה-state עם פרטי הקובץ שנבחר
-                        setFile(file);  // שמירת הקובץ במשתנה ה-state
+                        setFile(file);
                         console.log("\nThe File:", file);
                     }
                 } else {
-                    // אם הקובץ לא PDF, נשמור אותו כרגיל
                     setFile(file);
                     console.log("\nThe File", file);
                 }
             }
         } catch (error) {
-            console.error("\nProblem opening the file system", error);//check why if i do cancle in the iphone i get an error Problem opening the file system [TypeError: Cannot convert null value to object]
+            console.error("\nProblem opening the file system", error);//TODO: check why if i do cancle in the iphone i get an error Problem opening the file system [TypeError: Cannot convert null value to object]
         }
     };
-
 
     const rotateStyle = {
         transform: [

@@ -61,29 +61,19 @@ export async function saveFileToAppStorage(fileUri, fileName, folderId) {
 }
 
 
-/**
- * Reads the content of a given file and returns it as a string.
- * 
- * 🔹 Where is the data stored?  
- * - The data remains in the app's storage system (`APP_DIRECTORY`).
- * 
- * 🔹 Input:  
- * - `filePath` (String) – The full path of the file to be read.
- * 
- * 🔹 Output:  
- * - Returns the file content as a string (`String`) if the read operation is successful.  
- * - Returns `null` in case of an error.
- */
-//need to check if this function is really needed and also the delete function 
-export async function getFileInfo(filePath) {
+export async function fileExistsInStorage(folderId, fileName) {
     try {
-        const fileInfo = await FileSystem.getInfoAsync(filePath);
-        if (!fileInfo.exists) {
-            throw new Error('File does not exist');
+        const directoryCreated = await ensureAppDirectoryExists();
+        if (!directoryCreated) {
+            throw new Error('Failed to create app directory');
         }
-        return fileInfo;
+
+        const filePath = APP_DIRECTORY + folderId + "/" + fileName;
+
+        const fileInfo = await FileSystem.getInfoAsync(filePath);
+        return fileInfo.exists;
     } catch (error) {
-        console.error('Error getting file info:', error);
+        console.error('Error checking if file exists in storage:', error);
         throw error;
     }
 }
