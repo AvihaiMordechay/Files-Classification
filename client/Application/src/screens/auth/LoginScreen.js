@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import constats from '../../styles/constats';
 import {
     View,
@@ -18,6 +18,7 @@ import { auth } from '../../services/firebase';
 import theme from '../../styles/theme';
 import { updateLastLogin } from '../../services/database';
 import { useUser } from '../../context/UserContext';
+import ForgetPasswordModal from '../../components/modals/forgetPasswordModal';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -33,6 +34,8 @@ const validationSchema = Yup.object().shape({
 
 const LoginScreen = ({ navigation }) => {
     const { loadUser } = useUser();
+    const [isForgetPasswordModalVisible, setIsForgetPasswordModalVisible] = useState(false);
+
     const handleLogin = async (values, { setFieldError }) => {
         try {
             await signInWithEmailAndPassword(auth, values.email, values.password);
@@ -53,12 +56,18 @@ const LoginScreen = ({ navigation }) => {
         }
     };
 
+    const openForgetPasswordModal = () => {
+        setIsForgetPasswordModalVisible(true);
+    };
+    const closeForgetPasswordModal = () => {
+        setIsForgetPasswordModalVisible(false);
+    };
+
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
-                <KeyboardAvoidingView
-                    style={styles.keyboardAvoidingView}
-                >
+                <KeyboardAvoidingView style={styles.keyboardAvoidingView}>
+
                     <ScrollView contentContainerStyle={styles.scrollView}>
                         <View style={styles.logoContainer}>
                             <View style={styles.logoBox}></View>
@@ -124,15 +133,19 @@ const LoginScreen = ({ navigation }) => {
 
                                     <TouchableOpacity
                                         style={styles.linkButton}
-                                        onPress={() => navigation.replace('Registration')}
-                                    >
-                                        <Text style={styles.linkText}>אין לך חשבון? הירשם כאן</Text>
-                                    </TouchableOpacity>
+                                        onPress={openForgetPasswordModal}                                    >
+                                        <Text style={styles.linkText}>שכחתי סיסמה</Text>                                     </TouchableOpacity>
                                 </View>
                             )}
                         </Formik>
                     </ScrollView>
                 </KeyboardAvoidingView>
+
+                <ForgetPasswordModal
+                    visible={isForgetPasswordModalVisible}
+                    onClose={closeForgetPasswordModal}
+                />
+
             </SafeAreaView>
         </SafeAreaProvider>
     );
@@ -179,10 +192,13 @@ const styles = StyleSheet.create({
     linkButton: {
         marginTop: 15,
         alignItems: 'center',
+        alignSelf: 'flex-end',
     },
     linkText: {
         color: constats.colors.primary,
         fontSize: constats.sizes.font.small,
+        textDecorationLine: 'underline',
+        paddingRight: 10,
     },
 });
 
