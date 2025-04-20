@@ -130,8 +130,7 @@ const UploadFile = ({ file }) => {
 
                 <FileUploadModal
                     visible={newCategoryModalVisible}
-                    content={המערכת זיהתה מסמך מקטגוריה חדשה בשם: ${category}, מה ברצונך לעשות?}
-                    buttons={[
+                    content={`המערכת זיהתה מסמך מקטגוריה חדשה בשם: ${category}, מה ברצונך לעשות?`}
                         {
                             text: 'צור תיקייה חדשה',
                             icon: 'add-outline',
