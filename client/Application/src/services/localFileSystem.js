@@ -103,6 +103,3 @@ export async function deleteFile(filePath) {
         return false;
     }
 }
-
-
-//adding function name delete all files that run in a loop and delete all files in the 

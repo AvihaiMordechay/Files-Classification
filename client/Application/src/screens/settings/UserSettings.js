@@ -10,8 +10,6 @@ import { auth } from '../../services/firebase';
 import { deleteDB } from '../../services/database';
 import { reauthenticateWithCredential, EmailAuthProvider, deleteUser } from 'firebase/auth';
 import DeleteUserModal from '../../components/modals/DeleteUserModal';
-
-// ייבוא חדש:
 import ForgotPasswordModal from '../../components/modals/changePasswordModal';
 
 const UserSettingsScreen = () => {
@@ -20,7 +18,6 @@ const UserSettingsScreen = () => {
     const [saveNameButtonVisible, setSaveNameButtonVisible] = useState(false);
     const [emailModalVisible, setEmailModelVisible] = useState(false);
     const [deleteUserModalVisible, setDeleteUserModalVisible] = useState(false);
-    // הוספתי את המשתנה למודל שינוי סיסמה
     const [forgotPasswordModalVisible, setForgotPasswordModalVisible] = useState(false);
 
     const handleUpdateName = async () => {
@@ -34,7 +31,6 @@ const UserSettingsScreen = () => {
     };
 
     const handleUpdatePassword = () => {
-        // פותח את המודל לשינוי סיסמה
         setForgotPasswordModalVisible(true);
     };
 
@@ -182,7 +178,6 @@ const styles = StyleSheet.create({
         fontSize: constats.sizes.font.small,
         fontWeight: 'bold',
     },
-    // Modal Overlay - ניתן ללחוץ עליו לסגירת המודל
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
