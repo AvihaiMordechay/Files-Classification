@@ -5,6 +5,7 @@ import FileUploadModal from './modals/FileUploadModal';
 import CreateFolderModal from './modals/CreateFolderModal';
 import CategoryListModel from './modals/CategoryListModel';
 import ChangeFileNameModel from './modals/ChangeFileNameModel';
+import Spinner from './Spinner';
 
 const UploadFile = ({ file }) => {
     const { user, createNewFolder } = useUser();
@@ -16,6 +17,7 @@ const UploadFile = ({ file }) => {
     const [categoryListModelVisible, setCategoryListModelVisible] = useState(false);
     const [changeFileNameModelVisible, setChangeFileNameModelVisible] = useState(false);
     const [folderId, setFolderId] = useState(null);
+    const [loading, setLoading] = useState(false);
 
 
     useEffect(() => {
@@ -88,6 +90,7 @@ const UploadFile = ({ file }) => {
 
     const uploadFileToServer = async (file) => {
         try {
+            setLoading(true);
             // Create form data
             const formData = new FormData();
             formData.append('file', {
@@ -103,7 +106,7 @@ const UploadFile = ({ file }) => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-
+            setLoading(false);
             const responseText = await uploadResponse.text();
 
             if (uploadResponse.ok) {
@@ -126,6 +129,9 @@ const UploadFile = ({ file }) => {
 
     return (
         <>
+            {loading && (
+                <Spinner />
+            )}
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
 
                 <FileUploadModal
