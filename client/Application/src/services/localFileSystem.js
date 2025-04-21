@@ -101,5 +101,3 @@ export async function deleteFile(filePath) {
         return false;
     }
 }
-
-
