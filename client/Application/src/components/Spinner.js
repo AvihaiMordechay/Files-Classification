@@ -1,11 +1,11 @@
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import constats from '../styles/constats';
 
-const Spinner = ({ text = "טוען..." }) => {
+const Spinner = () => {
     return (
         <View style={styles.container}>
             <ActivityIndicator size={80} color={constats.colors.primary} />
-            <Text style={styles.text}>{text}</Text>
+            <Text style={styles.text}>טוען...</Text>
         </View>
     );
 }
