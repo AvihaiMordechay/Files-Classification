@@ -26,7 +26,7 @@ const FileUploadModal = ({ visible, content, buttons, onClose }) => {
                                             button.isPrimary && styles.primaryButton
                                         ]} onPress={button.onPress}
                                     >
-                                        {button.icon && <Ionicons name={button.icon} size={42} color={button.isPrimary ? 'white' : 'black'} />}
+                                        {button.icon && <Ionicons name={button.icon} size={constats.sizes.icon.FileUploadModal} color={button.isPrimary ? 'white' : 'black'} />}
                                     </TouchableOpacity>
                                     <Text style={styles.buttonText}>{button.text}</Text>
                                 </View>

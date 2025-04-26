@@ -34,7 +34,7 @@ const FloatingActionButton = ({ isExpanded, index, label, icon, myOnPress }) => 
             <View style={styles.buttonView}>
                 <Text style={styles.label}>{label}</Text>
                 <Pressable onPress={myOnPress} style={[styles.button, styles.shadow]}>
-                    <Ionicons name={icon} size={28} />
+                    <Ionicons name={icon} size={constats.sizes.icon.default + 4} />
                 </Pressable>
             </View>
         </Animated.View>
@@ -99,7 +99,7 @@ const ActionMenu = () => {
             });
 
             if (result.type === 'cancel') {
-                console.log("\nThe user cancel the action");
+                console.log("The user cancel the action");
             } else {
                 const mimeType = result.assets && result.assets[0] && result.assets[0].mimeType;
 
@@ -121,15 +121,15 @@ const ActionMenu = () => {
                     const numPages = pdfDoc.getPageCount();
 
                     if (numPages > 1) {
-                        console.log("\nThe user choose a PDF file with more than one page.");
+                        console.log("The user choose a PDF file with more than one page.");
                         return;
                     } else {
                         setFile(file);
-                        console.log("\nThe File:", file);
+                        console.log("The File:", file);
                     }
                 } else {
                     setFile(file);
-                    console.log("\nThe File", file);
+                    console.log("The File", file);
                 }
             }
         } catch (error) {

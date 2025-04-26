@@ -197,7 +197,6 @@ export const isFirstTime = async () => {
             SELECT name FROM sqlite_master WHERE type='table' AND name IN (?, ?, ?)
         `, [USER, FOLDERS, FILES]);
 
-        console.log(result);
         return result.length === 0;
     } catch (error) {
         console.error("Error checking first time:", error);

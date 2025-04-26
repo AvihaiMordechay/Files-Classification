@@ -65,7 +65,7 @@ const ChangeFileNameModel = ({ visible, onClose, name, folderId, type, path }) =
                                     style={styles.closeButton}
                                     onPress={handleClose}
                                 >
-                                    <Ionicons name="close-outline" size={28} />
+                                    <Ionicons name="close-outline" size={constats.sizes.icon.default + 4} />
                                 </TouchableOpacity>
 
                                 <Text style={styles.modalTitle}>האם ברצונך לשנות שם לקובץ?</Text>

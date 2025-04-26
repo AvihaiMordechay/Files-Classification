@@ -1,6 +1,7 @@
 const constats = {
     colors: {
         primary: '#00C7BE',
+        white: '#ffffff',
         backgroundButton: '#ECECEC',
         backgroundInput: '#F1F5F9',
         background: '#F9FAFB',
@@ -27,7 +28,9 @@ const constats = {
         icon: {
             folderButton: 50,
             fileButton: 50,
-            star: 22
+            star: 22,
+            default: 24,
+            FileUploadModal: 42
         }
 
     }

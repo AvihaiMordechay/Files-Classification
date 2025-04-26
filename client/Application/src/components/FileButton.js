@@ -4,11 +4,10 @@ import { Ionicons } from '@expo/vector-icons';
 import constats from '../styles/constats';
 import { useUser } from '../context/UserContext';
 
-const FileButton = ({ file, onPress, folderName }) => {
+const FileButton = ({ file, onPress, folderName, presentFolderName = false }) => {
     const { markAsFavorite } = useUser();
     const [isFavorite, setIsFavorite] = useState(file.isFavorite === 1);
 
-    console.log(file.isFavorite);
     // Sync state when props change
     useEffect(() => {
         setIsFavorite(file.isFavorite === 1);
@@ -34,6 +33,10 @@ const FileButton = ({ file, onPress, folderName }) => {
                 <Ionicons name="document-outline" size={constats.sizes.icon.fileButton} color={constats.colors.primary} />
             </View>
             <Text style={styles.buttonText}>{file.name}</Text>
+
+            {presentFolderName && (
+                <Text style={styles.folderNameText}>{folderName}</Text>
+            )}
         </TouchableOpacity>
     );
 };
@@ -68,7 +71,14 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: '#333',
         textAlign: 'center',
-    }
+    },
+    folderNameText: {
+        fontSize: constats.sizes.font.small,
+        color: '#666',
+        textAlign: 'center',
+        marginTop: 2,
+    },
+
 });
 
 export default FileButton;

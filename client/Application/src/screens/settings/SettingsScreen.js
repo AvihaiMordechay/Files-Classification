@@ -15,9 +15,9 @@ const SettingsScreen = () => {
 
     const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.item} onPress={() => navigation.navigate(item.screen)}>
-            <Ionicons name={item.icon} size={24} color="#333" style={styles.icon} />
+            <Ionicons name={item.icon} size={constats.sizes.icon.default} color="#333" style={styles.icon} />
             <Text style={styles.text}>{item.title}</Text>
-            <Ionicons name="chevron-back" size={20} color="#777" style={styles.chevron} />
+            <Ionicons name="chevron-back" size={constats.sizes.icon.default - 4} color="#777" style={styles.chevron} />
         </TouchableOpacity>
     );
 

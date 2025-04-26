@@ -239,7 +239,6 @@ export const UserProvider = ({ children }) => {
     }
 
     const markAsFavorite = async (value, fileId, folderName) => {
-        console.log(value, fileId, folderName);
         try {
             await markFileAsFavorite(value, fileId);
 
