@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Alert } from 'react-native';
 import { View, StyleSheet, TextInput, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import theme from '../../styles/theme';
@@ -7,10 +6,8 @@ import constats from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
 import EmailUpdateModal from '../../components/modals/EmailUpdateModal';
 import { auth } from '../../services/firebase';
-import { deleteDB } from '../../services/database';
-import { reauthenticateWithCredential, EmailAuthProvider, deleteUser } from 'firebase/auth';
 import DeleteUserModal from '../../components/modals/DeleteUserModal';
-import ForgotPasswordModal from '../../components/modals/changePasswordModal';
+import ForgotPasswordModal from '../../components/modals/ChangePasswordModal';
 
 const UserSettingsScreen = () => {
     const { user, updateUserName } = useUser();

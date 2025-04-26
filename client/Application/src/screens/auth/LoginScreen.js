@@ -18,7 +18,7 @@ import { auth } from '../../services/firebase';
 import theme from '../../styles/theme';
 import { updateLastLogin } from '../../services/database';
 import { useUser } from '../../context/UserContext';
-import ForgetPasswordModal from '../../components/modals/forgetPasswordModal';
+import ForgetPasswordModal from '../../components/modals/ForgetPasswordModal';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -133,8 +133,11 @@ const LoginScreen = ({ navigation }) => {
 
                                     <TouchableOpacity
                                         style={styles.linkButton}
-                                        onPress={openForgetPasswordModal}                                    >
-                                        <Text style={styles.linkText}>שכחתי סיסמה</Text>                                     </TouchableOpacity>
+                                        onPress={openForgetPasswordModal}
+                                    >
+                                        <Text style={styles.linkText}>שכחתי סיסמה</Text>
+                                    </TouchableOpacity>
+
                                 </View>
                             )}
                         </Formik>
@@ -202,4 +205,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default LoginScreen;
+export default LoginScreen;

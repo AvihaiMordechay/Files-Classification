@@ -1,13 +1,12 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import constats from '../../styles/constats';
 
 import HomeStackNavigator from './HomeNav';
-import FavoritesScreen from '../../screens/FavoritesScreen';
+import FavoriteStackNavigator from './FavoriteNav';
 import SettingsNavigator from './SettingsNav';
-import UploadFile from '../../components/UploadFile';
-import constats from '../../styles/constats';
 import ActionMenu from '../../components/ActionMenu';
 
 
@@ -45,9 +44,10 @@ const ApplicationNavigator = () => {
             </Tab.Screen>
             <Tab.Screen
                 name="Favorites"
-                component={FavoritesScreen}
-                options={{ title: 'מועדפים' }}
-            />
+                options={{ title: 'מעודפים' }}
+            >
+                {() => <FavoriteStackNavigator />}
+            </Tab.Screen>
 
             <Tab.Screen
                 name="Settings"

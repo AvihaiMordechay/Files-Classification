@@ -4,7 +4,7 @@ import FileButton from '../components/FileButton';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
 const FolderScreen = ({ route, navigation }) => {
-    const { files } = route.params || {};
+    const { files, folderName } = route.params || {};
 
     const handleFilePress = (file) => {
         navigation.navigate('File', {
@@ -16,13 +16,17 @@ const FolderScreen = ({ route, navigation }) => {
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
                 <ScrollView contentContainerStyle={styles.categoriesContainer}>
-                    {files?.map((file, index) => (
-                        <FileButton
-                            key={index}
-                            file={file}
-                            onPress={() => handleFilePress(file)}
-                        />
-                    ))}
+                    {files && Object.keys(files).map((fileId) => {
+                        const file = files[fileId];
+                        return (
+                            <FileButton
+                                key={fileId}
+                                file={file}
+                                onPress={() => handleFilePress(file)}
+                                folderName={folderName}
+                            />
+                        );
+                    })}
                 </ScrollView>
             </SafeAreaView>
         </SafeAreaProvider>

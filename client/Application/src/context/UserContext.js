@@ -14,8 +14,8 @@ import {
     createFolder,
     closeDB,
     addFileToFolder,
-    printDB,
     isFileExistInDB,
+    markFileAsFavorite,
 } from '../services/database';
 
 const UserContext = createContext();
@@ -114,18 +114,24 @@ export const UserProvider = ({ children }) => {
 
         const folders = await Promise.all(
             foldersDetails.map(async (folder) => {
-                let files = [];
+                let filesList = [];
                 try {
-                    files = await getFilesByFolder(folder.id);
+                    filesList = await getFilesByFolder(folder.id);
                 } catch (error) {
                     console.error("Error loading files for folder", folder.id, error);
-                    files = [];
+                    filesList = [];
                 }
+
+                const filesMap = {};
+                filesList.forEach(file => {
+                    filesMap[file.id] = file;
+                });
+
                 return {
                     [folder.name]: {
                         id: folder.id,
                         filesCount: folder.filesCount,
-                        files: files
+                        files: filesMap
                     }
                 };
             })
@@ -195,7 +201,10 @@ export const UserProvider = ({ children }) => {
                     updatedFolders[folderName] = {
                         ...folderData,
                         filesCount: folderData.filesCount + 1,
-                        files: [...folderData.files, { id: fileId, name, type, path: newPath }],
+                        files: {
+                            ...folderData.files,
+                            [fileId]: { name: name, type: type, path: newPath, isFavorite: 0, lastViewed: null }
+                        },
                     };
                 }
 
@@ -229,6 +238,28 @@ export const UserProvider = ({ children }) => {
         }
     }
 
+    const markAsFavorite = async (value, fileId, folderName) => {
+        console.log(value, fileId, folderName);
+        try {
+            await markFileAsFavorite(value, fileId);
+
+            setUser((prevUser) => {
+                const updatedFolders = { ...prevUser.folders };
+
+                if (folderName && updatedFolders[folderName] && updatedFolders[folderName].files[fileId]) {
+                    updatedFolders[folderName].files[fileId] = {
+                        ...updatedFolders[folderName].files[fileId],
+                        isFavorite: value ? 1 : 0
+                    };
+                }
+
+                return { ...prevUser, folders: updatedFolders };
+            });
+        } catch (error) {
+            Alert.alert("שגיאה", "לא ניתן לסמן את הקובץ כמועדף");
+        }
+    }
+
     return (
         <UserContext.Provider value={{
             user,
@@ -241,6 +272,7 @@ export const UserProvider = ({ children }) => {
             createNewFolder,
             addNewFile,
             isFileExist,
+            markAsFavorite,
             deleteAccount
         }}>
             {!loading && children}

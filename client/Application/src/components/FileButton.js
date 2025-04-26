@@ -1,24 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import constats from '../styles/constats';
 import { useUser } from '../context/UserContext';
 
-const FileButton = ({ file, onPress, initialFavorite = false }) => {
+const FileButton = ({ file, onPress, folderName }) => {
     const { markAsFavorite } = useUser();
-    const [isFavorite, setIsFavorite] = useState(initialFavorite);
+    const [isFavorite, setIsFavorite] = useState(file.isFavorite === 1);
 
+    console.log(file.isFavorite);
+    // Sync state when props change
+    useEffect(() => {
+        setIsFavorite(file.isFavorite === 1);
+    }, [file.isFavorite]);
 
-    const handleFavortite = async (event) => {
+    const handleFavorite = async (event) => {
         event.stopPropagation();
-        // await markAsFavorite();
-        setIsFavorite((prev) => !prev);
-
+        const newFavoriteState = !isFavorite;
+        setIsFavorite(newFavoriteState);
+        await markAsFavorite(newFavoriteState, file.id, folderName);
     };
 
     return (
         <TouchableOpacity style={styles.button} onPress={onPress}>
-            <TouchableOpacity onPress={handleFavortite} style={styles.starIcon}>
+            <TouchableOpacity onPress={handleFavorite} style={styles.starIcon}>
                 <Ionicons
                     name={isFavorite ? 'star' : 'star-outline'}
                     size={constats.sizes.icon.star}
