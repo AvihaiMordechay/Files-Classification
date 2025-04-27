@@ -61,27 +61,27 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
     },
     title: {
-        fontSize: constats.sizes.font.large, אותו גודל פונט כמו ב- SettingsScreen
+        fontSize: constats.sizes.font.large,
         fontWeight: 'bold',
-    textAlign: 'right',
-    marginVertical: 20,
-    color: '#333',
-    paddingHorizontal: 25,
-},
+        textAlign: 'right',
+        marginVertical: 20,
+        color: '#333',
+        paddingHorizontal: 25,
+    },
     categoriesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-},
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     noFavoritesContainer: {
-    marginTop: 50,
-    alignItems: 'center',
-},
+        marginTop: 50,
+        alignItems: 'center',
+    },
     noFavoritesText: {
-    fontSize: 16,
-    color: '#555',
-},
+        fontSize: 16,
+        color: '#555',
+    },
 });
 
 export default FavoriteScreen;
