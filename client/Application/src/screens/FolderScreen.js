@@ -2,9 +2,12 @@ import React from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 import FileButton from '../components/FileButton';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import { useUser } from '../context/UserContext';
 
 const FolderScreen = ({ route, navigation }) => {
-    const { files, folderName } = route.params || {};
+    const { folderName } = route.params || {};
+    const { user } = useUser();
+    const files = user?.folders?.[folderName]?.files || {};
 
     const handleFilePress = (file) => {
         navigation.navigate('File', {

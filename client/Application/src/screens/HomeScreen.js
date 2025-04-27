@@ -8,6 +8,7 @@ import Spinner from '../components/Spinner';
 import constats from '../styles/constats';
 import Search from '../components/Search';
 import FileButton from '../components/FileButton';
+import { printDB } from '../services/database';
 
 const HomeScreen = ({ navigation }) => {
     const { user } = useUser();
@@ -24,21 +25,12 @@ const HomeScreen = ({ navigation }) => {
         if (item.type === 'folder') {
             navigation.navigate('Folder', {
                 folderName: item.name,
-                files: item.files,
             });
         } else if (item.type === 'file') {
             navigation.navigate('File', {
                 file: item,
             });
         }
-    };
-
-
-    const handleFolderPress = (folder) => {
-        navigation.navigate('Folder', {
-            folderName: folder.name,
-            files: folder.files
-        });
     };
 
     if (isLoading) {
@@ -86,7 +78,10 @@ const HomeScreen = ({ navigation }) => {
                                 <FolderButton
                                     key={folder.id}
                                     folder={{ name, ...folder }}
-                                    onPress={() => handleFolderPress({ name, ...folder })}
+                                    onPress={() => {
+                                        const item = { name: name };
+                                        handleItemPress(item);
+                                    }}
                                 />
                             ))
                         )}
