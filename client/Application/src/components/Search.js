@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
-import { Text, View, TextInput, StyleSheet } from 'react-native';
-import theme from "../styles/theme";
+import { View, TextInput, StyleSheet } from 'react-native';
 import constats from "../styles/constats";
 import { Ionicons } from '@expo/vector-icons';
 
@@ -86,6 +85,7 @@ const styles = StyleSheet.create({
         backgroundColor: constats.colors.white,
         borderRadius: 12,
         paddingHorizontal: 15,
+        height: 55,
         width: '90%',
         borderWidth: 1,
         borderColor: '#E0E0E0',

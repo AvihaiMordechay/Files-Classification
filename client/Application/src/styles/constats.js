@@ -30,7 +30,8 @@ const constats = {
             fileButton: 50,
             star: 22,
             default: 24,
-            FileUploadModal: 42
+            FileUploadModal: 42,
+            profile: 47
         }
 
     }
