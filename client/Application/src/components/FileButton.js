@@ -5,13 +5,22 @@ import constats from '../styles/constats';
 import { useUser } from '../context/UserContext';
 
 const FileButton = ({ file, onPress, folderName, presentFolderName = false }) => {
-    const { markAsFavorite } = useUser();
-    const [isFavorite, setIsFavorite] = useState(file.isFavorite === 1);
+    const { markAsFavorite, user } = useUser();
 
-    // Sync state when props change
+    const checkIsFavorite = () => {
+        if (file.id) {
+            return user?.favorites?.some(
+                fav => fav.fileId === file.id && fav.folderName === folderName
+            ) || file.isFavorite === 1;
+        }
+        return file.isFavorite === 1;
+    };
+
+    const [isFavorite, setIsFavorite] = useState(checkIsFavorite());
+
     useEffect(() => {
-        setIsFavorite(file.isFavorite === 1);
-    }, [file.isFavorite]);
+        setIsFavorite(checkIsFavorite());
+    }, [user.favorites, file.isFavorite]);
 
     const handleFavorite = async (event) => {
         event.stopPropagation();
@@ -78,7 +87,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 2,
     },
-
 });
 
 export default FileButton;

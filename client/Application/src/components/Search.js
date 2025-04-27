@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "../context/UserContext";
 import { View, TextInput, StyleSheet } from 'react-native';
 import constats from "../styles/constats";
 import { Ionicons } from '@expo/vector-icons';
 
-
 const Search = ({ setResultSearch }) => {
     const { user } = useUser();
     const [searchValue, setSearchValue] = useState("");
 
-    const handleSearch = (text) => {
-        setSearchValue(text);
+    useEffect(() => {
+        if (searchValue.trim().length >= 2) {
+            performSearch(searchValue);
+        }
+    }, [user.favorites]);
 
+    const performSearch = (text) => {
         const searchLower = text.toLowerCase();
 
         if (searchLower.trim().length < 2) {
@@ -33,7 +36,7 @@ const Search = ({ setResultSearch }) => {
             .flatMap(([folderName, folder]) =>
                 Object.entries(folder.files || {}).map(([fileId, file]) => {
                     return {
-                        id: file.id,
+                        id: fileId,
                         name: file.name,
                         path: file.path,
                         fileType: file.type,
@@ -55,6 +58,11 @@ const Search = ({ setResultSearch }) => {
         }
     };
 
+    const handleSearch = (text) => {
+        setSearchValue(text);
+        performSearch(text);
+    };
+
     return (
         <View style={styles.searchContainer}>
             <View style={styles.searchBox}>
@@ -69,8 +77,7 @@ const Search = ({ setResultSearch }) => {
             </View>
         </View>
     );
-
-}
+};
 
 export default Search;
 
