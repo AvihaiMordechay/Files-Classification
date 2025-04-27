@@ -1,7 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Alert, AppState } from 'react-native';
-import { auth } from '../services/firebase';
-import { deleteFile, fileExistsInStorage, saveFileToAppStorage } from '../services/localFileSystem';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { Alert, AppState } from "react-native";
+import { auth } from "../services/firebase";
+import {
+    deleteFile,
+    fileExistsInStorage,
+    saveFileToAppStorage,
+} from "../services/localFileSystem";
 import {
     getUserDetails,
     changeUserName,
@@ -17,7 +21,9 @@ import {
     isFileExistInDB,
     markFileAsFavorite,
     updateLastViewed,
-} from '../services/database';
+    favorites,
+    setFavorites,
+} from "../services/database";
 
 const UserContext = createContext();
 
@@ -25,17 +31,25 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [userStatus, setUserStatus] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [favorites, setFavorites] = useState([]);
 
     useEffect(() => {
-        const appStateSubscription = AppState.addEventListener('change', nextAppState => {
-            if (nextAppState === 'background' || nextAppState === 'inactive') {
-                closeDB().catch(err => console.error("Error closing DB on app state change:", err));
+        const appStateSubscription = AppState.addEventListener(
+            "change",
+            (nextAppState) => {
+                if (nextAppState === "background" || nextAppState === "inactive") {
+                    closeDB().catch((err) =>
+                        console.error("Error closing DB on app state change:", err)
+                    );
+                }
             }
-        });
+        );
 
         return () => {
             appStateSubscription.remove();
-            closeDB().catch(err => console.error("Error closing DB on component unmount:", err));
+            closeDB().catch((err) =>
+                console.error("Error closing DB on component unmount:", err)
+            );
         };
     }, []);
 
@@ -43,17 +57,17 @@ export const UserProvider = ({ children }) => {
         const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
             if (await isFirstTime()) {
                 setUser(null);
-                setUserStatus('new');
-            } else if ((firebaseUser !== null) && await isUserLoggedIn()) {
+                setUserStatus("new");
+            } else if (firebaseUser !== null && (await isUserLoggedIn())) {
                 try {
                     await loadUser();
-                    setUserStatus('authenticated');
+                    setUserStatus("authenticated");
                 } catch (error) {
-                    setUserStatus('unauthenticated');
+                    setUserStatus("unauthenticated");
                 }
             } else {
                 setUser(null);
-                setUserStatus('unauthenticated');
+                setUserStatus("unauthenticated");
             }
             setLoading(false);
         });
@@ -81,25 +95,26 @@ export const UserProvider = ({ children }) => {
     const loadUser = async () => {
         try {
             const userDetails = await getUserDetails();
-            const folders = await loadFoldersFromDB();
+            const [folders, favorites] = await loadFoldersFromDB();
             setUser({
                 id: userDetails.id,
                 name: userDetails.name,
                 gender: userDetails.gender,
                 folders: folders,
+                favorites: favorites,
                 imgPath: null,
             });
         } catch (error) {
             console.error("Error loading user:", error);
             throw error;
         }
-    }
+    };
 
     const createUser = async (id, name, gender) => {
         try {
             await createDB(id, name, gender);
         } catch (error) {
-            Alert.alert('שגיאה', "לא ניתן להירשם כעת, אנא נסה שנית");
+            Alert.alert("שגיאה", "לא ניתן להירשם כעת, אנא נסה שנית");
             throw error;
         }
     };
@@ -110,9 +125,10 @@ export const UserProvider = ({ children }) => {
             foldersDetails = await getFoldersDetails();
         } catch (error) {
             Alert.alert("שגיאה", "לא ניתן לגשת לנתוני המשתמש");
-            return [];
+            return [[], []];
         }
 
+        const favoritesTmp = [];
         const folders = await Promise.all(
             foldersDetails.map(async (folder) => {
                 let filesList = [];
@@ -124,21 +140,28 @@ export const UserProvider = ({ children }) => {
                 }
 
                 const filesMap = {};
-                filesList.forEach(file => {
+                filesList.forEach((file) => {
                     filesMap[file.id] = file;
+
+                    if (file.isFavorite) {
+                        favoritesTmp.push({
+                            fileId: file.id,
+                            folderName: folder.name,
+                        });
+                    }
                 });
 
                 return {
                     [folder.name]: {
                         id: folder.id,
                         filesCount: folder.filesCount,
-                        files: filesMap
-                    }
+                        files: filesMap,
+                    },
                 };
             })
         );
 
-        return Object.assign({}, ...folders);
+        return [Object.assign({}, ...folders), favoritesTmp];
     };
 
     const updateUserName = async (newName) => {
@@ -154,7 +177,7 @@ export const UserProvider = ({ children }) => {
     const createNewFolder = async (newName, withAlert = true) => {
         if (!user) return;
         if (user.folders[newName]) {
-            throw new Error('already exist')
+            throw new Error("already exist");
         }
         try {
             const folderId = await createFolder(newName);
@@ -177,7 +200,7 @@ export const UserProvider = ({ children }) => {
             Alert.alert("שגיאה", "לא ניתן לפתוח תיקייה חדשה");
             return false;
         }
-    }
+    };
 
     const addNewFile = async (name, folderId, type, tempPath) => {
         if (!user) return;
@@ -195,7 +218,9 @@ export const UserProvider = ({ children }) => {
             }
             setUser((prevUser) => {
                 const updatedFolders = { ...prevUser.folders };
-                const folderEntry = Object.entries(updatedFolders).find(([key, value]) => value.id === folderId);
+                const folderEntry = Object.entries(updatedFolders).find(
+                    ([key, value]) => value.id === folderId
+                );
 
                 if (folderEntry) {
                     const [folderName, folderData] = folderEntry;
@@ -204,7 +229,13 @@ export const UserProvider = ({ children }) => {
                         filesCount: folderData.filesCount + 1,
                         files: {
                             ...folderData.files,
-                            [fileId]: { name: name, type: type, path: newPath, isFavorite: 0, lastViewed: null }
+                            [fileId]: {
+                                name: name,
+                                type: type,
+                                path: newPath,
+                                isFavorite: 0,
+                                lastViewed: null,
+                            },
                         },
                     };
                 }
@@ -215,20 +246,23 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             Alert.alert("שגיאה", "לא ניתן להוסיף את הקובץ כעת");
         }
-    }
+    };
 
     const isFileExist = async (folderId, fileName) => {
         try {
-            return await fileExistsInStorage(folderId, fileName) && await isFileExistInDB(folderId, fileName);
+            return (
+                (await fileExistsInStorage(folderId, fileName)) &&
+                (await isFileExistInDB(folderId, fileName))
+            );
         } catch (error) {
             Alert.alert("שגיאה", "לא ניתן להוסיף את הקובץ כעת");
             throw error;
         }
-    }
+    };
 
     const deleteAccount = async () => {
         try {
-            Object.values(user.folders).forEach(folder => {
+            Object.values(user.folders).forEach((folder) => {
                 folder.files.forEach(async (file) => {
                     await deleteFile(file.path);
                 });
@@ -237,7 +271,7 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             Alert.alert("שגיאה", "לא ניתן למחוק את המשתמש כעת");
         }
-    }
+    };
 
     const markAsFavorite = async (value, fileId, folderName) => {
         try {
@@ -245,26 +279,45 @@ export const UserProvider = ({ children }) => {
 
             setUser((prevUser) => {
                 const updatedFolders = { ...prevUser.folders };
+                const updatedFavorites = [...(prevUser.favorites || [])];
 
-                if (folderName && updatedFolders[folderName] && updatedFolders[folderName].files[fileId]) {
+                if (
+                    folderName &&
+                    updatedFolders[folderName] &&
+                    updatedFolders[folderName].files[fileId]
+                ) {
                     updatedFolders[folderName].files[fileId] = {
                         ...updatedFolders[folderName].files[fileId],
-                        isFavorite: value ? 1 : 0
+                        isFavorite: value ? 1 : 0,
                     };
                 }
 
-                return { ...prevUser, folders: updatedFolders };
+                if (value) {
+                    const alreadyExists = updatedFavorites.some(
+                        (fav) => fav.fileId === fileId && fav.folderName === folderName
+                    );
+                    if (!alreadyExists) {
+                        updatedFavorites.push({ fileId, folderName });
+                    }
+                } else {
+                    const newFavorites = updatedFavorites.filter(
+                        (fav) => !(fav.fileId === fileId && fav.folderName === folderName)
+                    );
+                    return {
+                        ...prevUser,
+                        folders: updatedFolders,
+                        favorites: newFavorites,
+                    };
+                }
+
+                return {
+                    ...prevUser,
+                    folders: updatedFolders,
+                    favorites: updatedFavorites,
+                };
             });
         } catch (error) {
             Alert.alert("שגיאה", "לא ניתן לסמן את הקובץ כמועדף");
-        }
-    }
-
-    const updateLastViewedToFile = async (id) => {
-        try {
-            await updateLastViewed(id);
-        } catch (error) {
-            console.log("falid to update last viewed to file id: ", id);
         }
     }
 
@@ -281,8 +334,7 @@ export const UserProvider = ({ children }) => {
             addNewFile,
             isFileExist,
             markAsFavorite,
-            deleteAccount,
-            updateLastViewedToFile
+            deleteAccount
         }}>
             {!loading && children}
         </UserContext.Provider>

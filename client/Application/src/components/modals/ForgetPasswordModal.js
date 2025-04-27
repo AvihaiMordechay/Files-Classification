@@ -15,7 +15,7 @@ import {
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../../services/firebase'; // ודא שהנתיב נכון
+import { auth } from '../../services/firebase';
 import theme from "../../styles/theme";
 
 const ForgetPasswordModal = ({ visible, onClose }) => {

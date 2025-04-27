@@ -7,7 +7,7 @@ const theme = {
         borderRadius: 8,
         marginBottom: 15,
         paddingHorizontal: 10,
-        paddingVertical: Platform.select({ ios: 15, android: 8 }), // שינוי דינמי
+        paddingVertical: Platform.select({ ios: 15, android: 8 }),
         borderBottomWidth: 1,
         borderColor: '#E0E0E0',
     },
