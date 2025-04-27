@@ -321,6 +321,16 @@ export const UserProvider = ({ children }) => {
         }
     }
 
+    const updateLastViewedToFile = async (id) => {
+        try {
+            await updateLastViewed(id);
+        } catch (error) {
+            console.log("falid to update last viewed to file id: ", id);
+        }
+    }
+
+
+
     return (
         <UserContext.Provider value={{
             user,
@@ -334,7 +344,8 @@ export const UserProvider = ({ children }) => {
             addNewFile,
             isFileExist,
             markAsFavorite,
-            deleteAccount
+            deleteAccount,
+            updateLastViewedToFile
         }}>
             {!loading && children}
         </UserContext.Provider>

@@ -15,7 +15,6 @@ const FileScreen = ({ route }) => {
         );
     } else {
         updateLastViewedToFile(file.id);
-        console.log("file id: ", file.id);
     }
 
     return (

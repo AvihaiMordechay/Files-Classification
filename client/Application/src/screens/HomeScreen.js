@@ -79,7 +79,7 @@ const HomeScreen = ({ navigation }) => {
                                     key={folder.id}
                                     folder={{ name, ...folder }}
                                     onPress={() => {
-                                        const item = { name: name };
+                                        const item = { name: name, type: "folder" };
                                         handleItemPress(item);
                                     }}
                                 />
