@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 8,
         right: 8,
-        padding: 5, // מקל על הלחיצה על הכוכב
+        padding: 5,
     },
     iconContainer: {
         marginBottom: 10,

@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import constats from '../styles/constats';
+import { useUser } from '../context/UserContext';
 
 const FileScreen = ({ route }) => {
     const { file } = route.params || {};
+    const { updateLastViewedToFile } = useUser();
 
     if (!file) {
         return (
@@ -11,6 +13,9 @@ const FileScreen = ({ route }) => {
                 <Text style={styles.errorText}>No file provided</Text>
             </View>
         );
+    } else {
+        updateLastViewedToFile(file.id);
+        console.log("file id: ", file.id);
     }
 
     return (
