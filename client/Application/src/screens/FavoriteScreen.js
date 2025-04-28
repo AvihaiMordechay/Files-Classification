@@ -4,7 +4,6 @@ import FileButton from '../components/FileButton';
 import Header from '../components/Header';
 import { useUser } from '../context/UserContext';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
-import constats from '../styles/constats';
 
 const FavoriteScreen = ({ navigation }) => {
     const { user } = useUser();
@@ -26,32 +25,36 @@ const FavoriteScreen = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaProvider>
-            <SafeAreaView style={styles.container}>
+        <>
+            <View>
                 <Header />
-                <Text style={styles.title}>מועדפים</Text>
-                <ScrollView contentContainerStyle={styles.categoriesContainer}>
-                    {validFavorites.length > 0 ? (
-                        validFavorites.map((fav, index) => {
-                            const file = getFileData(fav.fileId, fav.folderName);
-                            if (!file) return null;
-                            return (
-                                <FileButton
-                                    key={`${fav.folderName}-${fav.fileId}-${index}`}
-                                    file={file}
-                                    onPress={() => handleFilePress(file)}
-                                    folderName={fav.folderName}
-                                />
-                            );
-                        })
-                    ) : (
-                        <View style={styles.noFavoritesContainer}>
-                            <Text style={styles.noFavoritesText}>אין מועדפים להציג</Text>
-                        </View>
-                    )}
-                </ScrollView>
-            </SafeAreaView>
-        </SafeAreaProvider>
+            </View>
+            <SafeAreaProvider>
+                <SafeAreaView style={styles.container}>
+                    <Text style={styles.baseText}>המועדפים שלי:</Text>
+                    <ScrollView contentContainerStyle={styles.categoriesContainer}>
+                        {validFavorites.length > 0 ? (
+                            validFavorites.map((fav, index) => {
+                                const file = getFileData(fav.fileId, fav.folderName);
+                                if (!file) return null;
+                                return (
+                                    <FileButton
+                                        key={`${fav.folderName}-${fav.fileId}-${index}`}
+                                        file={file}
+                                        onPress={() => handleFilePress(file)}
+                                        folderName={fav.folderName}
+                                    />
+                                );
+                            })
+                        ) : (
+                            <View style={styles.noFavoritesContainer}>
+                                <Text style={styles.noFavoritesText}>אין מועדפים להציג</Text>
+                            </View>
+                        )}
+                    </ScrollView>
+                </SafeAreaView>
+            </SafeAreaProvider>
+        </>
     );
 };
 
@@ -60,15 +63,16 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 15,
     },
-    title: {
-        fontSize: constats.sizes.font.large,
+    baseText: {
         fontWeight: 'bold',
+        fontSize: 20,
+        marginRight: 20,
+        marginTop: 30,
+        writingDirection: 'rtl',
         textAlign: 'right',
-        marginVertical: 20,
-        color: '#333',
-        paddingHorizontal: 25,
     },
     categoriesContainer: {
+        marginTop: 20,
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
@@ -84,4 +88,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default FavoriteScreen;
+export default FavoriteScreen;
