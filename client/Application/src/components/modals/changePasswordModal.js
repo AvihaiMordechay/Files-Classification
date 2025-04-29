@@ -21,8 +21,10 @@ import * as Yup from "yup";
 
 const ForgotPasswordModal = ({ visible, onClose }) => {
   const [generalError, setGeneralError] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
   const closeModal = () => {
     setModalVisible(false);
+    onClose();
   };
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -47,8 +49,7 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
         currentPassword
       );
       await updatePassword(userCredential.user, newPassword);
-      setModalVisible(true);//setting the alertModel
-      onClose();
+      setModalVisible(true); //setting the alertModel
     } catch (error) {
       if (
         error.code === "auth/user-not-found" ||
@@ -205,7 +206,6 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
                             {
                               text: "אישור",
                               onPress: closeModal,
-                              style: { backgroundColor: "#2196F3" }, // לדוגמה, רקע כחול
                             },
                           ]}
                         />
