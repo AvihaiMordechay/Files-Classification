@@ -124,6 +124,7 @@ const UploadFile = ({ file }) => {
         }
         catch (error) {
             console.error('Upload error:', error);
+            setLoading(false);
         }
     };
 

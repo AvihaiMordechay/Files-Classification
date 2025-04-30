@@ -5,7 +5,7 @@ import constats from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
 import { Ionicons } from '@expo/vector-icons';
 
-const ChangeFileNameModel = ({ visible, onClose, name, folderId, type, path }) => {
+const ChangeFileNameModel = ({ visible, onClose, name, folderId, type, path, isNewFile = true }) => {
     const { addNewFile, isFileExist } = useUser();
     const [newFileName, setNewFileName] = useState("");
     const [error, setError] = useState("");
@@ -25,8 +25,9 @@ const ChangeFileNameModel = ({ visible, onClose, name, folderId, type, path }) =
             if (await isFileExist(folderId, newFileName)) {
                 setError("שם קובץ קיים בתיקייה, אנא בחר שם אחר");
                 return;
-            } else {
+            } else if (isNewFile) {
                 await addNewFile(newFileName, folderId, type, path);
+            } else {
             }
         } catch (error) {
             console.log(error)

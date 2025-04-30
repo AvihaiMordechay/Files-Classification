@@ -3,9 +3,11 @@ import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import constats from '../styles/constats';
 import { useUser } from '../context/UserContext';
+import { useActionSheet } from '@expo/react-native-action-sheet'; // חדש
 
 const FileButton = ({ file, onPress, folderName, presentFolderName = false }) => {
     const { markAsFavorite, user } = useUser();
+    const { showActionSheetWithOptions } = useActionSheet(); // חדש
 
     const checkIsFavorite = () => {
         if (file.id) {
@@ -29,8 +31,43 @@ const FileButton = ({ file, onPress, folderName, presentFolderName = false }) =>
         await markAsFavorite(newFavoriteState, file.id, folderName);
     };
 
+    const handleLongPress = () => {
+        const options = ['שנה שם', 'מחק', 'ביטול'];
+        const destructiveButtonIndex = 1;
+        const cancelButtonIndex = 2;
+
+        showActionSheetWithOptions(
+            {
+                options,
+                cancelButtonIndex,
+                destructiveButtonIndex,
+                title: `בחר פעולה עבור "${file.name}"`,
+                message: 'בחר אחת מהאפשרויות הבאות',
+            },
+            (selectedIndex) => {
+                switch (selectedIndex) {
+                    case 0:
+                        console.log('שנה שם');
+                        break;
+                    case 1:
+                        console.log('מחק קובץ');
+                        break;
+                    case 2:
+                        // ביטול
+                        break;
+                    default:
+                        break;
+                }
+            }
+        );
+    };
+
     return (
-        <TouchableOpacity style={styles.button} onPress={onPress}>
+        <TouchableOpacity
+            style={styles.button}
+            onPress={onPress}
+            onLongPress={handleLongPress}
+        >
             <TouchableOpacity onPress={handleFavorite} style={styles.starIcon}>
                 <Ionicons
                     name={isFavorite ? 'star' : 'star-outline'}

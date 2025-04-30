@@ -433,7 +433,7 @@ export const changeFileName = async (newName, id) => {
     } catch (error) {
         if (error.message && error.message.includes('UNIQUE constraint failed')) {
             console.error(`File name '${newName}' already exists in this folder`);
-            throw new Error(`File name '${newName}' already exists in this folder`);
+            throw new Error('alreadyExists');
         }
         throw error;
     }

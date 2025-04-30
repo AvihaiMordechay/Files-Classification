@@ -23,6 +23,7 @@ import {
     updateLastViewed,
     favorites,
     setFavorites,
+    changeFileName,
 } from "../services/database";
 
 const UserContext = createContext();
@@ -230,6 +231,7 @@ export const UserProvider = ({ children }) => {
                         files: {
                             ...folderData.files,
                             [fileId]: {
+                                id: fileId,
                                 name: name,
                                 type: type,
                                 path: newPath,
@@ -259,6 +261,18 @@ export const UserProvider = ({ children }) => {
             throw error;
         }
     };
+
+    const changeFileNameInDB = async (newName, id) => {
+        try {
+            await changeFileName(newName, id);
+        } catch (error) {
+            if (error.message === 'alreadyExists'){
+                Alert.alert("שגיאה", "השם שבחרת קיים במערכת");
+            } else {
+                Alert.alert("שגיאה", "לא ניתן לשנות את שם הקובץ");
+            }
+        }
+    }
 
     const deleteAccount = async () => {
         try {
@@ -345,7 +359,8 @@ export const UserProvider = ({ children }) => {
             isFileExist,
             markAsFavorite,
             deleteAccount,
-            updateLastViewedToFile
+            updateLastViewedToFile,
+            changeFileNameInDB
         }}>
             {!loading && children}
         </UserContext.Provider>

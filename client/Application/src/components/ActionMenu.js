@@ -233,7 +233,6 @@ const styles = StyleSheet.create({
     button: {
         width: 50,
         height: 50,
-        backgroundColor: '#FDFEFFFF',
         borderRadius: 100,
         justifyContent: 'center',
         alignItems: 'center',
@@ -241,9 +240,13 @@ const styles = StyleSheet.create({
         zIndex: -2,
     },
     buttonView: {
+        backgroundColor: '#F5FDFEFF',
         marginLeft: -70,
         flexDirection: 'row',
         alignItems: 'center',
+        paddingStart: 8,
+        borderRadius: 100,
+        overflow: 'hidden',
     },
     label: {
         writingDirection: 'rtl',

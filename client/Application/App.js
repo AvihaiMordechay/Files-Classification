@@ -1,5 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { UserProvider, useUser } from './src/context/UserContext';
+import { ActionSheetProvider } from '@expo/react-native-action-sheet'; // ← חדש!
 import Spinner from './src/components/Spinner';
 import RegistrationNavigator from './src/navigation/RegistrationNav';
 import AuthenticatedNavigator from './src/navigation/AuthenticatedNav';
@@ -24,7 +25,9 @@ const MainNavigator = () => {
 export default function App() {
   return (
     <UserProvider>
-      <MainNavigator />
+      <ActionSheetProvider>
+        <MainNavigator />
+      </ActionSheetProvider>
     </UserProvider>
   );
 }
