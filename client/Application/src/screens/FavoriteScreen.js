@@ -43,6 +43,7 @@ const FavoriteScreen = ({ navigation }) => {
                                         file={file}
                                         onPress={() => handleFilePress(file)}
                                         folderName={fav.folderName}
+                                        presentFolderName={true}
                                     />
                                 );
                             })
@@ -88,4 +89,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default FavoriteScreen;
+export default FavoriteScreen;
