@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Alert, AppState } from "react-native";
 import { auth } from "../services/firebase";
+import AlertModal from "../components/modals/AlertModal"; 
 import {
     deleteFile,
     fileExistsInStorage,
@@ -32,6 +33,11 @@ export const UserProvider = ({ children }) => {
     const [userStatus, setUserStatus] = useState(null);
     const [loading, setLoading] = useState(true);
     const [favorites, setFavorites] = useState([]);
+    const [alertVisible, setAlertVisible] = useState(false); // for managing alert visibility
+    const [alertMessage, setAlertMessage] = useState(""); // for holding the alert message
+    const [alertTitle, setAlertTitle] = useState(""); // for holding the alert message
+
+
 
     useEffect(() => {
         const appStateSubscription = AppState.addEventListener(
@@ -114,7 +120,9 @@ export const UserProvider = ({ children }) => {
         try {
             await createDB(id, name, gender);
         } catch (error) {
-            Alert.alert("שגיאה", "לא ניתן להירשם כעת, אנא נסה שנית");
+            setAlertTitle("שגיאה");
+            setAlertMessage("לא ניתן להירשם כעת, אנא נסה שנית");
+            setAlertVisible(true); // Show the alert
             throw error;
         }
     };
@@ -124,7 +132,9 @@ export const UserProvider = ({ children }) => {
         try {
             foldersDetails = await getFoldersDetails();
         } catch (error) {
-            Alert.alert("שגיאה", "לא ניתן לגשת לנתוני המשתמש");
+            setAlertTitle("שגיאה");
+            setAlertMessage("לא ניתן לגשת לנתוני המשתמש");
+            setAlertVisible(true); // Show the alert      
             return [[], []];
         }
 
@@ -170,7 +180,9 @@ export const UserProvider = ({ children }) => {
             await changeUserName(newName, user.id);
             setUser((prevUser) => ({ ...prevUser, name: newName }));
         } catch (error) {
-            Alert.alert("שגיאה", "לא ניתן לעדכן את שם המשתמש");
+            setAlertTitle("שגיאה");
+            setAlertMessage("לא ניתן לעדכן את שם המשתמש");
+            setAlertVisible(true); // Show the alert    
         }
     };
 
@@ -193,11 +205,15 @@ export const UserProvider = ({ children }) => {
                 },
             }));
             if (withAlert) {
-                Alert.alert("הצלחה", "התיקייה נוצרה בהצלחה");
+                setAlertTitle("הצלחה");
+                setAlertMessage("התיקייה נוצרה בהצלחה");
+                setAlertVisible(true); // Show the alert    
             }
             return folderId;
         } catch (error) {
-            Alert.alert("שגיאה", "לא ניתן לפתוח תיקייה חדשה");
+            setAlertTitle("שגיאה");
+            setAlertMessage("לא ניתן לפתוח תיקייה חדשה");
+            setAlertVisible(true); // Show the alert    
             return false;
         }
     };
@@ -242,9 +258,13 @@ export const UserProvider = ({ children }) => {
 
                 return { ...prevUser, folders: updatedFolders };
             });
-            Alert.alert("הצלחה", "הקובץ צורף לתיקייה בהצלחה");
+            setAlertTitle("הצלחה");
+            setAlertMessage("הקובץ צורף לתיקייה בהצלחה");
+            setAlertVisible(true); // Show the alert    
         } catch (error) {
-            Alert.alert("שגיאה", "לא ניתן להוסיף את הקובץ כעת");
+            setAlertTitle("שגיאה");
+            setAlertMessage("לא ניתן להוסיף את הקובץ כעת");
+            setAlertVisible(true); // Show the alert    
         }
     };
 
@@ -255,7 +275,9 @@ export const UserProvider = ({ children }) => {
                 (await isFileExistInDB(folderId, fileName))
             );
         } catch (error) {
-            Alert.alert("שגיאה", "לא ניתן להוסיף את הקובץ כעת");
+            setAlertTitle("שגיאה");
+            setAlertMessage("לא ניתן להוסיף את הקובץ כעת");
+            setAlertVisible(true); // Show the alert    
             throw error;
         }
     };
@@ -269,7 +291,9 @@ export const UserProvider = ({ children }) => {
             });
             await deleteDB();
         } catch (error) {
-            Alert.alert("שגיאה", "לא ניתן למחוק את המשתמש כעת");
+            setAlertTitle("שגיאה");
+            setAlertMessage("לא ניתן למחוק את המשתמש כעת");
+            setAlertVisible(true); // Show the alert    
         }
     };
 
@@ -317,7 +341,9 @@ export const UserProvider = ({ children }) => {
                 };
             });
         } catch (error) {
-            Alert.alert("שגיאה", "לא ניתן לסמן את הקובץ כמועדף");
+            setAlertTitle("שגיאה");
+            setAlertMessage("לא ניתן לסמן את הקובץ כמועדף");
+            setAlertVisible(true); // Show the alert    
         }
     }
 
@@ -348,6 +374,13 @@ export const UserProvider = ({ children }) => {
             updateLastViewedToFile
         }}>
             {!loading && children}
+            <AlertModal
+                visible={alertVisible}
+                onClose={() => setAlertVisible(false)}
+                title={alertTitle || "שגיאה"}
+                message={alertMessage}
+                buttons={[{ text: "סגור", onPress: () => setAlertVisible(false) }]}
+            />
         </UserContext.Provider>
     );
 };
