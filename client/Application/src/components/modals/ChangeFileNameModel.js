@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Alert, View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import theme from "../../styles/theme";
 import constats from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
