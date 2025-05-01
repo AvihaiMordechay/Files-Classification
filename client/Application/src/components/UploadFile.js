@@ -28,8 +28,8 @@ const UploadFile = ({ file }) => {
     }, [file])
 
 
-    const handleFileRecognitionSuccess = () => {
-        if (user.folders[category]) {
+    const handleFileRecognitionSuccess = (dataCategory) => {
+        if (user.folders[dataCategory]) {
             setExistCategoryModalVisible(true);
         } else {
             setNewCategoryModalVisible(true);
@@ -111,11 +111,11 @@ const UploadFile = ({ file }) => {
 
             if (uploadResponse.ok) {
                 const data = JSON.parse(responseText);
-                setCategory(data.category);
-                if (category === "undefined") {
+                if (!data.category || data.category === "undefined") {
                     handleFileRecognitionFailed();
                 } else {
-                    handleFileRecognitionSuccess();
+                    setCategory(data.category);
+                    handleFileRecognitionSuccess(data.category);
                 }
             } else {
                 handleFileRecognitionFailed();
