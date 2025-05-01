@@ -12,6 +12,7 @@ import {
   Keyboard,
 } from "react-native";
 import theme from "../../styles/theme";
+import constats from "../../styles/constats";
 
 const AlertModal = ({ visible, onClose, title, message, buttons }) => {
   return (
@@ -59,34 +60,44 @@ const AlertModal = ({ visible, onClose, title, message, buttons }) => {
 export default AlertModal;
 
 const styles = StyleSheet.create({
-    modalOverlay: theme.modal.modalOverlay,
-    centeredView: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      paddingTop: "50%",
-    },
-    scrollViewContent: theme.modal.scrollViewContent,
-    modalView: {
-      ...theme.modal.modalView,
-      width: 350,
-      padding: 20,
-    },
-    modalTitle: theme.modal.modalTitle,
-    modalMessage: theme.modal.modalLabel,
-    modalButtonsContainer: {
-      flexDirection: "row",
-      justifyContent: "center",
-      alignItems: "center",
-      marginTop: 20,
-      gap: 10,
-    },
-    modalButton: {
-      ...theme.modal.modalSaveButton,
-      height: 50,
-      flex: 1,
-      maxWidth: 200,
-    },
-    modalButtonText: theme.modal.modalSaveButtonText,
-  });
-  
+  modalOverlay: theme.modal.modalOverlay,
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: "50%",
+  },
+  scrollViewContent: theme.modal.scrollViewContent,
+  modalView: {
+    ...theme.modal.modalView,
+    width: 350,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: constats.sizes.font.mediumPlus,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#333',
+  },
+  modalMessage: {
+    fontSize: constats.sizes.font.medium,
+    marginBottom: 8,
+    textAlign: 'right',
+    color: '#333',
+  },
+  modalButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+    gap: 10,
+  },
+  modalButton: {
+    ...theme.modal.modalSaveButton,
+    height: 50,
+    flex: 1,
+    maxWidth: 200,
+  },
+  modalButtonText: theme.modal.modalSaveButtonText,
+});

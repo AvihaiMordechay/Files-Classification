@@ -33,7 +33,6 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [userStatus, setUserStatus] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [favorites, setFavorites] = useState([]);
     const [alertVisible, setAlertVisible] = useState(false); // for managing alert visibility
     const [alertMessage, setAlertMessage] = useState(""); // for holding the alert message
     const [alertTitle, setAlertTitle] = useState(""); // for holding the alert title

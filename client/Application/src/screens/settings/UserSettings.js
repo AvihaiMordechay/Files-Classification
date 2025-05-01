@@ -97,7 +97,6 @@ const UserSettingsScreen = () => {
                         visible={deleteUserModalVisible}
                         onClose={() => setDeleteUserModalVisible(false)}
                     />
-                    {/* הוספתי את המודל לשינוי סיסמה */}
                     <ForgotPasswordModal
                         visible={forgotPasswordModalVisible}
                         onClose={() => setForgotPasswordModalVisible(false)}

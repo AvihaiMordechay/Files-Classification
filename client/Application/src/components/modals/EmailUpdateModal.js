@@ -21,19 +21,30 @@ import {
 } from "firebase/auth";
 import { auth } from "../../services/firebase";
 import AlertModal from "./AlertModal";
+import * as yup from 'yup';
+
+const emailSchema = yup.string().email("כתובת אימייל לא תקינה").required("יש להזין כתובת אימייל");
+const passwordSchema = yup.string()
+  .required('יש למלא סיסמה')
+  .min(8, 'הסיסמה חייבת להיות באורך של לפחות 8 תווים')
+  .matches(/^[A-Za-z0-9!@#$%^&*()_+=\-[\]{};':"\\|,.<>/?`~]*$/, 'הסיסמה חייבת להכיל אותיות באנגלית, מספרים או סימנים מיוחדים בלבד');
 
 const EmailUpdateModal = ({ visible, onClose }) => {
   const { user } = useUser();
   const [newEmail, setNewEmail] = useState("");
   const [password, setPassword] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [errorModalVisible, setErrorModalVisible] = useState(false);
+
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const existEmail = auth.currentUser?.email || "";
 
   const handleClose = () => {
     setNewEmail("");
     setPassword("");
+    setEmailError("");
+    setPasswordError("");
     onClose();
   };
 
@@ -43,18 +54,68 @@ const EmailUpdateModal = ({ visible, onClose }) => {
   };
 
   const handleUpdateEmail = async () => {
+    setEmailError("");
+    setPasswordError("");
+
+    const firebaseUser = auth.currentUser;
+
     try {
-      const firebaseUser = auth.currentUser;
-      const credential = EmailAuthProvider.credential(
-        firebaseUser.email,
-        password
-      );
+      if (!firebaseUser) {
+        setEmailError("אין משתמש מחובר כרגע");
+        return;
+      }
+
+      if (newEmail === firebaseUser.email) {
+        setEmailError("כתובת האימייל החדשה חייבת להיות שונה מהנוכחית");
+        return;
+      }
+
+      await emailSchema.validate(newEmail);
+      await passwordSchema.validate(password);
+
+      const credential = EmailAuthProvider.credential(firebaseUser.email, password);
       await reauthenticateWithCredential(firebaseUser, credential);
+
       await verifyBeforeUpdateEmail(firebaseUser, newEmail);
+
       setModalVisible(true);
     } catch (error) {
-      console.log(error);
-      setErrorModalVisible(true);
+      console.log("Email update error:", error);
+
+      if (error.name === "ValidationError") {
+        if (error.message.includes("סיסמה")) {
+          setPasswordError(error.message);
+        } else {
+          setEmailError(error.message);
+        }
+        return;
+      }
+
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          setEmailError("האימייל הזה כבר קיים במערכת");
+          break;
+        case "auth/invalid-email":
+          setEmailError("כתובת אימייל לא חוקית");
+          break;
+        case "auth/wrong-password":
+          setPasswordError("סיסמה שגויה");
+          break;
+        case "auth/missing-password":
+          setPasswordError("חסרה סיסמה");
+          break;
+        case "auth/user-not-found":
+          setEmailError("המשתמש לא נמצא או אינו תואם");
+          break;
+        case "auth/too-many-requests":
+          setPasswordError("יותר מדי ניסיונות כושלים. נסה שוב מאוחר יותר");
+          break;
+        case "auth/invalid-credential":
+          setEmailError("האימייל או הסיסמה אינם חוקיים");
+          break;
+        default:
+          setEmailError("אירעה שגיאה בעדכון האימייל");
+      }
     }
   };
 
@@ -98,6 +159,9 @@ const EmailUpdateModal = ({ visible, onClose }) => {
                     onChangeText={setNewEmail}
                     value={newEmail}
                   />
+                  {emailError ? (
+                    <Text style={styles.errorText}>{emailError}</Text>
+                  ) : null}
                 </View>
 
                 <Text style={styles.modalLabel}>הכנס סיסמה לאימות</Text>
@@ -110,6 +174,9 @@ const EmailUpdateModal = ({ visible, onClose }) => {
                     onChangeText={setPassword}
                     value={password}
                   />
+                  {passwordError ? (
+                    <Text style={styles.errorText}>{passwordError}</Text>
+                  ) : null}
                 </View>
 
                 <View style={styles.modalButtonsContainer}>
@@ -143,19 +210,6 @@ const EmailUpdateModal = ({ visible, onClose }) => {
                       },
                     ]}
                   />
-
-                  <AlertModal
-                    visible={errorModalVisible}
-                    onClose={() => setErrorModalVisible(false)}
-                    title="שגיאה"
-                    message="לא ניתן לעדכן את האימייל"
-                    buttons={[
-                      {
-                        text: "אישור",
-                        onPress: () => setErrorModalVisible(false),
-                      },
-                    ]}
-                  />
                 </View>
               </Pressable>
             </ScrollView>
@@ -181,6 +235,7 @@ const styles = StyleSheet.create({
   modalCancelButton: theme.modal.modalCancelButton,
   modalCancelButtonText: theme.modal.modalCancelButtonText,
   disabledButton: theme.modal.disabledButton,
+  errorText: theme.errorText,
 });
 
 export default EmailUpdateModal;
