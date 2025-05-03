@@ -123,7 +123,7 @@ const UploadFile = ({ file }) => {
             }
         }
         catch (error) {
-            console.error('Upload error:', error);
+            console.log('Upload error:', error);
             setLoading(false);
         }
     };

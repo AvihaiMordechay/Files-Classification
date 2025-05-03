@@ -32,7 +32,7 @@ const DeleteUserModal = ({ visible, onClose }) => {
 
             BackHandler.exitApp();
         } catch (error) {
-            console.error("Error deleting user:", error);
+            console.log("Error deleting user:", error);
             setError("אירעה שגיאה בהסרת המשתמש");
 
             if (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {

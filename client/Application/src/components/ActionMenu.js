@@ -86,7 +86,7 @@ const ActionMenu = () => {
                 console.log("the user cancel the action");
             }
         } catch (error) {
-            console.error("Problem opening the album ", error);
+            console.log("Problem opening the album ", error);
         }
     };
 
@@ -133,7 +133,7 @@ const ActionMenu = () => {
                 }
             }
         } catch (error) {
-            console.error("\nProblem opening the file system", error);//TODO: check why if i do cancle in the iphone i get an error Problem opening the file system [TypeError: Cannot convert null value to object]
+            console.log("\nProblem opening the file system", error);//TODO: check why if i do cancle in the iphone i get an error Problem opening the file system [TypeError: Cannot convert null value to object]
         }
     };
 

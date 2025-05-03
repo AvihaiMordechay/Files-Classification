@@ -17,7 +17,7 @@ import { useUser } from "../../context/UserContext";
 import AlertModal from "./AlertModal";
 
 const ChangeFileNameModal = ({ visible, onClose, fileId, folderName }) => {
-    const { user } = useUser();
+    const { user, changeFileName } = useUser();
     const [newName, setNewName] = useState("");
     const [alertModalVisible, setAlertModalVisible] = useState(false);
     const [error, setError] = useState("");
@@ -38,9 +38,15 @@ const ChangeFileNameModal = ({ visible, onClose, fileId, folderName }) => {
     const handleUpdateName = async () => {
         setError("");
         try {
-
+            await changeFileName(newName, fileId, folderName);
+            handleClose();
         } catch (error) {
-
+            if (error.message === 'alreadyExists') {
+                setError("השם שבחרת קיים בתיקייה");
+            } else {
+                setError("לא ניתן לשנות את שם הקובץ");
+                handleClose();
+            }
         }
     };
 

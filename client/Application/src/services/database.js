@@ -22,7 +22,7 @@ export const initDB = async () => {
         console.log("Database initialized successfully");
         return dbInstance;
     } catch (error) {
-        console.error("Database initialization error:", error);
+        console.log("Database initialization error:", error);
         throw error;
     }
 };
@@ -36,7 +36,7 @@ export const closeDB = async () => {
             console.log("Database connection closed");
         }
     } catch (error) {
-        console.error("Error closing database:", error);
+        console.log("Error closing database:", error);
         throw error;
     }
 };
@@ -119,7 +119,7 @@ export const createDB = async (id, name, gender) => {
         console.log("Application initialized successfully!");
         return true;
     } catch (error) {
-        console.error("Error setting up database:", error);
+        console.log("Error setting up database:", error);
         throw error;
     }
 };
@@ -131,7 +131,7 @@ const getTable = async (tableName) => {
         const result = await db.getAllAsync(`SELECT * FROM ${tableName}`);
         return result;
     } catch (error) {
-        console.error(`Error fetching data from table: ${tableName}`, error);
+        console.log(`Error fetching data from table: ${tableName}`, error);
         throw error;
     }
 };
@@ -151,7 +151,7 @@ const updateElement = async (tableName, column, columnValue, where, whereValue) 
 
         return result.rowsAffected;
     } catch (error) {
-        console.error(`Error updating data in table: ${tableName}`, error);
+        console.log(`Error updating data in table: ${tableName}`, error);
         throw error;
     }
 };
@@ -172,7 +172,7 @@ const deleteRow = async (tableName, elementId) => {
 
         return result.rowsAffected;
     } catch (error) {
-        console.error(`Error deleting from ${tableName}:`, error);
+        console.log(`Error deleting from ${tableName}:`, error);
         throw error;
     }
 };
@@ -184,7 +184,7 @@ export const deleteDB = async () => {
         await SQLite.deleteDatabaseAsync(DB_NAME);
         console.log("Database deleted successfully!");
     } catch (error) {
-        console.error("Error deleting database:", error);
+        console.log("Error deleting database:", error);
         throw error;
     }
 };
@@ -199,7 +199,7 @@ export const isFirstTime = async () => {
 
         return result.length === 0;
     } catch (error) {
-        console.error("Error checking first time:", error);
+        console.log("Error checking first time:", error);
         throw error;
     }
 };
@@ -212,7 +212,7 @@ export const getUserDetails = async () => {
         }
         return null;
     } catch (error) {
-        console.error("Error getting user details:", error);
+        console.log("Error getting user details:", error);
         throw error;
     }
 };
@@ -242,7 +242,7 @@ export const updateLastLogin = async () => {
         console.log("Login time successfully recorded.");
         return true;
     } catch (error) {
-        console.error("Error updating login time:", error);
+        console.log("Error updating login time:", error);
         throw error;
     }
 };
@@ -253,7 +253,7 @@ export const getLastLogin = async () => {
         const result = await db.getFirstAsync(`SELECT lastLogin FROM ${USER}`);
         return result ? result.lastLogin : null;
     } catch (error) {
-        console.error("Error getting last login:", error);
+        console.log("Error getting last login:", error);
         throw error;
     }
 };
@@ -264,7 +264,7 @@ export const getUserId = async () => {
         const result = await db.getFirstAsync(`SELECT id FROM ${USER}`);
         return result ? result.id : null;
     } catch (error) {
-        console.error("Error getting user ID:", error);
+        console.log("Error getting user ID:", error);
         throw error;
     }
 };
@@ -294,10 +294,10 @@ export const createFolder = async (folderName) => {
         }
     } catch (error) {
         if (error.message && error.message.includes('UNIQUE constraint failed')) {
-            console.error(`Folder '${folderName}' already exists`);
+            console.log(`Folder '${folderName}' already exists`);
             throw new Error(`Folder '${folderName}' already exists`);
         }
-        console.error("Error creating folder:", error);
+        console.log("Error creating folder:", error);
         throw error;
     }
 };
@@ -319,7 +319,7 @@ export const changeFolderName = async (newName, id) => {
         return rowsUpdated > 0;
     } catch (error) {
         if (error.message && error.message.includes('UNIQUE constraint failed')) {
-            console.error(`Folder name '${newName}' already exists`);
+            console.log(`Folder name '${newName}' already exists`);
             throw new Error(`Folder name '${newName}' already exists`);
         }
         throw error;
@@ -372,10 +372,10 @@ export const addFileToFolder = async (name, folderId, type, path) => {
         }
     } catch (error) {
         if (error.message && error.message.includes('UNIQUE constraint failed')) {
-            console.error(`File with name '${name}' already exists in folder ${folderId} or path '${path}' is already used`);
+            console.log(`File with name '${name}' already exists in folder ${folderId} or path '${path}' is already used`);
             throw new Error('File already exists');
         }
-        console.error("Error adding file:", error);
+        console.log("Error adding file:", error);
         throw error;
     }
 };
@@ -394,7 +394,7 @@ export const isFileExistInDB = async (folderId, fileName) => {
 
         return result && result.count > 0;
     } catch (error) {
-        console.error('Error checking if file exists by name and folder:', error);
+        console.log('Error checking if file exists by name and folder:', error);
         throw error;
     }
 };
@@ -414,7 +414,7 @@ export const getFilesByFolder = async (folderId) => {
 
         return result;
     } catch (error) {
-        console.error('Error fetching files by folder:', error);
+        console.log('Error fetching files by folder:', error);
         throw error;
     }
 };
@@ -432,7 +432,7 @@ export const updateFileName = async (newName, id) => {
         return rowsUpdated > 0;
     } catch (error) {
         if (error.message && error.message.includes('UNIQUE constraint failed')) {
-            console.error(`File name '${newName}' already exists in this folder`);
+            console.log(`File name '${newName}' already exists in this folder`);
             throw new Error('alreadyExists');
         }
         throw error;
@@ -489,6 +489,6 @@ export const printDB = async () => {
         console.log("Folders Table:", folders);
         console.log("Files Table:", files);
     } catch (error) {
-        console.error("Error printing database:", error);
+        console.log("Error printing database:", error);
     }
 };

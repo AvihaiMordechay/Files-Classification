@@ -64,7 +64,7 @@ const RegistrationScreen = ({ navigation }) => {
             } else {
                 Alert.alert('שגיאה', "לא ניתן להירשם כעת, אנא נסה שנית");
             }
-            console.error('Error creating user:', error.message);
+            console.log('Error creating user:', error.message);
         }
     };
 

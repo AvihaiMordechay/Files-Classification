@@ -43,7 +43,7 @@ export const UserProvider = ({ children }) => {
             (nextAppState) => {
                 if (nextAppState === "background" || nextAppState === "inactive") {
                     closeDB().catch((err) =>
-                        console.error("Error closing DB on app state change:", err)
+                        console.log("Error closing DB on app state change:", err)
                     );
                 }
             }
@@ -52,7 +52,7 @@ export const UserProvider = ({ children }) => {
         return () => {
             appStateSubscription.remove();
             closeDB().catch((err) =>
-                console.error("Error closing DB on component unmount:", err)
+                console.log("Error closing DB on component unmount:", err)
             );
         };
     }, []);
@@ -109,7 +109,7 @@ export const UserProvider = ({ children }) => {
                 imgPath: null,
             });
         } catch (error) {
-            console.error("Error loading user:", error);
+            console.log("Error loading user:", error);
             throw error;
         }
     };
@@ -143,7 +143,7 @@ export const UserProvider = ({ children }) => {
                 try {
                     filesList = await getFilesByFolder(folder.id);
                 } catch (error) {
-                    console.error("Error loading files for folder", folder.id, error);
+                    console.log("Error loading files for folder", folder.id, error);
                     filesList = [];
                 }
 
@@ -320,11 +320,8 @@ export const UserProvider = ({ children }) => {
             setAlertVisible(true);
 
         } catch (error) {
-            if (error.message === 'alreadyExists') {
-                Alert.alert("שגיאה", "השם שבחרת קיים במערכת");
-            } else {
-                Alert.alert("שגיאה", "לא ניתן לשנות את שם הקובץ");
-            }
+            console.log("error with changeFileName:", error);
+            throw error;
         }
     };
 

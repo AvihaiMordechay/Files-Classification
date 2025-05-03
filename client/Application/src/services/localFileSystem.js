@@ -10,14 +10,14 @@ async function ensureAppDirectoryExists() {
         }
         return true;
     } catch (error) {
-        console.error('Error creating directory:', error);
+        console.log('Error creating directory:', error);
         return false;
     }
 }
 
 export async function saveFileToAppStorage(fileUri, fileName, folderId) {
     if (!fileUri || !fileName) {
-        console.error('Invalid file URI or filename');
+        console.log('Invalid file URI or filename');
         return null;
     }
 
@@ -55,7 +55,7 @@ export async function saveFileToAppStorage(fileUri, fileName, folderId) {
 
         return newFilePath;
     } catch (error) {
-        console.error('Error saving file:', error);
+        console.log('Error saving file:', error);
         throw error;
     }
 }
@@ -73,7 +73,7 @@ export async function fileExistsInStorage(folderId, fileName) {
         const fileInfo = await FileSystem.getInfoAsync(filePath);
         return fileInfo.exists;
     } catch (error) {
-        console.error('Error checking if file exists in storage:', error);
+        console.log('Error checking if file exists in storage:', error);
         throw error;
     }
 }
@@ -97,7 +97,7 @@ export async function deleteFile(filePath) {
         console.log(`File deleted: ${filePath}`);
         return true;
     } catch (error) {
-        console.error('Error deleting file:', error);
+        console.log('Error deleting file:', error);
         return false;
     }
 }
