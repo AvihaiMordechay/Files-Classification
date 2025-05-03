@@ -39,14 +39,21 @@ const AlertModal = ({ visible, onClose, title, message, buttons }) => {
                   {buttons.map((button, index) => (
                     <TouchableOpacity
                       key={index}
-                      style={[styles.modalButton, button.style]}
+                      style={[
+                        styles.modalButton,
+                        buttons.length > 1 && index === 0 && styles.modalCancelButton
+                      ]}
                       onPress={button.onPress}
                     >
-                      <Text style={styles.modalButtonText}>
+                      <Text style={[
+                        styles.modalButtonText,
+                        buttons.length > 1 && index === 0 && styles.modalCancelButtonText
+                      ]}>
                         {button.text ? String(button.text) : "לחץ כאן"}
                       </Text>
                     </TouchableOpacity>
                   ))}
+
                 </View>
               </Pressable>
             </ScrollView>
@@ -94,10 +101,22 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   modalButton: {
-    ...theme.modal.modalSaveButton,
+    backgroundColor: constats.colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    flex: 1,
+    marginLeft: 8,
+    alignItems: 'center',
     height: 50,
     flex: 1,
     maxWidth: 200,
   },
   modalButtonText: theme.modal.modalSaveButtonText,
+  modalCancelButton: {
+    backgroundColor: constats.colors.backgroundButton
+  },
+  modalCancelButtonText: {
+    color: "#000"
+  }
 });

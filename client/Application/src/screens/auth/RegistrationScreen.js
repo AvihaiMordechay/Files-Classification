@@ -43,9 +43,10 @@ const validationSchema = Yup.object().shape({
 
 const RegistrationScreen = ({ navigation }) => {
   const { createUser, loadUser } = useUser();
-  const [alertVisible, setAlertVisible] = useState(false); // for managing alert visibility
-  const [alertMessage, setAlertMessage] = useState(''); // for holding the alert message
-  const [alertTitle, setAlertTitle] = useState(''); // for holding the alert title
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertTitle, setAlertTitle] = useState('');
+
   const handleRegister = async (values, { setFieldError }) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -55,33 +56,6 @@ const RegistrationScreen = ({ navigation }) => {
       );
       const firebaseUserAuth = userCredential.user;
 
-<<<<<<< HEAD
-    const handleRegister = async (values, { setFieldError }) => {
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-            const firebaseUserAuth = userCredential.user;
-
-            try {
-                await createUser(firebaseUserAuth.uid, values.name, values.gender, values.email);
-                await loadUser();
-                navigation.replace('Application');
-            } catch (dbError) {
-                if (dbError.code === 'ERR_UNEXPECTED') {
-                    Alert.alert('שגיאה', 'לא ניתן ליצור את המשתמש כעת, אנא נסה שנית')
-                }
-                await deleteUser(firebaseUserAuth);
-                console.log("Delete user from firebase");
-            }
-        } catch (error) {
-            if (error.code === 'auth/network-request-failed') {
-                Alert.alert("שגיאה", "אין חיבור לאינטרנט");
-            } else if (error.code === 'auth/email-already-in-use') {
-                setFieldError('email', 'האימייל כבר קיים במערכת');
-            } else {
-                Alert.alert('שגיאה', "לא ניתן להירשם כעת, אנא נסה שנית");
-            }
-            console.log('Error creating user:', error.message);
-=======
       try {
         await createUser(
           firebaseUserAuth.uid,
@@ -96,7 +70,6 @@ const RegistrationScreen = ({ navigation }) => {
           setAlertTitle('שגיאה');
           setAlertMessage('לא ניתן ליצור את המשתמש כעת, אנא נסה שנית');
           setAlertVisible(true);
->>>>>>> Omer_New
         }
         await deleteUser(firebaseUserAuth);
         console.log('Delete user from firebase');

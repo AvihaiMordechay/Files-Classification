@@ -3,7 +3,7 @@ import { Alert, AppState } from "react-native";
 import { auth } from "../services/firebase";
 import AlertModal from "../components/modals/AlertModal";
 import {
-    deleteFile,
+    deleteFileFromLocalStorage,
     fileExistsInStorage,
     saveFileToAppStorage,
 } from "../services/localFileSystem";
@@ -25,6 +25,7 @@ import {
     favorites,
     setFavorites,
     updateFileName,
+    deleteFileFromFolder,
 } from "../services/database";
 
 const UserContext = createContext();
@@ -227,7 +228,7 @@ export const UserProvider = ({ children }) => {
             try {
                 fileId = await addFileToFolder(name, folderId, type, newPath);
             } catch (error) {
-                await deleteFile(newPath);
+                await deleteFileFromLocalStorage(newPath);
                 throw error;
             }
             setUser((prevUser) => {
@@ -330,7 +331,7 @@ export const UserProvider = ({ children }) => {
         try {
             Object.values(user.folders).forEach((folder) => {
                 folder.files.forEach(async (file) => {
-                    await deleteFile(file.path);
+                    await deleteFileFromLocalStorage(file.path);
                 });
             });
             await deleteDB();
@@ -400,6 +401,47 @@ export const UserProvider = ({ children }) => {
         }
     };
 
+    const deleteFile = async (folderName, fileId) => {
+        try {
+            await deleteFileFromFolder(fileId);
+
+            setUser((prevUser) => {
+                const updatedFolders = { ...prevUser.folders };
+                const updatedFavorites = (prevUser.favorites || []).filter(
+                    (fav) => !(fav.fileId === fileId && fav.folderName === folderName)
+                );
+
+                if (
+                    updatedFolders[folderName] &&
+                    updatedFolders[folderName].files[fileId]
+                ) {
+                    const { [fileId]: _, ...remainingFiles } = updatedFolders[folderName].files;
+                    updatedFolders[folderName] = {
+                        ...updatedFolders[folderName],
+                        filesCount: Math.max(updatedFolders[folderName].filesCount - 1, 0),
+                        files: remainingFiles,
+                    };
+                }
+
+                return {
+                    ...prevUser,
+                    folders: updatedFolders,
+                    favorites: updatedFavorites,
+                };
+            });
+
+            setAlertTitle("הצלחה");
+            setAlertMessage("הקובץ נמחק בהצלחה");
+            setAlertVisible(true);
+        } catch (error) {
+            console.log("Failed to deleteFile:", error);
+            setAlertTitle("שגיאה");
+            setAlertMessage("לא ניתן למחוק את הקובץ כעת");
+            setAlertVisible(true);
+        }
+    };
+
+
     return (
         <UserContext.Provider value={{
             user,
@@ -415,7 +457,8 @@ export const UserProvider = ({ children }) => {
             markAsFavorite,
             deleteAccount,
             updateLastViewedToFile,
-            changeFileName
+            changeFileName,
+            deleteFile
         }}>
             {!loading && children}
             <AlertModal

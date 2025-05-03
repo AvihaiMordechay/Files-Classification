@@ -91,7 +91,7 @@ export async function fileExistsInStorage(folderId, fileName) {
  * - Returns `true` if the file was successfully deleted.  
  * - Returns `false` in case of an error.
  */
-export async function deleteFile(filePath) {
+export async function deleteFileFromLocalStorage(filePath) {
     try {
         await FileSystem.deleteAsync(filePath);
         console.log(`File deleted: ${filePath}`);

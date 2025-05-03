@@ -5,9 +5,10 @@ import constats from '../styles/constats';
 import { useUser } from '../context/UserContext';
 import ActionSheet from 'react-native-actions-sheet';
 import ChangeFileNameModal from './modals/ChangeFileNameModal';
+import AlertModal from './modals/AlertModal';
 
 const FileButton = ({ file, onPress, folderName, presentFolderName = false }) => {
-    const { markAsFavorite, user } = useUser();
+    const { markAsFavorite, user, deleteFile } = useUser();
     const [changeFileNameModalVisible, setChangeFileNameModalVisible] = useState(false);
     const [deleteFileModalVisible, setDeleteFileModalVisible] = useState(false);
     const actionSheetRef = useRef(null);
@@ -37,6 +38,11 @@ const FileButton = ({ file, onPress, folderName, presentFolderName = false }) =>
     const handleLongPress = () => {
         actionSheetRef.current?.show();
     };
+
+    const hangleDeleteFile = async () => {
+        await deleteFile(folderName, file.id);
+        setDeleteFileModalVisible(false);
+    }
 
     const handleActionSelect = (selectedIndex) => {
         switch (selectedIndex) {
@@ -118,6 +124,20 @@ const FileButton = ({ file, onPress, folderName, presentFolderName = false }) =>
                 onClose={() => setChangeFileNameModalVisible(false)}
                 fileId={file.id}
                 folderName={folderName}
+            />
+
+            <AlertModal
+                visible={deleteFileModalVisible}
+                onClose={() => setDeleteFileModalVisible(false)}
+                title={'אזהרה'}
+                message={`האם ברצונך למחוק את הקובץ: ${file.name}`}
+                buttons={
+                    [
+                        { text: 'בטל', onPress: () => setDeleteFileModalVisible(false) },
+                        { text: 'מחק', onPress: () => hangleDeleteFile() }
+
+                    ]
+                }
             />
         </>
     );
