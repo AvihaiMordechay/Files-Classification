@@ -120,7 +120,7 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן להירשם כעת, אנא נסה שנית");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true); 
             throw error;
         }
     };
@@ -132,7 +132,7 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן לגשת לנתוני המשתמש");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true); 
             return [[], []];
         }
 
@@ -180,7 +180,7 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן לעדכן את שם המשתמש");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true); 
         }
     };
 
@@ -205,13 +205,13 @@ export const UserProvider = ({ children }) => {
             if (withAlert) {
                 setAlertTitle("הצלחה");
                 setAlertMessage("התיקייה נוצרה בהצלחה");
-                setAlertVisible(true); // Show the alert
+                setAlertVisible(true); 
             }
             return folderId;
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן לפתוח תיקייה חדשה");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true); 
             return false;
         }
     };
@@ -259,11 +259,11 @@ export const UserProvider = ({ children }) => {
             });
             setAlertTitle("הצלחה");
             setAlertMessage("הקובץ צורף לתיקייה בהצלחה");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true); 
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן להוסיף את הקובץ כעת");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true); 
         }
     };
 
@@ -276,7 +276,7 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן להוסיף את הקובץ כעת");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true); 
             throw error;
         }
     };
@@ -292,7 +292,7 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן למחוק את המשתמש כעת");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true); 
         }
     };
 
@@ -342,7 +342,7 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן לסמן את הקובץ כמועדף");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true); 
             console.log(`error with set user as favorie ${error}`);
         }
     };
