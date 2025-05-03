@@ -24,7 +24,7 @@ import {
     updateLastViewed,
     favorites,
     setFavorites,
-    changeFileName,
+    updateFileName,
 } from "../services/database";
 
 const UserContext = createContext();
@@ -33,9 +33,9 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [userStatus, setUserStatus] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [alertVisible, setAlertVisible] = useState(false); // for managing alert visibility
-    const [alertMessage, setAlertMessage] = useState(""); // for holding the alert message
-    const [alertTitle, setAlertTitle] = useState(""); // for holding the alert title
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertTitle, setAlertTitle] = useState("");
 
     useEffect(() => {
         const appStateSubscription = AppState.addEventListener(
@@ -120,7 +120,7 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן להירשם כעת, אנא נסה שנית");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true);
             throw error;
         }
     };
@@ -132,7 +132,7 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן לגשת לנתוני המשתמש");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true);
             return [[], []];
         }
 
@@ -180,7 +180,7 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן לעדכן את שם המשתמש");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true);
         }
     };
 
@@ -205,13 +205,13 @@ export const UserProvider = ({ children }) => {
             if (withAlert) {
                 setAlertTitle("הצלחה");
                 setAlertMessage("התיקייה נוצרה בהצלחה");
-                setAlertVisible(true); // Show the alert
+                setAlertVisible(true);
             }
             return folderId;
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן לפתוח תיקייה חדשה");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true);
             return false;
         }
     };
@@ -260,11 +260,11 @@ export const UserProvider = ({ children }) => {
             });
             setAlertTitle("הצלחה");
             setAlertMessage("הקובץ צורף לתיקייה בהצלחה");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true);
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן להוסיף את הקובץ כעת");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true);
         }
     };
 
@@ -277,14 +277,48 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן להוסיף את הקובץ כעת");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true);
             throw error;
         }
     };
 
-    const changeFileNameInDB = async (newName, id) => {
+    const changeFileName = async (newName, fileId, folderName) => {
         try {
-            await changeFileName(newName, id);
+            await updateFileName(newName, fileId);
+
+            setUser((prevUser) => {
+                if (!prevUser) return prevUser;
+
+                const updatedFolders = { ...prevUser.folders };
+
+                if (
+                    updatedFolders[folderName] &&
+                    updatedFolders[folderName].files[fileId]
+                ) {
+                    updatedFolders[folderName].files[fileId] = {
+                        ...updatedFolders[folderName].files[fileId],
+                        name: newName,
+                    };
+                }
+
+                const updatedFavorites = prevUser.favorites.map((fav) => {
+                    if (fav.fileId === fileId && fav.folderName === folderName) {
+                        return { ...fav, name: newName };
+                    }
+                    return fav;
+                });
+
+                return {
+                    ...prevUser,
+                    folders: updatedFolders,
+                    favorites: updatedFavorites,
+                };
+            });
+
+            setAlertTitle("הצלחה");
+            setAlertMessage("שם הקובץ עודכן בהצלחה");
+            setAlertVisible(true);
+
         } catch (error) {
             if (error.message === 'alreadyExists') {
                 Alert.alert("שגיאה", "השם שבחרת קיים במערכת");
@@ -292,7 +326,8 @@ export const UserProvider = ({ children }) => {
                 Alert.alert("שגיאה", "לא ניתן לשנות את שם הקובץ");
             }
         }
-    }
+    };
+
 
     const deleteAccount = async () => {
         try {
@@ -305,7 +340,7 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן למחוק את המשתמש כעת");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true);
         }
     };
 
@@ -355,7 +390,7 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן לסמן את הקובץ כמועדף");
-            setAlertVisible(true); // Show the alert
+            setAlertVisible(true);
             console.log(`error with set user as favorie ${error}`);
         }
     };
@@ -383,7 +418,7 @@ export const UserProvider = ({ children }) => {
             markAsFavorite,
             deleteAccount,
             updateLastViewedToFile,
-            changeFileNameInDB
+            changeFileName
         }}>
             {!loading && children}
             <AlertModal

@@ -419,7 +419,7 @@ export const getFilesByFolder = async (folderId) => {
     }
 };
 
-export const changeFileName = async (newName, id) => {
+export const updateFileName = async (newName, id) => {
     if (!newName || !id) {
         throw new Error('New name and file ID are required');
     }

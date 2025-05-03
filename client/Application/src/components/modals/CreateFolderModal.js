@@ -3,7 +3,7 @@ import { Modal, Alert, View, Text, TextInput, TouchableOpacity, Pressable, Style
 import theme from "../../styles/theme";
 import { useUser } from '../../context/UserContext';
 import constats from '../../styles/constats';
-import ChangeFileNameModel from './ChangeFileNameModel';
+import VerifyFileNameModal from './VerifyFileNameModal';
 
 const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
     const { createNewFolder } = useUser();
@@ -109,7 +109,7 @@ const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
                 </TouchableWithoutFeedback>
             </Modal>
             {attachedFile && (
-                <ChangeFileNameModel
+                <VerifyFileNameModal
                     visible={changeFileNameModelVisible}
                     onClose={() => setChangeFileNameModelVisible(false)}
                     name={attachedFile.name}

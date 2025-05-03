@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useUser } from "../../context/UserContext";
 import theme from "../../styles/theme";
-import ChangeFileNameModel from "./ChangeFileNameModel";
+import VerifyFileNameModal from "./VerifyFileNameModal";
 import AlertModal from "./AlertModal";
 
 const CategoryListModel = ({ visible, onClose, attachedFile }) => {
@@ -70,7 +70,7 @@ const CategoryListModel = ({ visible, onClose, attachedFile }) => {
         </TouchableWithoutFeedback>
       </Modal>
 
-      <ChangeFileNameModel
+      <VerifyFileNameModal
         visible={changeFileNameModelVisible}
         onClose={() => setChangeFileNameModelVisible(false)}
         name={attachedFile.name}

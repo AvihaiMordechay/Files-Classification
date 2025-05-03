@@ -5,7 +5,7 @@ import constats from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
 import { Ionicons } from '@expo/vector-icons';
 
-const ChangeFileNameModel = ({ visible, onClose, name, folderId, type, path, isNewFile = true }) => {
+const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isNewFile = true }) => {
     const { addNewFile, isFileExist } = useUser();
     const [newFileName, setNewFileName] = useState("");
     const [error, setError] = useState("");
@@ -123,7 +123,7 @@ const ChangeFileNameModel = ({ visible, onClose, name, folderId, type, path, isN
     );
 };
 
-export default ChangeFileNameModel;
+export default VerifyFileNameModal;
 
 const styles = StyleSheet.create({
     modalOverlay: theme.modal.modalOverlay,

@@ -4,7 +4,7 @@ import { useUser } from '../context/UserContext';
 import FileUploadModal from './modals/FileUploadModal';
 import CreateFolderModal from './modals/CreateFolderModal';
 import CategoryListModel from './modals/CategoryListModel';
-import ChangeFileNameModel from './modals/ChangeFileNameModel';
+import VerifyFileNameModal from './modals/VerifyFileNameModal';
 import Spinner from './Spinner';
 
 const UploadFile = ({ file }) => {
@@ -214,7 +214,7 @@ const UploadFile = ({ file }) => {
                 />
             </View>
 
-            <ChangeFileNameModel
+            <VerifyFileNameModal
                 visible={changeFileNameModelVisible}
                 onClose={() => setChangeFileNameModelVisible(false)}
                 name={file.name}
