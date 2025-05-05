@@ -2,8 +2,13 @@ import React from 'react';
 import { View, Button, Alert } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import AlertModal from './modals/AlertModal';
 
 const PdfViewer = ({ base64 }) => {
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertTitle, setAlertTitle] = useState("");
+
     const saveAndOpenPDF = async () => {
         try {
             const fileUri = FileSystem.cacheDirectory + 'document.pdf';
@@ -19,18 +24,31 @@ const PdfViewer = ({ base64 }) => {
                     dialogTitle: 'צפייה במסמך PDF',
                 });
             } else {
-                Alert.alert('שיתוף לא זמין', 'לא ניתן לפתוח את הקובץ באפליקציה חיצונית במכשיר זה.');
+                setAlertTitle('שיתוף לא זמין');
+                setAlertMessage('לא ניתן לפתוח את הקובץ באפליקציה חיצונית במכשיר זה.');
+                setAlertVisible(true);
             }
         } catch (error) {
-            console.error('שגיאה בפתיחת ה-PDF:', error);
-            Alert.alert('שגיאה', 'אירעה שגיאה בעת פתיחת הקובץ.');
+            setAlertTitle('שיתוף לא זמין');
+            setAlertMessage('לא ניתן לפתוח את הקובץ באפליקציה חיצונית במכשיר זה.');
+            setAlertVisible(true);
         }
     };
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Button title="פתח PDF" onPress={saveAndOpenPDF} />
-        </View>
+        <>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Button title="פתח PDF" onPress={saveAndOpenPDF} />
+            </View>
+
+            <AlertModal
+                visible={alertVisible}
+                onClose={() => setAlertVisible(false)}
+                title={alertTitle}
+                message={alertMessage}
+                buttons={[{ text: 'סגור', onPress: () => setAlertVisible(false) }]}
+            />
+        </>
     );
 };
 
