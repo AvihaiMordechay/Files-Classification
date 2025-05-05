@@ -76,6 +76,12 @@ const FileScreen = ({ route }) => {
             <View style={styles.container}>
                 <PdfViewer base64={base64} />
 
+                <View style={styles.bottomBar}>
+                    <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
+                        <Ionicons name="share-social-outline" size={28} color="#333" />
+                        <Text style={styles.iconLabel}>שתף</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     }
@@ -133,7 +139,7 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: '100%',
+        flex: 1,
     },
 });
 
