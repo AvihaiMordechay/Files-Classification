@@ -1,14 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import constats from '../styles/constats';
 import { useUser } from '../context/UserContext';
+import PdfViewer from '../components/PdfViewer';
 
 const FileScreen = ({ route }) => {
     const { file } = route.params || {};
     const { updateLastViewedToFile } = useUser();
     const navigation = useNavigation();
+    const [base64, setBase64] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         navigation.getParent()?.setOptions({
@@ -25,8 +30,30 @@ const FileScreen = ({ route }) => {
     useEffect(() => {
         if (file) {
             updateLastViewedToFile(file.id);
+
+            if (file.type === 'application/pdf') {
+                FileSystem.readAsStringAsync(file.path, {
+                    encoding: FileSystem.EncodingType.Base64
+                }).then(data => {
+                    setBase64(data);
+                    setLoading(false);
+                }).catch(err => {
+                    console.error('error with open file', err);
+                    setLoading(false);
+                });
+            } else {
+                setLoading(false);
+            }
         }
     }, [file]);
+
+    const handleShare = () => {
+        console.log('שתף', file.path);
+    };
+
+    const handleCrop = () => {
+        console.log('חתוך', file.path);
+    };
 
     if (!file) {
         return (
@@ -36,13 +63,22 @@ const FileScreen = ({ route }) => {
         );
     }
 
-    const handleShare = () => {
-        console.log('שתף', file.path);
-    };
+    if (loading) {
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator size="large" color="#000" />
+            </View>
+        );
+    }
 
-    const handleCrop = () => {
-        console.log('חתוך', file.path);
-    };
+    if (file.type === 'application/pdf') {
+        return (
+            <View style={styles.container}>
+                <PdfViewer base64={base64} />
+
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -70,11 +106,7 @@ const FileScreen = ({ route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff'
-    },
-    image: {
-        flex: 1,
-        width: '100%',
+        backgroundColor: '#fff',
     },
     errorText: {
         fontSize: constats.sizes.font.medium,
@@ -98,6 +130,10 @@ const styles = StyleSheet.create({
         marginTop: 4,
         fontSize: 12,
         color: '#333',
+    },
+    image: {
+        width: '100%',
+        height: '100%',
     },
 });
 
