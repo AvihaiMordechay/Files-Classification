@@ -16,10 +16,12 @@ import constats from '../styles/constats';
 import { useUser } from '../context/UserContext';
 import PdfViewer from '../components/PdfViewer';
 import AlertModal from '../components/modals/AlertModal';
+import ChangeFileNameModal from '../components/modals/ChangeFileNameModal';
 
 const FileScreen = ({ route }) => {
-  const { file } = route.params || {};
+  const { file, folderName } = route.params || {};
   const { updateLastViewedToFile } = useUser();
+  const { markAsFavorite, user } = useUser();
   const navigation = useNavigation();
   const [base64, setBase64] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +29,40 @@ const FileScreen = ({ route }) => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertTitle, setAlertTitle] = useState('');
   const [isSharing, setIsSharing] = useState(false);
+  const [changeFileNameModalVisible, setChangeFileNameModalVisible] =
+    useState(false);
 
+  const [localFavorite, setLocalFavorite] = useState(null);
+
+  const checkIsFavorite = () => {
+    if (file.id) {
+      return (
+        user?.favorites?.some(
+          (fav) => fav.fileId === file.id && fav.folderName === file.folderName
+        ) || file.isFavorite === 1
+      );
+    }
+    return file.isFavorite === 1;
+  };
+
+  useEffect(() => {
+    if (localFavorite === null) {
+      setLocalFavorite(checkIsFavorite());
+    }
+  }, [file, user.favorites, localFavorite]);
+
+  const handleFavorite = async (event) => {
+    event.stopPropagation();
+    const newFavoriteState = !localFavorite;
+    setLocalFavorite(newFavoriteState); 
+
+    try {
+      await markAsFavorite(newFavoriteState, file.id, folderName); 
+    } catch (error) {
+      console.error('שגיאה בהוספת המועדף', error);
+      setLocalFavorite(localFavorite); 
+    }
+  };
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -62,12 +97,12 @@ const FileScreen = ({ route }) => {
       }
     }
   }, [file]);
-
+  const handleRename = () => {};
   const handleShare = async () => {
-    if (isSharing) return; //using locks for two time fast click
-  
-    setIsSharing(true);//only if isSharing is false then start share
-  
+    if (isSharing) return; // using locks for two time fast click
+
+    setIsSharing(true); // only if isSharing is false then start share
+
     try {
       const isAvailable = await Sharing.isAvailableAsync();
       if (!isAvailable) {
@@ -76,28 +111,32 @@ const FileScreen = ({ route }) => {
         setAlertVisible(true);
         return;
       }
-  
+
       if (
-        file.type === 'image/jpeg' || 
+        file.type === 'image/jpeg' ||
         file.type === 'image/jpg' ||
         file.type === 'image/png' ||
-        file.type === 'image/tiff' 
+        file.type === 'image/tiff'
       ) {
         const extension =
-          file.type === 'image/jpeg' || file.type === 'image/jpg' ? 'jpg' :
-          file.type === 'image/png' ? 'png' : 'tiff';
-  
-        const tempFileUri = FileSystem.documentDirectory + file.name + '.' + extension;
-  
+          file.type === 'image/jpeg' || file.type === 'image/jpg'
+            ? 'jpg'
+            : file.type === 'image/png'
+            ? 'png'
+            : 'tiff';
+
+        const tempFileUri =
+          FileSystem.documentDirectory + file.name + '.' + extension;
+
         await FileSystem.copyAsync({
           from: file.path,
           to: tempFileUri,
         });
-  
+
         const shareResult = await Sharing.shareAsync(tempFileUri, {
           mimeType: file.type,
         });
-  
+
         if (shareResult) {
           await FileSystem.deleteAsync(tempFileUri);
         }
@@ -110,12 +149,8 @@ const FileScreen = ({ route }) => {
       setAlertMessage('שגיאה בשיתוף הקובץ');
       setAlertVisible(true);
     } finally {
-      setIsSharing(false);//after finishing sharing set the lock to false 
+      setIsSharing(false); // after finishing sharing set the lock to false
     }
-  };
-  
-  const handleCrop = () => {
-    console.log('חתוך', file.path);
   };
 
   if (!file) {
@@ -156,11 +191,21 @@ const FileScreen = ({ route }) => {
         style={styles.image}
         resizeMode="contain"
       />
-
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.iconButton} onPress={handleCrop}>
-          <Ionicons name="crop" size={28} color="#333" />
-          <Text style={styles.iconLabel}>חתוך</Text>
+        <TouchableOpacity style={styles.iconButton} onPress={handleFavorite}>
+          <Ionicons
+            name={localFavorite ? 'star' : 'star-outline'}
+            size={28}
+            color="#333"
+          />
+          <Text style={styles.iconLabel}>מועדפים</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={() => setChangeFileNameModalVisible(true)}
+        >
+          <Ionicons name="pencil-outline" size={28} color="#333" />
+          <Text style={styles.iconLabel}>שנה שם</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
@@ -173,7 +218,13 @@ const FileScreen = ({ route }) => {
         onClose={() => setAlertVisible(false)}
         title={alertTitle || 'שגיאה'}
         message={alertMessage}
-        buttons={[{ text: 'סגור', onPress: () => setAlertVisible(false) }]}
+        buttons={[{ text: 'סגור', onPress: () => setAlertVisible(false) }]} 
+      />
+      <ChangeFileNameModal
+        visible={changeFileNameModalVisible}
+        onClose={() => setChangeFileNameModalVisible(false)}
+        fileId={file.id}
+        folderName={folderName}
       />
     </View>
   );

@@ -18,9 +18,10 @@ const FavoriteScreen = ({ navigation }) => {
         return file !== null;
     });
 
-    const handleFilePress = (file) => {
+    const handleFilePress = (file,folderName) => {
         navigation.navigate('File', {
-            file: file
+            file: file,
+            folderName:folderName,
         });
     };
 
@@ -41,7 +42,7 @@ const FavoriteScreen = ({ navigation }) => {
                                     <FileButton
                                         key={`${fav.folderName}-${fav.fileId}-${index}`}
                                         file={file}
-                                        onPress={() => handleFilePress(file)}
+                                        onPress={() => handleFilePress(file,fav.folderName)}
                                         folderName={fav.folderName}
                                         presentFolderName={true}
                                     />

@@ -29,6 +29,7 @@ const HomeScreen = ({ navigation }) => {
         } else if (item.type === 'file') {
             navigation.navigate('File', {
                 file: item,
+                folderName:item.folderName
             });
         }
     };

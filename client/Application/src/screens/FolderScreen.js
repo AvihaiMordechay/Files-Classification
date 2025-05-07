@@ -11,7 +11,8 @@ const FolderScreen = ({ route, navigation }) => {
 
     const handleFilePress = (file) => {
         navigation.navigate('File', {
-            file: file
+            file: file,
+            folderName:folderName
         });
     };
 
