@@ -26,6 +26,8 @@ const FileScreen = ({ route }) => {
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertTitle, setAlertTitle] = useState('');
+  const [isSharing, setIsSharing] = useState(false);
+
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -62,6 +64,10 @@ const FileScreen = ({ route }) => {
   }, [file]);
 
   const handleShare = async () => {
+    if (isSharing) return; //using locks for two time fast click
+  
+    setIsSharing(true);//only if isSharing is false then start share
+  
     try {
       const isAvailable = await Sharing.isAvailableAsync();
       if (!isAvailable) {
@@ -70,18 +76,18 @@ const FileScreen = ({ route }) => {
         setAlertVisible(true);
         return;
       }
+  
       if (
         file.type === 'image/jpeg' || 
         file.type === 'image/jpg' ||
         file.type === 'image/png' ||
         file.type === 'image/tiff' 
       ) {
-        const tempFileUri =
-          FileSystem.documentDirectory +
-          file.name +'.' +
-          (file.type === 'image/jpeg' || file.type === 'image/jpg' ? 'jpg' :
-          file.type === 'image/png' ? 'png' :
-          'tiff');  
+        const extension =
+          file.type === 'image/jpeg' || file.type === 'image/jpg' ? 'jpg' :
+          file.type === 'image/png' ? 'png' : 'tiff';
+  
+        const tempFileUri = FileSystem.documentDirectory + file.name + '.' + extension;
   
         await FileSystem.copyAsync({
           from: file.path,
@@ -103,6 +109,8 @@ const FileScreen = ({ route }) => {
       setAlertTitle('שגיאה');
       setAlertMessage('שגיאה בשיתוף הקובץ');
       setAlertVisible(true);
+    } finally {
+      setIsSharing(false);//after finishing sharing set the lock to false 
     }
   };
   
