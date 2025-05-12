@@ -6,6 +6,7 @@ import CreateFolderModal from './modals/CreateFolderModal';
 import CategoryListModel from './modals/CategoryListModel';
 import VerifyFileNameModal from './modals/VerifyFileNameModal';
 import Spinner from './Spinner';
+import AlertModal from './modals/AlertModal';
 
 const UploadFile = ({ file }) => {
   const { user, createNewFolder } = useUser();
@@ -23,6 +24,10 @@ const UploadFile = ({ file }) => {
     useState(false);
   const [folderId, setFolderId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertButtons, setAlertButtons] = useState([]);
 
   useEffect(() => {
     const handleUploadFileToServer = async () => {
@@ -55,18 +60,22 @@ const UploadFile = ({ file }) => {
         const id = await createNewFolder(category, false);
         setFolderId(id);
         if (id) {
-          Alert.alert('צרף קובץ', 'האם לצרף את הקובץ לתיקייה החדשה?', [
+          setAlertTitle('צרף קובץ');
+          setAlertMessage('האם לצרף את הקובץ לתיקייה החדשה?');
+          setAlertButtons([
             {
               text: 'לא',
-              style: 'cancel',
+              onPress: () => setAlertVisible(false),
             },
             {
               text: 'כן',
-              onPress: async () => {
+              onPress: () => {
+                setAlertVisible(false);
                 setChangeFileNameModelVisible(true);
               },
             },
           ]);
+          setAlertVisible(true);
         }
         break;
       case 'saveToExistingCategory':
@@ -113,7 +122,7 @@ const UploadFile = ({ file }) => {
 
       if (uploadResponse.ok) {
         const data = JSON.parse(responseText);
-        if (!data.category || data.category === "undefined") {
+        if (!data.category || data.category === 'undefined') {
           handleFileRecognitionFailed();
         } else {
           setCategory(data.category);
@@ -121,10 +130,8 @@ const UploadFile = ({ file }) => {
         }
       } else {
         handleFileRecognitionFailed();
-
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.log('Upload error:', error);
       setLoading(false);
     }
@@ -160,7 +167,6 @@ const UploadFile = ({ file }) => {
           ]}
           onClose={() => setNewCategoryModalVisible(false)}
         />
-
         <FileUploadModal
           visible={existCategoryModalVisible}
           content={`המערכת זיהתה מסמך מקטגורית: ${category}, מה ברצונך לעשות?`}
@@ -190,7 +196,6 @@ const UploadFile = ({ file }) => {
           ]}
           onClose={() => setExistCategoryModalVisible(false)}
         />
-
         <FileUploadModal
           visible={failedRecognitionModelVisible}
           content={'לא הצלחנו לזהות את סוג המסמך. מה ברצונך לעשות?'}
@@ -210,17 +215,21 @@ const UploadFile = ({ file }) => {
           ]}
           onClose={() => setFailedRecognitionModelVisible(false)}
         />
-
         <CreateFolderModal
           visible={createFolderModalVisible}
           onClose={() => setCreateFolderModalVisible(false)}
           attachedFile={file}
         />
-
         <CategoryListModel
           visible={categoryListModelVisible}
           onClose={() => setCategoryListModelVisible(false)}
           attachedFile={file}
+        />
+        <AlertModal
+          visible={alertVisible}
+          title={alertTitle}
+          message={alertMessage}
+          buttons={alertButtons}
         />
       </View>
 

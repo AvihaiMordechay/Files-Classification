@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import constats from '../../styles/constats';
 import {
   View,
