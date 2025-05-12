@@ -25,9 +25,9 @@ const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
         }
 
         try {
-            const id = await createNewFolder(newFolderName);
-            setFolderId(id);
             if (attachedFile) {
+                const id = await createNewFolder(newFolderName, false);
+                setFolderId(id);
                 Alert.alert(
                     "צרף קובץ",
                     "האם לצרף את הקובץ לתיקייה החדשה?",
@@ -41,6 +41,9 @@ const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
                         }
                     ]
                 );
+            } else {
+                const id = await createNewFolder(newFolderName);
+                setFolderId(id);
             }
             handleClose();
         } catch (error) {
