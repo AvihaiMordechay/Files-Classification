@@ -132,7 +132,11 @@ const UploadFile = ({ file }) => {
 
   return (
     <>
-      {loading && <Spinner />}
+      <Spinner
+        visible={loading}
+        text='מזהה את סוג המסמך...'
+        isUploadFile={true}
+      />
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <FileUploadModal
           visible={newCategoryModalVisible}

@@ -10,7 +10,7 @@ const MainNavigator = () => {
   const { userStatus } = useUser();
 
   if (!userStatus) {
-    return <Spinner />;
+    return <Spinner text="טוען נתוני משתמש..." isUploadFile={false} visible={true} />;
   }
 
   return (
