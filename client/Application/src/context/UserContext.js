@@ -316,9 +316,6 @@ export const UserProvider = ({ children }) => {
                 };
             });
 
-            setAlertTitle("הצלחה");
-            setAlertMessage("שם הקובץ עודכן בהצלחה");
-            setAlertVisible(true);
 
         } catch (error) {
             console.log("error with changeFileName:", error);

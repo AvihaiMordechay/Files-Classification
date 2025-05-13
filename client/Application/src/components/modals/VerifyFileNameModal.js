@@ -1,14 +1,28 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import {
+    Modal, View, Text, TextInput, TouchableOpacity,
+    Pressable, StyleSheet, KeyboardAvoidingView,
+    ScrollView, TouchableWithoutFeedback, Keyboard
+} from 'react-native';
 import theme from "../../styles/theme";
 import constats from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
 import { Ionicons } from '@expo/vector-icons';
+import * as yup from 'yup';
+
+const schema = yup.object().shape({
+    newFileName: yup
+        .string()
+        .required("יש להזין שם חדש לקובץ")
+        .max(20, "שם הקובץ צריך להכיל עד 20 תווים בלבד")
+});
 
 const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isNewFile = true }) => {
     const { addNewFile, isFileExist } = useUser();
     const [newFileName, setNewFileName] = useState("");
     const [error, setError] = useState("");
+
+    const isNameTooLong = name.length > 20;
 
     const handleClose = () => {
         setNewFileName("");
@@ -17,22 +31,22 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isN
     }
 
     const handleChangeFileName = async () => {
-        if (!newFileName.trim()) {
-            setError("יש להזין שם חדש לקובץ");
-            return;
-        }
         try {
+            await schema.validate({ newFileName });
+
             if (await isFileExist(folderId, newFileName)) {
                 setError("שם קובץ קיים בתיקייה, אנא בחר שם אחר");
                 return;
-            } else if (isNewFile) {
-                await addNewFile(newFileName, folderId, type, path);
-            } else {
             }
-        } catch (error) {
-            console.log(error)
+
+            if (isNewFile) {
+                await addNewFile(newFileName, folderId, type, path);
+            }
+
+            handleClose();
+        } catch (validationError) {
+            setError(validationError.message);
         }
-        handleClose();
     };
 
     const handleRemainName = async () => {
@@ -44,11 +58,10 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isN
                 await addNewFile(name, folderId, type, path);
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
         handleClose();
-    }
-
+    };
 
     return (
         <Modal
@@ -95,9 +108,15 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isN
                                             setNewFileName(text);
                                             setError("");
                                         }}
+                                        editable={!isNameTooLong}
                                     />
                                 </View>
-                                {error ? (
+
+                                {isNameTooLong && (
+                                    <Text style={styles.errorText}>שם הקובץ הנוכחי ארוך מ-20 תווים ולכן לא ניתן לשנותו</Text>
+                                )}
+
+                                {!isNameTooLong && error ? (
                                     <Text style={styles.errorText}>{error}</Text>
                                 ) : null}
 
@@ -107,9 +126,12 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isN
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
-                                        style={[styles.modalSaveButton, !newFileName && styles.disabledButton]}
+                                        style={[
+                                            styles.modalSaveButton,
+                                            (!newFileName || isNameTooLong) && styles.disabledButton
+                                        ]}
                                         onPress={handleChangeFileName}
-                                        disabled={!newFileName}
+                                        disabled={!newFileName || isNameTooLong}
                                     >
                                         <Text style={styles.modalSaveButtonText}>החלף</Text>
                                     </TouchableOpacity>
