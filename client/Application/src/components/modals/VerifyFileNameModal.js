@@ -14,7 +14,7 @@ const schema = yup.object().shape({
     newFileName: yup
         .string()
         .required("יש להזין שם חדש לקובץ")
-        .max(20, "שם הקובץ צריך להכיל עד 20 תווים בלבד")
+        .max(20, "שם הקובץ חורג מהגודל המותר")
 });
 
 const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isNewFile = true }) => {
@@ -113,7 +113,7 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isN
                                 </View>
 
                                 {isNameTooLong && (
-                                    <Text style={styles.errorText}>שם הקובץ הנוכחי ארוך מ-20 תווים ולכן לא ניתן לשנותו</Text>
+                                    <Text style={styles.errorText}>שם הקובץ חורג מהגודל המותר</Text>
                                 )}
 
                                 {!isNameTooLong && error ? (

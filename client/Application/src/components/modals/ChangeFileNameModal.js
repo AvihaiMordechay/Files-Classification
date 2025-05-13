@@ -28,7 +28,7 @@ const ChangeFileNameModal = ({ visible, onClose, fileId, folderName }) => {
     const validationSchema = Yup.object().shape({
         newName: Yup.string()
             .required("יש להזין שם חדש")
-            .max(20, "השם ארוך מדי (מקסימום 20 תווים)"),
+            .max(20, "שם הקובץ חורג מהגודל המותר"),
     });
 
     const handleClose = () => {
