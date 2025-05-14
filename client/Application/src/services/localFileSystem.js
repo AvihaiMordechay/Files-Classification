@@ -15,9 +15,9 @@ async function ensureAppDirectoryExists() {
     }
 }
 
-export async function saveFileToAppStorage(fileUri, fileName, folderId) {
-    if (!fileUri || !fileName) {
-        console.log('Invalid file URI or filename');
+export async function saveFileToAppStorage(fileUri, fileId, folderId) {
+    if (!fileUri || !fileId) {
+        console.log('Invalid file URI or fileId');
         return null;
     }
 
@@ -34,7 +34,7 @@ export async function saveFileToAppStorage(fileUri, fileName, folderId) {
         }
 
         const folderPath = APP_DIRECTORY + folderId + "/";
-        const newFilePath = folderPath + fileName;
+        const newFilePath = folderPath + fileId;
 
         // Check if the folder for the user exists, create if not
         const folderInfo = await FileSystem.getInfoAsync(folderPath);
@@ -61,14 +61,14 @@ export async function saveFileToAppStorage(fileUri, fileName, folderId) {
 }
 
 
-export async function fileExistsInStorage(folderId, fileName) {
+export async function fileExistsInStorage(folderId, fileId) {
     try {
         const directoryCreated = await ensureAppDirectoryExists();
         if (!directoryCreated) {
             throw new Error('Failed to create app directory');
         }
 
-        const filePath = APP_DIRECTORY + folderId + "/" + fileName;
+        const filePath = APP_DIRECTORY + folderId + "/" + fileId;
 
         const fileInfo = await FileSystem.getInfoAsync(filePath);
         return fileInfo.exists;
