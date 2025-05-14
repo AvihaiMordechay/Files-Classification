@@ -616,14 +616,14 @@ export const markFileAsFavorite = async (value, fileId) => {
 };
 
 export const updateFilePath = async (path, fileId) => {
-      return safeDBOperation(async () => {
-    if (!fileId||!path) {
+  return safeDBOperation(async () => {
+    if (!fileId || !path) {
       throw new Error('File ID and Path are required');
     }
     const rowsUpdated = await updateElement(
       FILES,
       'path',
-      fileId,
+      path,
       'id',
       fileId
     );

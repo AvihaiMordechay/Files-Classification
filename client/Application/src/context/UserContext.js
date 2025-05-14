@@ -229,13 +229,7 @@ export const UserProvider = ({ children }) => {
     try {
       fileId = await addFileToFolder(name, folderId, type, 'tmp');
       newPath = await saveFileToAppStorage(tempPath, fileId, folderId);
-      try {
-        await updateFilePath(fileId,newPath)
-      } catch (error) {
-        console.log(error);
-        await deleteFileFromLocalStorage(newPath);
-        throw error;
-      }
+      await updateFilePath(newPath, fileId);
       setUser((prevUser) => {
         const updatedFolders = { ...prevUser.folders };
         const folderEntry = Object.entries(updatedFolders).find(
@@ -268,6 +262,7 @@ export const UserProvider = ({ children }) => {
       setAlertMessage('הקובץ צורף לתיקייה בהצלחה');
       setAlertVisible(true);
     } catch (error) {
+      console.log("error with add new file: ", error);
       setAlertTitle('שגיאה');
       setAlertMessage('לא ניתן להוסיף את הקובץ כעת');
       setAlertVisible(true);

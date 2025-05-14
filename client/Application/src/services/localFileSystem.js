@@ -45,7 +45,7 @@ export async function saveFileToAppStorage(fileUri, fileId, folderId) {
         // Check if target file already exists
         const existingFile = await FileSystem.getInfoAsync(newFilePath);
         if (existingFile.exists) {
-            throw new Error('File with the same name already exists');
+            throw new Error('File with the same id already exists');
         }
 
         await FileSystem.copyAsync({
