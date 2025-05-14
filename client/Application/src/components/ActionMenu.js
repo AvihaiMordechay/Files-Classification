@@ -57,10 +57,14 @@ const ActionMenu = () => {
     };
 
     const handleCreateFolderPress = () => {
+        setIsExpanded(false);
+        handlePlusPress();
         setCreateFolderModalVisible(true);
     };
 
     const uploadFileFromGallery = async () => {
+        setIsExpanded(false);
+        handlePlusPress();
         try {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (status !== 'granted') {
@@ -93,6 +97,8 @@ const ActionMenu = () => {
 
 
     const uploadFileFromFiles = async () => {
+        setIsExpanded(false);
+        handlePlusPress();
         try {
             const result = await DocumentPicker.getDocumentAsync({
                 type: ['application/pdf', 'image/*'],

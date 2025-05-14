@@ -26,6 +26,7 @@ import {
     setFavorites,
     updateFileName,
     deleteFileFromFolder,
+    resetDatabaseState,
 } from "../services/database";
 
 const UserContext = createContext();
@@ -60,6 +61,8 @@ export const UserProvider = ({ children }) => {
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+            await resetDatabaseState();
+
             if (await isFirstTime()) {
                 setUser(null);
                 setUserStatus("new");
@@ -326,18 +329,30 @@ export const UserProvider = ({ children }) => {
 
     const deleteAccount = async () => {
         try {
-            Object.values(user.folders).forEach((folder) => {
-                folder.files.forEach(async (file) => {
-                    await deleteFileFromLocalStorage(file.path);
-                });
-            });
+            if (user && user.folders) {
+                const deletionPromises = Object.values(user.folders).flatMap(folder =>
+                    Object.values(folder.files).map(file =>
+                        deleteFileFromLocalStorage(file.path)
+                    )
+                );
+                await Promise.all(deletionPromises);
+            }
+
+            await resetDatabaseState();
+
             await deleteDB();
+
+            setUser(null);
+            setUserStatus("unauthenticated");
         } catch (error) {
+            console.error("Error in deleteAccount:", error);
             setAlertTitle("שגיאה");
             setAlertMessage("לא ניתן למחוק את המשתמש כעת");
             setAlertVisible(true);
+            throw error;
         }
     };
+
 
     const markAsFavorite = async (value, fileId, folderName) => {
         try {

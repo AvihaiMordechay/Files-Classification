@@ -3,7 +3,7 @@ import { Modal, View, Text, TouchableOpacity, Pressable, StyleSheet, KeyboardAvo
 import theme from "../../styles/theme";
 import { auth } from '../../services/firebase';
 import { useUser } from '../../context/UserContext';
-import { EmailAuthProvider, reauthenticateWithCredential, deleteUser } from 'firebase/auth';
+import { EmailAuthProvider, reauthenticateWithCredential, deleteUser, signOut } from 'firebase/auth';
 
 const DeleteUserModal = ({ visible, onClose }) => {
     const { setUserStatus, deleteAccount } = useUser();
@@ -24,11 +24,15 @@ const DeleteUserModal = ({ visible, onClose }) => {
             const credential = EmailAuthProvider.credential(user.email, password);
             await reauthenticateWithCredential(user, credential);
 
+            // Delete the DB and local file system.
+            await deleteAccount();
+
             // Delete the user account from firebase.
             await deleteUser(user);
 
-            // Delete the DB and local file system.
-            await deleteAccount();
+            await signOut(auth);
+
+            setUserStatus("unauthenticated");
 
             BackHandler.exitApp();
         } catch (error) {
