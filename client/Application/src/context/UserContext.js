@@ -415,6 +415,7 @@ export const UserProvider = ({ children }) => {
 
     const deleteFile = async (folderName, fileId) => {
         try {
+            await deleteFileFromLocalStorage(user.folders[folderName].files[fileId].path)
             await deleteFileFromFolder(fileId);
 
             setUser((prevUser) => {
