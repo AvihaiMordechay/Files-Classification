@@ -180,6 +180,11 @@ export const UserProvider = ({ children }) => {
   const updateUserName = async (newName) => {
     if (!user) return;
     try {
+      if (newName.length === 0) {
+        setAlertTitle('שגיאה');
+        setAlertMessage('לא ניתן לשמור שם משתמש ריק');
+        setAlertVisible(true);
+      }
       await changeUserName(newName, user.id);
       setUser((prevUser) => ({ ...prevUser, name: newName }));
     } catch (error) {
@@ -230,7 +235,7 @@ export const UserProvider = ({ children }) => {
       fileId = await addFileToFolder(name, folderId, type, 'tmp');
       newPath = await saveFileToAppStorage(tempPath, fileId, folderId);
       try {
-        await updateFilePath(fileId,newPath)
+        await updateFilePath(fileId, newPath)
       } catch (error) {
         console.log(error);
         await deleteFileFromLocalStorage(newPath);

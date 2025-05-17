@@ -22,8 +22,7 @@ import VerifyFileNameModal from './VerifyFileNameModal';
 const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
   const { createNewFolder } = useUser();
   const [newFolderName, setNewFolderName] = useState('');
-  const [changeFileNameModelVisible, setChangeFileNameModelVisible] =
-    useState(false);
+  const [changeFileNameModelVisible, setChangeFileNameModelVisible] = useState(false);
   const [folderError, setFolderError] = useState('');
   const [folderId, setFolderId] = useState(null);
   const [alertVisible, setAlertVisible] = useState(false);
@@ -41,11 +40,14 @@ const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
     if (!newFolderName.trim()) {
       setFolderError('יש להזין שם תיקייה');
       return;
+    } else if (newFolderName.trim().length > 20) {
+      setFolderError('שם התיקייה חורג מהגודל המותר');
+      return;
     }
 
     try {
       if (attachedFile) {
-        const id = await createNewFolder(newFolderName, false);
+        const id = await createNewFolder(newFolderName.trim(), false);
         setFolderId(id);
         setAlertTitle('צרף קובץ');
         setAlertMessage('האם לצרף את הקובץ לתיקייה החדשה?');

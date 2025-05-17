@@ -48,7 +48,7 @@ const ChangeFileNameModal = ({ visible, onClose, fileId, folderName }) => {
             setAlertModalVisible(true);
         } catch (error) {
             if (error.message === 'alreadyExists') {
-                setErrors({ newName: "השם שבחרת קיים בתיקייה" });
+                setErrors("השם שבחרת קיים בתיקייה");
             } else {
                 setError("לא ניתן לשנות את שם הקובץ");
                 handleClose();
