@@ -411,8 +411,9 @@ export const getFoldersDetails = async () => {
   });
 };
 
-export const changeFolderName = async (newName, id) => {
+export const updateFolderName = async (newName, id) => {
   return safeDBOperation(async () => {
+
     if (!newName || !id) {
       throw new Error('New name and folder ID are required');
     }

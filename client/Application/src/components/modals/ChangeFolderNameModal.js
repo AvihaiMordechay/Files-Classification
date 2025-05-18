@@ -18,17 +18,15 @@ import AlertModal from "./AlertModal";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
-const ChangeFileNameModal = ({ visible, onClose, fileId, folderName }) => {
-    const { user, changeFileName } = useUser();
+const ChangeFolderNameModal = ({ visible, onClose, folderName }) => {
+    const { changeFolderName } = useUser();
     const [alertModalVisible, setAlertModalVisible] = useState(false);
     const [error, setError] = useState("");
-
-    const existFileName = user.folders[folderName].files[fileId].name;
 
     const validationSchema = Yup.object().shape({
         newName: Yup.string()
             .required("יש להזין שם חדש")
-            .max(20, "שם הקובץ חורג מהגודל המותר"),
+            .max(20, "שם התיקייה חורג מהגודל המותר"),
     });
 
     const handleClose = () => {
@@ -44,16 +42,20 @@ const ChangeFileNameModal = ({ visible, onClose, fileId, folderName }) => {
     const handleUpdateName = async (values, { setSubmitting, setErrors }) => {
         setError("");
         try {
-            await changeFileName(values.newName.trim(), fileId, folderName);
+            console.log
+            if (folderName === values.newName.trim()) {
+                setError("אנא בחר שם אחר מהשם הנוכחי");
+                return;
+            }
+            await changeFolderName(folderName, values.newName.trim());
             setAlertModalVisible(true);
         } catch (error) {
-            console.log(error.message)
+            console.log(error.message);
+
             if (error.message === 'alreadyExists') {
-                setError("השם שבחרת קיים בתיקייה");
-            } else if (error.message === 'sameName') {
-                setError("אנא בחר שם אחר מהשם הנוכחי");
+                setError("שם התיקייה קיים במערכת");
             } else {
-                setError("לא ניתן לשנות את שם הקובץ");
+                setError("לא ניתן לשנות את שם התיקייה");
                 handleClose();
             }
         } finally {
@@ -68,13 +70,13 @@ const ChangeFileNameModal = ({ visible, onClose, fileId, folderName }) => {
                     <KeyboardAvoidingView style={styles.centeredView}>
                         <ScrollView contentContainerStyle={styles.scrollViewContent} keyboardShouldPersistTaps="handled">
                             <Pressable style={styles.modalView} onPress={(e) => e.stopPropagation()}>
-                                <Text style={styles.modalTitle}>שינוי שם קובץ</Text>
+                                <Text style={styles.modalTitle}>שינוי שם תיקייה</Text>
 
-                                <Text style={styles.modalLabel}>שם קובץ נוכחי</Text>
+                                <Text style={styles.modalLabel}>שם התיקייה הנוכחית</Text>
                                 <View style={styles.modalInputContainer}>
                                     <TextInput
                                         style={styles.modalInput}
-                                        value={existFileName}
+                                        value={folderName}
                                         editable={false}
                                         selectTextOnFocus={false}
                                     />
@@ -87,7 +89,7 @@ const ChangeFileNameModal = ({ visible, onClose, fileId, folderName }) => {
                                 >
                                     {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting }) => (
                                         <>
-                                            <Text style={styles.modalLabel}>שם קובץ חדש</Text>
+                                            <Text style={styles.modalLabel}>שם התיקייה החדשה</Text>
                                             <View style={styles.modalInputContainer}>
                                                 <TextInput
                                                     style={styles.modalInput}
@@ -129,7 +131,7 @@ const ChangeFileNameModal = ({ visible, onClose, fileId, folderName }) => {
                                     visible={alertModalVisible}
                                     onClose={closeAlertModal}
                                     title="הודעה"
-                                    message="שם הקובץ עודכן בהצלחה"
+                                    message="שם התיקייה עודכן בהצלחה"
                                     buttons={[
                                         {
                                             text: "אישור",
@@ -169,4 +171,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ChangeFileNameModal;
+export default ChangeFolderNameModal;

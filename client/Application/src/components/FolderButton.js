@@ -3,11 +3,17 @@ import { Text, TouchableOpacity, StyleSheet, View, Platform } from 'react-native
 import { Ionicons } from '@expo/vector-icons';
 import constats from '../styles/constats';
 import ActionSheet from 'react-native-actions-sheet';
+import ChangeFolderNameModal from './modals/ChangeFolderNameModal';
+import AlertModal from './modals/AlertModal';
 
 const FolderButton = ({ folder, onPress }) => {
     const [changeFolderNameModalVisible, setChangeFolderNameModalVisible] = useState(false);
     const [deleteFolderModalVisible, setDeleteFolderModalVisible] = useState(false);
     const actionSheetRef = useRef(null);
+
+    const handleLongPress = () => {
+        actionSheetRef.current?.show();
+    };
 
     const handleActionSelect = (selectedIndex) => {
         switch (selectedIndex) {
@@ -22,12 +28,28 @@ const FolderButton = ({ folder, onPress }) => {
         }
     };
 
+    const hangleDeleteFile = async () => {
+        setDeleteFolderModalVisible(false);
+    }
+
     return (
         <>
+            <TouchableOpacity
+                style={styles.button}
+                onPress={onPress}
+                onLongPress={handleLongPress}
+            >
+                <View style={styles.iconContainer}>
+                    <Ionicons name="folder-outline" size={constats.sizes.icon.folderButton} color={constats.colors.primary} />
+                </View>
+                <Text style={styles.buttonText}>{folder.name}</Text>
+                <Text style={styles.subButtonText}>{folder.filesCount} קבצים</Text>
+            </TouchableOpacity>
+
             <ActionSheet ref={actionSheetRef} gestureEnabled={true}>
                 <View style={styles.actionSheetContainer}>
                     <Text style={styles.actionSheetTitle}>
-                        בחר פעולה עבור "{file.name}"
+                        בחר פעולה עבור תיקיית "{folder.name}"
                     </Text>
                     <Text style={styles.actionSheetMessage}>
                         בחר אחת מהאפשרויות הבאות
@@ -62,13 +84,25 @@ const FolderButton = ({ folder, onPress }) => {
                 </View>
             </ActionSheet>
 
-            <TouchableOpacity style={styles.button} onPress={onPress}>
-                <View style={styles.iconContainer}>
-                    <Ionicons name="folder-outline" size={constats.sizes.icon.folderButton} color={constats.colors.primary} />
-                </View>
-                <Text style={styles.buttonText}>{folder.name}</Text>
-                <Text style={styles.subButtonText}>{folder.filesCount} קבצים</Text>
-            </TouchableOpacity>
+            <ChangeFolderNameModal
+                visible={changeFolderNameModalVisible}
+                onClose={() => setChangeFolderNameModalVisible(false)}
+                folderName={folder.name}
+            />
+
+            <AlertModal
+                visible={deleteFolderModalVisible}
+                onClose={() => setDeleteFolderModalVisible(false)}
+                title={'אזהרה'}
+                message={`האם ברצונך למחוק את התיקייה: ${folder.name}`}
+                buttons={
+                    [
+                        { text: 'בטל', onPress: () => setDeleteFolderModalVisible(false) },
+                        { text: 'מחק', onPress: () => hangleDeleteFile() }
+
+                    ]
+                }
+            />
         </>
 
     );

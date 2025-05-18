@@ -28,7 +28,8 @@ import {
   deleteFileFromFolder,
   resetDatabaseState,
   updateFilePath,
-} from '../services/database';
+  updateFolderName,
+} from "../services/database";
 
 const UserContext = createContext();
 
@@ -292,7 +293,56 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const changeFolderName = async (oldName, newName) => {
+    if (!user) return;
+
+    if (user.folders[newName]) {
+      throw new Error("alreadyExists");
+    }
+
+    try {
+      const folderId = user.folders[oldName]?.id;
+      if (!folderId) {
+        throw new Error("folder not found");
+      }
+      await updateFolderName(newName, folderId);
+      setUser((prevUser) => {
+        const updatedFolders = { ...prevUser.folders };
+
+        updatedFolders[newName] = {
+          ...updatedFolders[oldName]
+        };
+
+        delete updatedFolders[oldName];
+
+        const updatedFavorites = prevUser.favorites.map((fav) => {
+          if (fav.folderName === oldName) {
+            return { ...fav, folderName: newName };
+          }
+          return fav;
+        });
+
+        return {
+          ...prevUser,
+          folders: updatedFolders,
+          favorites: updatedFavorites
+        };
+      });
+    } catch (error) {
+      console.log("Error changing folder name:", error);
+      throw error;
+    }
+  };
+
   const changeFileName = async (newName, fileId, folderName) => {
+    if (!user) return;
+
+    if (user.folders[folderName].files[fileId].name === newName) {
+      throw new Error("sameName");
+    } else if (user.folders[folderName].files[fileId]) {
+      throw new Error("alreadyExists");
+    }
+
     try {
       await updateFileName(newName, fileId);
 
@@ -460,32 +510,31 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider
-      value={{
-        user,
-        setUser,
-        userStatus,
-        setUserStatus,
-        createUser,
-        updateUserName,
-        loadUser,
-        createNewFolder,
-        addNewFile,
-        isFileExist,
-        markAsFavorite,
-        deleteAccount,
-        updateLastViewedToFile,
-        changeFileName,
-        deleteFile,
-      }}
-    >
+    <UserContext.Provider value={{
+      user,
+      setUser,
+      userStatus,
+      setUserStatus,
+      createUser,
+      updateUserName,
+      loadUser,
+      createNewFolder,
+      addNewFile,
+      isFileExist,
+      markAsFavorite,
+      deleteAccount,
+      updateLastViewedToFile,
+      changeFileName,
+      changeFolderName,
+      deleteFile
+    }}>
       {!loading && children}
       <AlertModal
         visible={alertVisible}
         onClose={() => setAlertVisible(false)}
-        title={alertTitle || 'שגיאה'}
+        title={alertTitle || "שגיאה"}
         message={alertMessage}
-        buttons={[{ text: 'סגור', onPress: () => setAlertVisible(false) }]}
+        buttons={[{ text: "סגור", onPress: () => setAlertVisible(false) }]}
       />
     </UserContext.Provider>
   );
