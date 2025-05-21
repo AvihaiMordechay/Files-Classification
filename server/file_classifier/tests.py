@@ -11,7 +11,8 @@ load_dotenv()
 CATEGORY_MAP = {
     'תחבורה': 'transportation',
     'רפואה': 'health',
-    'פיננסי': 'finance'
+    'פיננסי': 'finance',
+    'השכלה':'education'
 }
 
 
