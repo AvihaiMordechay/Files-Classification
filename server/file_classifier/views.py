@@ -10,6 +10,7 @@ load_dotenv()
 
 @csrf_exempt
 def process_file(request):
+    MIN_TEXT_LENGTH = 35
     if request.method == "POST":
         try:
             file = request.FILES.get("file")
@@ -39,14 +40,25 @@ def process_file(request):
 
             try:
                 extracted_text = parse_text_from_image(file_path, credentials_path)
-                category = predict_category(extracted_text)
+
+                if len(extracted_text.strip()) < MIN_TEXT_LENGTH:
+                    category = "undefined"
+                    message = "Text extracted successfully, but it's too short to classify reliably."
+                else:
+                    category = predict_category(extracted_text)
+                    message = "Text extracted and categorized successfully."
+
                 return JsonResponse(
-                    {"category": category, "message": "Text extracted and categorized successfully."},
+                    {
+                        "category": category,
+                        "message": message,
+                        "text": extracted_text,
+                    },
                     status=200,
                 )
 
             except Exception as processing_error:
-                print(f"Error during processing: {str(processing_error)}")  # Debug line
+                print(f"Error during processing: {str(processing_error)}")
                 return JsonResponse(
                     {"error": str(processing_error), "message": "An error occurred while processing the file."},
                     status=500,
@@ -73,3 +85,4 @@ def process_file(request):
         {"error": "Invalid request method", "message": "Only POST requests are allowed."},
         status=405,
     )
+

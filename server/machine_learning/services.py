@@ -41,9 +41,9 @@ def predict_category(text: str) -> str:
             outputs = model(**inputs)
         probabilities = torch.softmax(outputs.logits, dim=-1).squeeze()
         
-        #using a threshold of 0.4 to return undefined if the max probability is less than 0.4
-    
-        if torch.max(probabilities).item() < 0.55:
+        #using a threshold of 0.5 to return undefined if the max probability is less than 0.4
+        print(torch.max(probabilities).item())
+        if torch.max(probabilities).item() < 0.6:
             return "undefined"
         
         predicted_id = torch.argmax(outputs.logits, dim=-1).item()
