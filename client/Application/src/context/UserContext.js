@@ -1,3 +1,4 @@
+// Fixed UserContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AppState } from 'react-native';
 import { auth } from '../services/firebase';
@@ -188,6 +189,7 @@ export const UserProvider = ({ children }) => {
         setAlertTitle('שגיאה');
         setAlertMessage('לא ניתן לשמור שם משתמש ריק');
         setAlertVisible(true);
+        return;
       }
       await changeUserName(newName, user.id);
       setUser((prevUser) => ({ ...prevUser, name: newName }));
@@ -212,7 +214,7 @@ export const UserProvider = ({ children }) => {
           [newName]: {
             id: folderId,
             filesCount: 0,
-            files: [],
+            files: {}, // Fixed: should be empty object, not array
           },
         },
       }));
@@ -262,6 +264,8 @@ export const UserProvider = ({ children }) => {
                 name: name,
                 type: type,
                 path: newPath,
+                size: size, // Added missing size field
+                createDate: createDate, // Added missing createDate field
                 isFavorite: 0,
                 lastViewed: null,
               },
@@ -287,12 +291,9 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-
   const isFileExist = async (folderId, fileName) => {
     try {
-      return (
-        await isFileExistInDB(folderId, fileName)
-      );
+      return await isFileExistInDB(folderId, fileName);
     } catch (error) {
       console.log("error with isFileExist: ", error);
       setAlertTitle('שגיאה');
@@ -346,9 +347,21 @@ export const UserProvider = ({ children }) => {
   const changeFileName = async (newName, fileId, folderName) => {
     if (!user) return;
 
-    if (user.folders[folderName].files[fileId].name === newName) {
+    const currentFile = user.folders[folderName]?.files[fileId];
+    if (!currentFile) {
+      throw new Error("fileNotFound");
+    }
+
+    if (currentFile.name === newName) {
       throw new Error("sameName");
-    } else if (user.folders[folderName].files[fileId]) {
+    }
+
+    // Check if another file with the same name exists in the folder
+    const fileExists = Object.values(user.folders[folderName].files).some(
+      file => file.id !== fileId && file.name === newName
+    );
+
+    if (fileExists) {
       throw new Error("alreadyExists");
     }
 
@@ -396,7 +409,6 @@ export const UserProvider = ({ children }) => {
       }
 
       await resetDatabaseState();
-
       await deleteDB();
 
       setUser(null);
@@ -457,7 +469,7 @@ export const UserProvider = ({ children }) => {
       setAlertTitle('שגיאה');
       setAlertMessage('לא ניתן לסמן את הקובץ כמועדף');
       setAlertVisible(true);
-      console.log(`error with set user as favorie ${error}`);
+      console.log(`error with set user as favorite ${error}`);
     }
   };
 
@@ -465,15 +477,16 @@ export const UserProvider = ({ children }) => {
     try {
       await updateLastViewed(id);
     } catch (error) {
-      console.log('falid to update last viewed to file id: ', id);
+      console.log('failed to update last viewed to file id: ', id);
     }
   };
 
   const deleteFile = async (folderName, fileId) => {
     try {
-      await deleteFileFromLocalStorage(
-        user.folders[folderName].files[fileId].path
-      );
+      const filePath = user.folders[folderName]?.files[fileId]?.path;
+      if (filePath) {
+        await deleteFileFromLocalStorage(filePath);
+      }
       await deleteFileFromFolder(fileId);
 
       setUser((prevUser) => {

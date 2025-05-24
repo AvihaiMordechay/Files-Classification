@@ -60,7 +60,10 @@ const FileButton = ({ file, onPress, folderName, presentFolderName = false }) =>
     return (
         <>
             <TouchableOpacity
-                style={styles.button}
+                style={[
+                    styles.button,
+                    { height: constats.sizes.button.height + (presentFolderName ? 15 : 0) }
+                ]}
                 onPress={onPress}
                 onLongPress={handleLongPress}
             >
@@ -79,6 +82,9 @@ const FileButton = ({ file, onPress, folderName, presentFolderName = false }) =>
                 {presentFolderName && (
                     <Text style={styles.folderNameText}>{folderName}</Text>
                 )}
+
+                <Text style={styles.folderNameText}>{file.size}</Text>
+
             </TouchableOpacity>
 
             <ActionSheet ref={actionSheetRef} gestureEnabled={true}>
@@ -159,6 +165,7 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         position: 'relative',
     },
+
     starIcon: {
         position: 'absolute',
         top: 8,
@@ -169,13 +176,13 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     buttonText: {
-        fontSize: constats.sizes.font.medium,
+        fontSize: constats.sizes.font.medium + 2,
         fontWeight: '600',
         color: '#333',
         textAlign: 'center',
     },
     folderNameText: {
-        fontSize: constats.sizes.font.small,
+        fontSize: constats.sizes.font.small + 1,
         color: '#666',
         textAlign: 'center',
         marginTop: 2,
