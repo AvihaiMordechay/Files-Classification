@@ -54,13 +54,13 @@ const FileScreen = ({ route }) => {
   const handleFavorite = async (event) => {
     event.stopPropagation();
     const newFavoriteState = !localFavorite;
-    setLocalFavorite(newFavoriteState); 
+    setLocalFavorite(newFavoriteState);
 
     try {
-      await markAsFavorite(newFavoriteState, file.id, folderName); 
+      await markAsFavorite(newFavoriteState, file.id, folderName);
     } catch (error) {
       console.error('שגיאה בהוספת המועדף', error);
-      setLocalFavorite(localFavorite); 
+      setLocalFavorite(localFavorite);
     }
   };
 
@@ -97,7 +97,7 @@ const FileScreen = ({ route }) => {
       }
     }
   }, [file]);
-  const handleRename = () => {};
+  const handleRename = () => { };
   const handleShare = async () => {
     if (isSharing) return; // using locks for two time fast click
 
@@ -122,8 +122,8 @@ const FileScreen = ({ route }) => {
           file.type === 'image/jpeg' || file.type === 'image/jpg'
             ? 'jpg'
             : file.type === 'image/png'
-            ? 'png'
-            : 'tiff';
+              ? 'png'
+              : 'tiff';
 
         const tempFileUri =
           FileSystem.documentDirectory + file.name + '.' + extension;
@@ -173,13 +173,6 @@ const FileScreen = ({ route }) => {
     return (
       <View style={styles.container}>
         <PdfViewer base64={base64} />
-
-        <View style={styles.bottomBar}>
-          <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
-            <Ionicons name="share-social-outline" size={28} color="#333" />
-            <Text style={styles.iconLabel}>שתף</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     );
   }
@@ -218,7 +211,7 @@ const FileScreen = ({ route }) => {
         onClose={() => setAlertVisible(false)}
         title={alertTitle || 'שגיאה'}
         message={alertMessage}
-        buttons={[{ text: 'סגור', onPress: () => setAlertVisible(false) }]} 
+        buttons={[{ text: 'סגור', onPress: () => setAlertVisible(false) }]}
       />
       <ChangeFileNameModal
         visible={changeFileNameModalVisible}
