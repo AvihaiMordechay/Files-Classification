@@ -70,6 +70,7 @@ export const closeDB = async () => {
 
       try {
         await dbInstance.closeAsync();
+        dbInstance = null;
         console.log('Database connection closed');
       } catch (closeError) {
         console.log('Error during database close:', closeError);
@@ -117,6 +118,8 @@ export const createDB = async (id, name, gender) => {
                 path TEXT NOT NULL,
                 isFavorite INTEGER NOT NULL DEFAULT 0, 
                 lastViewed TEXT DEFAULT NULL,
+                size TEXT  NOT NULL,
+                createDate TEXT  NOT NULL,
                 FOREIGN KEY (folderId) REFERENCES ${FOLDERS} (id) ON DELETE CASCADE,
                 UNIQUE (folderId, name)
             );
@@ -455,12 +458,12 @@ export const deleteFolderDB = async (folderId) => {
 };
 
 // FILES FUNCTIONS
-export const addFileToFolder = async (name, folderId, type, path) => {
+export const addFileToFolder = async (name, folderId, type, path, size, createDate) => {
   return safeDBOperation(async () => {
     try {
-      if (!name || !folderId || !type || !path) {
+      if (!name || !folderId || !type || !path || !size || !createDate) {
         throw new Error(
-          'All parameters (name, folderId, type, path) are required'
+          'All parameters (name, folderId, type, path, size, createDate) are required'
         );
       }
 
@@ -477,8 +480,8 @@ export const addFileToFolder = async (name, folderId, type, path) => {
       }
 
       const result = await db.runAsync(
-        `INSERT INTO ${FILES} (name, folderId, type, path) VALUES (?, ?, ?, ?)`,
-        [name, folderId, type, path]
+        `INSERT INTO ${FILES} (name, folderId, type, path, size, createDate) VALUES (?, ?, ?, ?, ?, ?)`,
+        [name, folderId, type, path, size, createDate]
       );
 
       if (result && result.insertId) {
@@ -537,7 +540,7 @@ export const getFilesByFolder = async (folderId) => {
       const db = await initDB();
       const result = await db.getAllAsync(
         `
-            SELECT ${FILES}.id, ${FILES}.name, ${FILES}.type, ${FILES}.path, ${FILES}.isFavorite, ${FILES}.lastViewed
+            SELECT ${FILES}.id, ${FILES}.name, ${FILES}.type, ${FILES}.path, ${FILES}.isFavorite, ${FILES}.lastViewed, ${FILES}.size, ${FILES}.createDate
             FROM ${FILES}
             WHERE ${FILES}.folderId = ?
         `,

@@ -22,7 +22,7 @@ const UserSettingsScreen = () => {
             await updateUserName(userName);
             setSaveNameButtonVisible(false);
         } catch (error) {
-            console.log(error);
+            console.log("error with handleUpdateName: ", error);
             setUserName(user?.name);
         }
     };

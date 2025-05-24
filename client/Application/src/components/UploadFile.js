@@ -248,6 +248,8 @@ const UploadFile = ({ file }) => {
           folderId={folderId}
           type={file.mimeType}
           path={file.uri}
+          size={file.size}
+          createDate={file.createDate}
         />
       )}
 

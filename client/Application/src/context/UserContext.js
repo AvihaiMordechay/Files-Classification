@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Alert, AppState } from 'react-native';
+import { AppState } from 'react-native';
 import { auth } from '../services/firebase';
 import AlertModal from '../components/modals/AlertModal';
+import uuid from 'react-native-uuid';
 import {
   deleteAllAppDataFromLocalStorage,
   deleteFileFromLocalStorage,
   deleteFolderFromLocalStorage,
-  fileExistsInStorage,
   saveFileToAppStorage,
 } from '../services/localFileSystem';
 import {
@@ -230,24 +230,17 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const addNewFile = async (name, folderId, type, tempPath) => {
+  const addNewFile = async (name, folderId, type, size, createDate, tempPath) => {
     if (!user) return;
 
     let fileId;
     let newPath;
     try {
-      fileId = await addFileToFolder(name, folderId, type, 'tmp');
-
+      newPath = await saveFileToAppStorage(tempPath, uuid.v4(), folderId);
       try {
-        newPath = await saveFileToAppStorage(tempPath, fileId, folderId);
-      } catch (error) {
-        await deleteFileFromFolder(fileId);
-      }
-      try {
-        await updateFilePath(fileId, newPath)
+        fileId = await addFileToFolder(name, folderId, type, newPath, size, createDate);
       } catch (error) {
         await deleteFileFromLocalStorage(newPath);
-        await deleteFileFromFolder(fileId);
         throw error;
       }
 
@@ -267,7 +260,6 @@ export const UserProvider = ({ children }) => {
               [fileId]: {
                 id: fileId,
                 name: name,
-                id: fileId,
                 type: type,
                 path: newPath,
                 isFavorite: 0,
@@ -279,22 +271,30 @@ export const UserProvider = ({ children }) => {
 
         return { ...prevUser, folders: updatedFolders };
       });
+
       setAlertTitle('הצלחה');
       setAlertMessage('הקובץ צורף לתיקייה בהצלחה');
       setAlertVisible(true);
     } catch (error) {
+      if (newPath) await deleteFileFromLocalStorage(newPath);
+      if (fileId) await deleteFileFromFolder(fileId);
+
+      console.log("error with addNewFile: ", error);
+
       setAlertTitle('שגיאה');
       setAlertMessage('לא ניתן להוסיף את הקובץ כעת');
       setAlertVisible(true);
     }
   };
 
+
   const isFileExist = async (folderId, fileName) => {
     try {
       return (
-        (await isFileExistInDB(folderId, fileName))
+        await isFileExistInDB(folderId, fileName)
       );
     } catch (error) {
+      console.log("error with isFileExist: ", error);
       setAlertTitle('שגיאה');
       setAlertMessage('לא ניתן להוסיף את הקובץ כעת');
       setAlertVisible(true);

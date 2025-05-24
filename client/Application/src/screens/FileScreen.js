@@ -97,11 +97,11 @@ const FileScreen = ({ route }) => {
       }
     }
   }, [file]);
-  const handleRename = () => { };
-  const handleShare = async () => {
-    if (isSharing) return; // using locks for two time fast click
 
-    setIsSharing(true); // only if isSharing is false then start share
+  const handleShare = async () => {
+    if (isSharing) return;
+
+    setIsSharing(true);
 
     try {
       const isAvailable = await Sharing.isAvailableAsync();
@@ -149,7 +149,9 @@ const FileScreen = ({ route }) => {
       setAlertMessage('שגיאה בשיתוף הקובץ');
       setAlertVisible(true);
     } finally {
-      setIsSharing(false); // after finishing sharing set the lock to false
+      setIsSharing(false);
+      await resetDatabaseState();
+      await initDB();
     }
   };
 

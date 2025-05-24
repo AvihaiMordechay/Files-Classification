@@ -81,16 +81,17 @@ const ActionMenu = () => {
             });
 
             if (!result.canceled) {
+                const size = formatFileSize(result.assets[0]?.fileSize);
+
                 const file = {
                     name: result.assets[0]?.fileName || '',
                     uri: result.assets[0]?.uri || '',
                     mimeType: result.assets[0]?.mimeType || '',
+                    size: size || '',
+                    createDate: new Date().toISOString(),
                 };
 
                 setFile(file);
-                console.log("The photo", file);
-            } else {
-                console.log("the user cancel the action");
             }
         } catch (error) {
             console.log("Problem opening the album ", error);
@@ -113,11 +114,14 @@ const ActionMenu = () => {
                 console.log("The user cancel the action");
             } else {
                 const mimeType = result.assets && result.assets[0] && result.assets[0].mimeType;
+                const size = formatFileSize(result.assets[0]?.size);
 
                 const file = {
                     name: result.assets[0]?.name || '',
                     uri: result.assets[0]?.uri || '',
                     mimeType: mimeType || '',
+                    size: size || '',
+                    createDate: new Date().toISOString(),
                 };
 
                 if (mimeType === "application/pdf") {
@@ -163,6 +167,21 @@ const ActionMenu = () => {
         ],
 
     };
+
+    const formatFileSize = (sizeInBytes) => {
+        const kb = 1024;
+        const mb = kb * 1024;
+        const gb = mb * 1024;
+
+        if (sizeInBytes < kb * 1000) {
+            return `${(sizeInBytes / kb).toFixed(0)} kb`;
+        } else if (sizeInBytes < mb * 1000) {
+            return `${(sizeInBytes / mb).toFixed(1)} mb`;
+        } else {
+            return `${(sizeInBytes / gb).toFixed(1)} gb`;
+        }
+    };
+
 
     return (
         <SafeAreaView>

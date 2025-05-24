@@ -9,6 +9,7 @@ import constats from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
 import { Ionicons } from '@expo/vector-icons';
 import * as yup from 'yup';
+import { printDB } from '../../services/database';
 
 const schema = yup.object().shape({
     newFileName: yup
@@ -17,7 +18,7 @@ const schema = yup.object().shape({
         .max(20, "שם הקובץ חורג מהגודל המותר")
 });
 
-const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isNewFile = true }) => {
+const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, size, createDate, isNewFile = true }) => {
     const { addNewFile, isFileExist } = useUser();
     const [newFileName, setNewFileName] = useState("");
     const [error, setError] = useState("");
@@ -33,14 +34,13 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isN
     const handleChangeFileName = async () => {
         try {
             await schema.validate({ newFileName });
-
             if (await isFileExist(folderId, newFileName)) {
                 setError("שם קובץ קיים בתיקייה, אנא בחר שם אחר");
                 return;
             }
 
             if (isNewFile) {
-                await addNewFile(newFileName, folderId, type, path);
+                await addNewFile(newFileName, folderId, type, size, createDate, path);
             }
 
             handleClose();
@@ -50,13 +50,12 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isN
     };
 
     const handleRemainName = async () => {
-        console.log(await isFileExist(folderId, name));
         try {
             if (await isFileExist(folderId, name)) {
                 setError("שם קובץ קיים בתיקייה, אנא בחר שם אחר");
                 return;
             } else {
-                await addNewFile(name, folderId, type, path);
+                await addNewFile(name, folderId, type, size, createDate, path);
             }
         } catch (error) {
             console.log(error);

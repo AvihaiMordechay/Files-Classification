@@ -27,8 +27,6 @@ const CategoryListModel = ({ visible, onClose, attachedFile }) => {
   };
 
   const handleFolderSelect = async (folderName) => {
-    console.log(folderName);
-    console.log(attachedFile);
     const folder = user.folders[folderName];
     if (!folder) {
       setAlert(true);
@@ -82,6 +80,8 @@ const CategoryListModel = ({ visible, onClose, attachedFile }) => {
         folderId={folderId}
         type={attachedFile.mimeType}
         path={attachedFile.uri}
+        size={attachedFile.size}
+        createDate={attachedFile.createDate}
       />
       <AlertModal
         visible={alert}

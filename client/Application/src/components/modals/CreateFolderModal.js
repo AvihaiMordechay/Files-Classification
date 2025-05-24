@@ -175,6 +175,8 @@ const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
           folderId={folderId}
           type={attachedFile.mimeType}
           path={attachedFile.uri}
+          size={attachedFile.size}
+          createDate={attachedFile.createDate}
         />
       )}
     </>
