@@ -35,13 +35,14 @@ const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
     setFolderError('');
     onClose();
   };
+  const letterLimit = 15;
 
   const handleNewFolder = async () => {
     setFolderError('');
     if (!newFolderName.trim()) {
       setFolderError('יש להזין שם תיקייה');
       return;
-    } else if (newFolderName.trim().length > 20) {
+    } else if (newFolderName.trim().length > letterLimit) {
       setFolderError('שם התיקייה חורג מהגודל המותר');
       return;
     }

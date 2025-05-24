@@ -23,12 +23,14 @@ const ChangeFileNameModal = ({ visible, onClose, fileId, folderName }) => {
     const [alertModalVisible, setAlertModalVisible] = useState(false);
     const [error, setError] = useState("");
 
+    const letterLimit = 10;
+
     const existFileName = user.folders[folderName].files[fileId].name;
 
     const validationSchema = Yup.object().shape({
         newName: Yup.string()
             .required("יש להזין שם חדש")
-            .max(20, "שם הקובץ חורג מהגודל המותר"),
+            .max(letterLimit, "שם הקובץ חורג מהגודל המותר"),
     });
 
     const handleClose = () => {

@@ -9,13 +9,14 @@ import constats from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
 import { Ionicons } from '@expo/vector-icons';
 import * as yup from 'yup';
-import { printDB } from '../../services/database';
+
+const letterLimit = 10;
 
 const schema = yup.object().shape({
     newFileName: yup
         .string()
         .required("יש להזין שם חדש לקובץ")
-        .max(20, "שם הקובץ חורג מהגודל המותר")
+        .max(letterLimit, "שם הקובץ חורג מהגודל המותר")
 });
 
 const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, size, createDate, isNewFile = true }) => {
@@ -23,7 +24,7 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, siz
     const [newFileName, setNewFileName] = useState("");
     const [error, setError] = useState("");
 
-    const isExistNameTooLong = name.length > 20;
+    const isExistNameTooLong = name.length > letterLimit;
 
     const handleClose = () => {
         setNewFileName("");
@@ -136,10 +137,10 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, siz
                                     <TouchableOpacity
                                         style={[
                                             styles.modalSaveButton,
-                                            (!newFileName || newFileName.length > 20) && styles.disabledButton
+                                            (!newFileName || newFileName.length > letterLimit) && styles.disabledButton
                                         ]}
                                         onPress={handleChangeFileName}
-                                        disabled={!newFileName || newFileName.length > 20}
+                                        disabled={!newFileName || newFileName.length > letterLimit}
                                     >
                                         <Text style={styles.modalSaveButtonText}>החלף</Text>
                                     </TouchableOpacity>

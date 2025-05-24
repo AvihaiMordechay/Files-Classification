@@ -22,11 +22,12 @@ const ChangeFolderNameModal = ({ visible, onClose, folderName }) => {
     const { changeFolderName } = useUser();
     const [alertModalVisible, setAlertModalVisible] = useState(false);
     const [error, setError] = useState("");
+    const letterLimit = 15;
 
     const validationSchema = Yup.object().shape({
         newName: Yup.string()
             .required("יש להזין שם חדש")
-            .max(20, "שם התיקייה חורג מהגודל המותר"),
+            .max(letterLimit, "שם התיקייה חורג מהגודל המותר"),
     });
 
     const handleClose = () => {
