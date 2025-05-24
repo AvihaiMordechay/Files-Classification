@@ -264,8 +264,8 @@ export const UserProvider = ({ children }) => {
                 name: name,
                 type: type,
                 path: newPath,
-                size: size, // Added missing size field
-                createDate: createDate, // Added missing createDate field
+                size: size,
+                createDate: createDate,
                 isFavorite: 0,
                 lastViewed: null,
               },

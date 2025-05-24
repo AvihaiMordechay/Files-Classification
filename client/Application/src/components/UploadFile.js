@@ -129,6 +129,7 @@ const UploadFile = ({ file }) => {
     } catch (error) {
       console.log('Upload error:', error);
       setLoading(false);
+      handleFileRecognitionFailed();
     }
   };
 

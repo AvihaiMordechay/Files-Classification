@@ -24,61 +24,63 @@ const AlertModal = ({ visible, onClose, title, message, buttons }) => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.modalOverlay}>
-          <KeyboardAvoidingView style={styles.centeredView}>
-            <ScrollView
-              contentContainerStyle={styles.scrollViewContent}
-              keyboardShouldPersistTaps="handled"
+          <KeyboardAvoidingView style={styles.centeredView} behavior="padding">
+            <Pressable
+              style={styles.modalView}
+              onPress={(e) => e.stopPropagation()}
             >
-              <Pressable
-                style={styles.modalView}
-                onPress={(e) => e.stopPropagation()}
-              >
-                <Text style={styles.modalTitle}>{title}</Text>
-                <Text style={styles.modalMessage}>{message}</Text>
-                <View style={styles.modalButtonsContainer}>
-                  {buttons.map((button, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={[
-                        styles.modalButton,
-                        buttons.length > 1 && index === 0 && styles.modalCancelButton
-                      ]}
-                      onPress={button.onPress}
-                    >
-                      <Text style={[
-                        styles.modalButtonText,
-                        buttons.length > 1 && index === 0 && styles.modalCancelButtonText
-                      ]}>
-                        {button.text ? String(button.text) : "לחץ כאן"}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-
-                </View>
-              </Pressable>
-            </ScrollView>
+              <Text style={styles.modalTitle}>{title}</Text>
+              <Text style={styles.modalMessage}>{message}</Text>
+              <View style={styles.modalButtonsContainer}>
+                {buttons.map((button, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.modalButton,
+                      buttons.length > 1 && index === 0 && styles.modalCancelButton
+                    ]}
+                    onPress={button.onPress}
+                  >
+                    <Text style={[
+                      styles.modalButtonText,
+                      buttons.length > 1 && index === 0 && styles.modalCancelButtonText
+                    ]}>
+                      {button.text ? String(button.text) : "לחץ כאן"}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </Pressable>
           </KeyboardAvoidingView>
         </View>
       </TouchableWithoutFeedback>
     </Modal>
+
   );
 };
 
 export default AlertModal;
 
 const styles = StyleSheet.create({
-  modalOverlay: theme.modal.modalOverlay,
-  centeredView: {
+  modalOverlay: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingTop: "50%",
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  scrollViewContent: theme.modal.scrollViewContent,
+  centeredView: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
   modalView: {
     ...theme.modal.modalView,
     width: 350,
-    padding: 20,
+    padding: 24,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    alignItems: 'center',
   },
   modalTitle: {
     fontSize: constats.sizes.font.mediumPlus,
@@ -89,15 +91,14 @@ const styles = StyleSheet.create({
   },
   modalMessage: {
     fontSize: constats.sizes.font.medium,
-    marginBottom: 8,
-    textAlign: 'right',
+    marginBottom: 20,
+    textAlign: 'center',
     color: '#333',
   },
   modalButtonsContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
     gap: 10,
   },
   modalButton: {
@@ -105,12 +106,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 12,
-    flex: 1,
-    marginLeft: 8,
     alignItems: 'center',
     height: 50,
+    maxWidth: 150,
     flex: 1,
-    maxWidth: 200,
   },
   modalButtonText: theme.modal.modalSaveButtonText,
   modalCancelButton: {
@@ -120,3 +119,4 @@ const styles = StyleSheet.create({
     color: "#000"
   }
 });
+
