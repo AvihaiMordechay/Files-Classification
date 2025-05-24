@@ -114,7 +114,7 @@ export const createDB = async (id, name, gender) => {
                 name TEXT NOT NULL, 
                 folderId INTEGER NOT NULL,
                 type TEXT NOT NULL,
-                path TEXT NOT NULL UNIQUE,
+                path TEXT NOT NULL,
                 isFavorite INTEGER NOT NULL DEFAULT 0, 
                 lastViewed TEXT DEFAULT NULL,
                 FOREIGN KEY (folderId) REFERENCES ${FOLDERS} (id) ON DELETE CASCADE,
@@ -440,7 +440,7 @@ export const updateFolderName = async (newName, id) => {
   });
 };
 
-export const deleteFolder = async (folderId) => {
+export const deleteFolderDB = async (folderId) => {
   return safeDBOperation(async () => {
     if (!folderId) {
       throw new Error('Folder ID is required');
@@ -496,7 +496,7 @@ export const addFileToFolder = async (name, folderId, type, path) => {
     } catch (error) {
       if (error.message && error.message.includes('UNIQUE constraint failed')) {
         console.log(
-          `File with name '${name}' already exists in folder ${folderId} or path '${path}' is already used`
+          `File with name '${name}' already exists in folder ${folderId}`
         );
         throw new Error('File already exists');
       }
@@ -617,14 +617,14 @@ export const markFileAsFavorite = async (value, fileId) => {
 };
 
 export const updateFilePath = async (path, fileId) => {
-      return safeDBOperation(async () => {
-    if (!fileId||!path) {
+  return safeDBOperation(async () => {
+    if (!fileId || !path) {
       throw new Error('File ID and Path are required');
     }
     const rowsUpdated = await updateElement(
       FILES,
       'path',
-      fileId,
+      path,
       'id',
       fileId
     );

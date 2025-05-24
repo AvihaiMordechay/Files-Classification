@@ -16,25 +16,27 @@ import AlertModal from "./AlertModal";
 
 const CategoryListModel = ({ visible, onClose, attachedFile }) => {
   const { user } = useUser();
-  const [changeFileNameModelVisible, setChangeFileNameModelVisible] =
-    useState(false);
+  const [changeFileNameModelVisible, setChangeFileNameModelVisible] = useState(false);
   const [folderId, setFolderId] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [alert, setAlert] = useState(false);
+  const folderNames = Object.keys(user?.folders || {});
+
   const closeModal = () => {
-    setModalVisible(false);
+    setAlert(false);
     onClose();
   };
+
   const handleFolderSelect = async (folderName) => {
+    console.log(folderName);
+    console.log(attachedFile);
     const folder = user.folders[folderName];
     if (!folder) {
-      setModalVisible(true); //setting the alertModel
+      setAlert(true);
       return;
     }
     setFolderId(folder.id);
     setChangeFileNameModelVisible(true);
-    onClose();
   };
-  const folderNames = Object.keys(user?.folders || {});
 
   return (
     <>
@@ -72,14 +74,17 @@ const CategoryListModel = ({ visible, onClose, attachedFile }) => {
 
       <VerifyFileNameModal
         visible={changeFileNameModelVisible}
-        onClose={() => setChangeFileNameModelVisible(false)}
+        onClose={() => {
+          setChangeFileNameModelVisible(false)
+          closeModal();
+        }}
         name={attachedFile.name}
         folderId={folderId}
         type={attachedFile.mimeType}
         path={attachedFile.uri}
       />
       <AlertModal
-        visible={modalVisible}
+        visible={alert}
         onClose={closeModal}
         title="שגיאה"
         message="התייקיה לא קיימת"

@@ -11,17 +11,12 @@ import AlertModal from './modals/AlertModal';
 const UploadFile = ({ file }) => {
   const { user, createNewFolder } = useUser();
   const [newCategoryModalVisible, setNewCategoryModalVisible] = useState(false);
-  const [existCategoryModalVisible, setExistCategoryModalVisible] =
-    useState(false);
-  const [failedRecognitionModelVisible, setFailedRecognitionModelVisible] =
-    useState(false);
-  const [createFolderModalVisible, setCreateFolderModalVisible] =
-    useState(false);
+  const [existCategoryModalVisible, setExistCategoryModalVisible] = useState(false);
+  const [failedRecognitionModelVisible, setFailedRecognitionModelVisible] = useState(false);
+  const [createFolderModalVisible, setCreateFolderModalVisible] = useState(false);
   const [category, setCategory] = useState(null);
-  const [categoryListModelVisible, setCategoryListModelVisible] =
-    useState(false);
-  const [changeFileNameModelVisible, setChangeFileNameModelVisible] =
-    useState(false);
+  const [categoryListModelVisible, setCategoryListModelVisible] = useState(false);
+  const [changeFileNameModelVisible, setChangeFileNameModelVisible] = useState(false);
   const [folderId, setFolderId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
@@ -219,32 +214,43 @@ const UploadFile = ({ file }) => {
           ]}
           onClose={() => setFailedRecognitionModelVisible(false)}
         />
-        <CreateFolderModal
-          visible={createFolderModalVisible}
-          onClose={() => setCreateFolderModalVisible(false)}
-          attachedFile={file}
-        />
-        <CategoryListModel
-          visible={categoryListModelVisible}
-          onClose={() => setCategoryListModelVisible(false)}
-          attachedFile={file}
-        />
-        <AlertModal
-          visible={alertVisible}
-          title={alertTitle}
-          message={alertMessage}
-          buttons={alertButtons}
-        />
+        {createFolderModalVisible && (
+          <CreateFolderModal
+            visible={createFolderModalVisible}
+            onClose={() => setCreateFolderModalVisible(false)}
+            attachedFile={file}
+          />
+        )}
+
+        {categoryListModelVisible && (
+          <CategoryListModel
+            visible={categoryListModelVisible}
+            onClose={() => setCategoryListModelVisible(false)}
+            attachedFile={file}
+          />
+        )}
+
+        {alertVisible && (
+          <AlertModal
+            visible={alertVisible}
+            title={alertTitle}
+            message={alertMessage}
+            buttons={alertButtons}
+          />
+        )}
       </View>
 
-      <VerifyFileNameModal
-        visible={changeFileNameModelVisible}
-        onClose={() => setChangeFileNameModelVisible(false)}
-        name={file.name}
-        folderId={folderId}
-        type={file.mimeType}
-        path={file.uri}
-      />
+      {changeFileNameModelVisible && (
+        <VerifyFileNameModal
+          visible={changeFileNameModelVisible}
+          onClose={() => setChangeFileNameModelVisible(false)}
+          name={file.name}
+          folderId={folderId}
+          type={file.mimeType}
+          path={file.uri}
+        />
+      )}
+
     </>
   );
 };

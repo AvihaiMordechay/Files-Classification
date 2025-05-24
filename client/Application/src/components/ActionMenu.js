@@ -8,6 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { PDFDocument } from 'pdf-lib';
 import * as FileSystem from 'expo-file-system';
+import { initDB, resetDatabaseState } from '../services/database';
 
 const OFFSET = 60;
 
@@ -67,6 +68,8 @@ const ActionMenu = () => {
         handlePlusPress();
         try {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            await resetDatabaseState();
+            await initDB();
             if (status !== 'granted') {
                 console.log("permission to access the gallery was denied");
                 return;
@@ -103,6 +106,8 @@ const ActionMenu = () => {
             const result = await DocumentPicker.getDocumentAsync({
                 type: ['application/pdf', 'image/*'],
             });
+            await resetDatabaseState();
+            await initDB();
 
             if (result.type === 'cancel') {
                 console.log("The user cancel the action");
@@ -131,11 +136,9 @@ const ActionMenu = () => {
                         return;
                     } else {
                         setFile(file);
-                        console.log("The File:", file);
                     }
                 } else {
                     setFile(file);
-                    console.log("The File", file);
                 }
             }
         } catch (error) {

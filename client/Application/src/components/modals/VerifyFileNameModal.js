@@ -22,7 +22,7 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isN
     const [newFileName, setNewFileName] = useState("");
     const [error, setError] = useState("");
 
-    const isNameTooLong = name.length > 20;
+    const isExistNameTooLong = name.length > 20;
 
     const handleClose = () => {
         setNewFileName("");
@@ -50,6 +50,7 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isN
     };
 
     const handleRemainName = async () => {
+        console.log(await isFileExist(folderId, name));
         try {
             if (await isFileExist(folderId, name)) {
                 setError("שם קובץ קיים בתיקייה, אנא בחר שם אחר");
@@ -108,30 +109,38 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, isN
                                             setNewFileName(text);
                                             setError("");
                                         }}
-                                        editable={!isNameTooLong}
                                     />
                                 </View>
 
-                                {isNameTooLong && (
-                                    <Text style={styles.errorText}>שם הקובץ חורג מהגודל המותר</Text>
+                                {isExistNameTooLong && (
+                                    <Text style={styles.errorText}>
+                                        שם הקובץ הנוכחי ארוך מדי. נא להזין שם חדש.
+                                    </Text>
                                 )}
 
-                                {!isNameTooLong && error ? (
+                                {!isExistNameTooLong && error ? (
                                     <Text style={styles.errorText}>{error}</Text>
                                 ) : null}
 
                                 <View style={styles.modalButtonsContainer}>
-                                    <TouchableOpacity style={styles.modalCancelButton} onPress={handleRemainName}>
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.modalCancelButton,
+                                            isExistNameTooLong && styles.disabledButton
+                                        ]}
+                                        onPress={handleRemainName}
+                                        disabled={isExistNameTooLong}
+                                    >
                                         <Text style={styles.modalCancelButtonText}>השאר נוכחי</Text>
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
                                         style={[
                                             styles.modalSaveButton,
-                                            (!newFileName || isNameTooLong) && styles.disabledButton
+                                            (!newFileName || newFileName.length > 20) && styles.disabledButton
                                         ]}
                                         onPress={handleChangeFileName}
-                                        disabled={!newFileName || isNameTooLong}
+                                        disabled={!newFileName || newFileName.length > 20}
                                     >
                                         <Text style={styles.modalSaveButtonText}>החלף</Text>
                                     </TouchableOpacity>

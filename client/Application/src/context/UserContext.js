@@ -3,7 +3,9 @@ import { Alert, AppState } from 'react-native';
 import { auth } from '../services/firebase';
 import AlertModal from '../components/modals/AlertModal';
 import {
+  deleteAllAppDataFromLocalStorage,
   deleteFileFromLocalStorage,
+  deleteFolderFromLocalStorage,
   fileExistsInStorage,
   saveFileToAppStorage,
 } from '../services/localFileSystem';
@@ -29,6 +31,7 @@ import {
   resetDatabaseState,
   updateFilePath,
   updateFolderName,
+  deleteFolderDB,
 } from "../services/database";
 
 const UserContext = createContext();
@@ -234,7 +237,12 @@ export const UserProvider = ({ children }) => {
     let newPath;
     try {
       fileId = await addFileToFolder(name, folderId, type, 'tmp');
-      newPath = await saveFileToAppStorage(tempPath, fileId, folderId);
+
+      try {
+        newPath = await saveFileToAppStorage(tempPath, fileId, folderId);
+      } catch (error) {
+        deleteFileFromFolder(fileId);
+      }
       try {
         await updateFilePath(fileId, newPath)
       } catch (error) {
@@ -242,6 +250,7 @@ export const UserProvider = ({ children }) => {
         await deleteFileFromLocalStorage(newPath);
         throw error;
       }
+
       setUser((prevUser) => {
         const updatedFolders = { ...prevUser.folders };
         const folderEntry = Object.entries(updatedFolders).find(
@@ -383,12 +392,7 @@ export const UserProvider = ({ children }) => {
   const deleteAccount = async () => {
     try {
       if (user && user.folders) {
-        const deletionPromises = Object.values(user.folders).flatMap((folder) =>
-          Object.values(folder.files).map((file) =>
-            deleteFileFromLocalStorage(file.path)
-          )
-        );
-        await Promise.all(deletionPromises);
+        await deleteAllAppDataFromLocalStorage();
       }
 
       await resetDatabaseState();
@@ -509,6 +513,41 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const deleteFolder = async (folderName) => {
+    if (!user) return;
+
+    try {
+      const folderId = user.folders[folderName].id;
+
+      await deleteFolderFromLocalStorage(folderId);
+      await deleteFolderDB(folderId);
+
+      setUser((prevUser) => {
+        const updatedFolders = { ...prevUser.folders };
+        delete updatedFolders[folderName];
+
+        const updatedFavorites = prevUser.favorites.filter(
+          (fav) => fav.folderName !== folderName
+        );
+
+        return {
+          ...prevUser,
+          folders: updatedFolders,
+          favorites: updatedFavorites,
+        };
+      });
+
+      setAlertTitle('הצלחה');
+      setAlertMessage('התיקייה נמחקה בהצלחה');
+      setAlertVisible(true);
+    } catch (error) {
+      console.log("error with deleteFolder: ", error);
+      setAlertTitle('שגיאה');
+      setAlertMessage('לא ניתן למחוק את התיקייה כעת');
+      setAlertVisible(true);
+    }
+  }
+
   return (
     <UserContext.Provider value={{
       user,
@@ -526,7 +565,8 @@ export const UserProvider = ({ children }) => {
       updateLastViewedToFile,
       changeFileName,
       changeFolderName,
-      deleteFile
+      deleteFile,
+      deleteFolder
     }}>
       {!loading && children}
       <AlertModal

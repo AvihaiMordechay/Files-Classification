@@ -101,3 +101,39 @@ export async function deleteFileFromLocalStorage(filePath) {
         return false;
     }
 }
+
+export async function deleteFolderFromLocalStorage(folderId) {
+    const folderPath = APP_DIRECTORY + folderId + "/";
+
+    try {
+        const folderInfo = await FileSystem.getInfoAsync(folderPath);
+        if (!folderInfo.exists) {
+            return false;
+        }
+
+        await FileSystem.deleteAsync(folderPath, { idempotent: true });
+        console.log(`Folder deleted: ${folderPath}`);
+        return true;
+    } catch (error) {
+        console.log('Error deleting folder:', error);
+        throw error;
+    }
+}
+
+export async function deleteAllAppDataFromLocalStorage() {
+    try {
+        const dirInfo = await FileSystem.getInfoAsync(APP_DIRECTORY);
+        if (!dirInfo.exists) {
+            console.log('App directory does not exist');
+            return false;
+        }
+
+        await FileSystem.deleteAsync(APP_DIRECTORY, { idempotent: true });
+        console.log('All app data deleted from local storage');
+        return true;
+    } catch (error) {
+        console.log('Error deleting app storage:', error);
+        throw error;
+    }
+}
+

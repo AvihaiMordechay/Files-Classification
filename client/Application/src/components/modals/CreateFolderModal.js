@@ -35,6 +35,7 @@ const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
     setFolderError('');
     onClose();
   };
+
   const handleNewFolder = async () => {
     setFolderError('');
     if (!newFolderName.trim()) {
@@ -46,15 +47,19 @@ const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
     }
 
     try {
+      const id = await createNewFolder(newFolderName.trim(), !attachedFile);
+      setFolderId(id);
+
       if (attachedFile) {
-        const id = await createNewFolder(newFolderName.trim(), false);
-        setFolderId(id);
         setAlertTitle('צרף קובץ');
         setAlertMessage('האם לצרף את הקובץ לתיקייה החדשה?');
         setAlertButtons([
           {
             text: 'לא',
-            onPress: () => setAlertVisible(false),
+            onPress: () => {
+              setAlertVisible(false);
+              handleClose();
+            },
           },
           {
             text: 'כן',
@@ -66,15 +71,22 @@ const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
         ]);
         setAlertVisible(true);
       } else {
-        const id = await createNewFolder(newFolderName);
-        setFolderId(id);
+        handleClose();
       }
-      handleClose();
     } catch (error) {
       if (error.message === 'already exist') {
         setFolderError(`התיקייה כבר קיימת במערכת`);
       } else {
         console.log(error);
+        setAlertTitle('שגיאה');
+        setAlertMessage('לא ניתן לצרף את הקובץ');
+        setAlertButtons([
+          {
+            text: 'סגור',
+            onPress: () => setAlertVisible(false),
+          },
+        ]);
+        setAlertVisible(true);
       }
     }
   };
@@ -151,10 +163,14 @@ const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+
       {attachedFile && (
         <VerifyFileNameModal
           visible={changeFileNameModelVisible}
-          onClose={() => setChangeFileNameModelVisible(false)}
+          onClose={() => {
+            setChangeFileNameModelVisible(false);
+            handleClose();
+          }}
           name={attachedFile.name}
           folderId={folderId}
           type={attachedFile.mimeType}

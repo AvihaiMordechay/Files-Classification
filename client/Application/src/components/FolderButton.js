@@ -5,8 +5,10 @@ import constats from '../styles/constats';
 import ActionSheet from 'react-native-actions-sheet';
 import ChangeFolderNameModal from './modals/ChangeFolderNameModal';
 import AlertModal from './modals/AlertModal';
+import { useUser } from '../context/UserContext';
 
 const FolderButton = ({ folder, onPress }) => {
+    const { deleteFolder } = useUser();
     const [changeFolderNameModalVisible, setChangeFolderNameModalVisible] = useState(false);
     const [deleteFolderModalVisible, setDeleteFolderModalVisible] = useState(false);
     const actionSheetRef = useRef(null);
@@ -29,6 +31,7 @@ const FolderButton = ({ folder, onPress }) => {
     };
 
     const hangleDeleteFile = async () => {
+        await deleteFolder(folder.name)
         setDeleteFolderModalVisible(false);
     }
 
