@@ -241,13 +241,13 @@ export const UserProvider = ({ children }) => {
       try {
         newPath = await saveFileToAppStorage(tempPath, fileId, folderId);
       } catch (error) {
-        deleteFileFromFolder(fileId);
+        await deleteFileFromFolder(fileId);
       }
       try {
         await updateFilePath(fileId, newPath)
       } catch (error) {
-        console.log(error);
         await deleteFileFromLocalStorage(newPath);
+        await deleteFileFromFolder(fileId);
         throw error;
       }
 

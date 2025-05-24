@@ -21,7 +21,7 @@ const Spinner = ({ visible = false, text = 'טוען...', isUploadFile = false }
                                 : require('../../assets/Spinner.json')
                         } autoPlay
                         loop
-                        style={styles.spinner}
+                        style={[styles.spinner, isUploadFile && styles.uploadOffset]}
                     />
                     <Text style={[
                         styles.text,
@@ -45,11 +45,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.1)',
     },
+    uploadOffset: {
+        marginBottom: 10,
+    },
     container: {
-        padding: 30,
-        borderRadius: 10,
+        padding: 28,
+        borderRadius: 15,
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: '#EEEEEEFF'
+
     },
     text: {
         color: '#212121D9',
