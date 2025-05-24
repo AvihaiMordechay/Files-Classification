@@ -17,6 +17,7 @@ import { useUser } from '../context/UserContext';
 import PdfViewer from '../components/PdfViewer';
 import AlertModal from '../components/modals/AlertModal';
 import ChangeFileNameModal from '../components/modals/ChangeFileNameModal';
+import strings from '../styles/strings';
 
 const FileScreen = ({ route }) => {
   const { file, folderName } = route.params || {};
@@ -59,7 +60,7 @@ const FileScreen = ({ route }) => {
     try {
       await markAsFavorite(newFavoriteState, file.id, folderName);
     } catch (error) {
-      console.error('שגיאה בהוספת המועדף', error);
+      console.log('שגיאה בהוספת המועדף', error);
       setLocalFavorite(localFavorite);
     }
   };
@@ -89,7 +90,7 @@ const FileScreen = ({ route }) => {
             setLoading(false);
           })
           .catch((err) => {
-            console.error('error with open file', err);
+            console.log('error with open file', err);
             setLoading(false);
           });
       } else {
@@ -106,8 +107,8 @@ const FileScreen = ({ route }) => {
     try {
       const isAvailable = await Sharing.isAvailableAsync();
       if (!isAvailable) {
-        setAlertTitle('שגיאה');
-        setAlertMessage('שיתוף לא זמין במכשיר הזה');
+        setAlertTitle(strings.alert.titleError);
+        setAlertMessage(strings.errors.sharingNotAvailable);
         setAlertVisible(true);
         return;
       }
@@ -144,9 +145,9 @@ const FileScreen = ({ route }) => {
         await Sharing.shareAsync(file.path);
       }
     } catch (error) {
-      console.error('שגיאה בשיתוף הקובץ:', error);
-      setAlertTitle('שגיאה');
-      setAlertMessage('שגיאה בשיתוף הקובץ');
+      console.log('שגיאה בשיתוף הקובץ:', error);
+      setAlertTitle(strings.alert.titleError);
+      setAlertMessage(strings.errors.sharingFailed);
       setAlertVisible(true);
     } finally {
       setIsSharing(false);
@@ -158,7 +159,7 @@ const FileScreen = ({ route }) => {
   if (!file) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>No file provided</Text>
+        <Text style={styles.errorText}>{strings.errors.NoFileProvided}</Text>
       </View>
     );
   }
@@ -200,20 +201,20 @@ const FileScreen = ({ route }) => {
           onPress={() => setChangeFileNameModalVisible(true)}
         >
           <Ionicons name="pencil-outline" size={28} color="#333" />
-          <Text style={styles.iconLabel}>שנה שם</Text>
+          <Text style={styles.iconLabel}>{strings.fileScreen.rename}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
           <Ionicons name="share-social-outline" size={28} color="#333" />
-          <Text style={styles.iconLabel}>שתף</Text>
+          <Text style={styles.iconLabel}>{strings.fileScreen.share}</Text>
         </TouchableOpacity>
       </View>
       <AlertModal
         visible={alertVisible}
         onClose={() => setAlertVisible(false)}
-        title={alertTitle || 'שגיאה'}
+        title={alertTitle || strings.alert.titleError}
         message={alertMessage}
-        buttons={[{ text: 'סגור', onPress: () => setAlertVisible(false) }]}
+        buttons={[{ text: strings.alert.close, onPress: () => setAlertVisible(false) }]}
       />
       <ChangeFileNameModal
         visible={changeFileNameModalVisible}

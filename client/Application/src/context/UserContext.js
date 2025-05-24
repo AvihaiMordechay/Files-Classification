@@ -414,7 +414,7 @@ export const UserProvider = ({ children }) => {
       setUser(null);
       setUserStatus('unauthenticated');
     } catch (error) {
-      console.error('Error in deleteAccount:', error);
+      console.log('Error in deleteAccount:', error);
       setAlertTitle('שגיאה');
       setAlertMessage('לא ניתן למחוק את המשתמש כעת');
       setAlertVisible(true);

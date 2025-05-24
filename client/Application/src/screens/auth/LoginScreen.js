@@ -8,7 +8,6 @@ import {
   StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
-  Alert,
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
@@ -20,26 +19,29 @@ import { updateLastLogin } from '../../services/database';
 import { useUser } from '../../context/UserContext';
 import ForgetPasswordModal from '../../components/modals/ForgetPasswordModal';
 import AlertModal from '../../components/modals/AlertModal';
+import strings from '../../styles/strings';
+
+const { validation, placeholders, buttons, errors } = strings.loginScreen;
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
     .matches(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      'אימייל לא תקין'
+      validation.emailInvalid
     )
-    .required('יש למלא אימייל'),
+    .required(validation.emailRequired),
   password: Yup.string()
-    .required('יש למלא סיסמה')
-    .min(8, 'הסיסמה חייבת להיות באורך של לפחות 8 תווים'),
+    .required(validation.passwordRequired)
+    .min(8, validation.passwordMinLength),
 });
 
 const LoginScreen = ({ navigation }) => {
   const { loadUser } = useUser();
-  const [isForgetPasswordModalVisible, setIsForgetPasswordModalVisible] =
-    useState(false);
-  const [alertVisible, setAlertVisible] = useState(false); // for managing alert visibility
-  const [alertMessage, setAlertMessage] = useState(''); // for holding the alert message
-  const [alertTitle, setAlertTitle] = useState(''); // for holding the alert title
+  const [isForgetPasswordModalVisible, setIsForgetPasswordModalVisible] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertTitle, setAlertTitle] = useState('');
+
   const handleLogin = async (values, { setFieldError }) => {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
@@ -48,29 +50,22 @@ const LoginScreen = ({ navigation }) => {
       navigation.replace('Application');
     } catch (error) {
       if (error.code === 'ERR_UNEXPECTED') {
-        setAlertTitle('שגיאה');
-        setAlertMessage('לא ניתן לטעון את המשתמש כעת, אנא נסה שנית');
+        setAlertTitle(strings.alert.titleError);
+        setAlertMessage(errors.unexpected);
         setAlertVisible(true);
       } else if (error.code === 'auth/network-request-failed') {
-        setAlertTitle('שגיאה');
-        setAlertMessage('אין חיבור לאינטרנט');
+        setAlertTitle(strings.alert.titleError);
+        setAlertMessage(errors.noInternet);
         setAlertVisible(true);
       } else if (error.code === 'auth/invalid-credential') {
-        setFieldError('email', 'האימייל או הסיסמה אינם נכונים');
+        setFieldError('email', validation.invalidCredentials);
       } else {
         console.log(error.code);
-        setAlertTitle('שגיאה');
-        setAlertMessage('אירעה שגיאה לא ידועה');
+        setAlertTitle(strings.alert.titleError);
+        setAlertMessage(errors.unknown);
         setAlertVisible(true);
       }
     }
-  };
-
-  const openForgetPasswordModal = () => {
-    setIsForgetPasswordModalVisible(true);
-  };
-  const closeForgetPasswordModal = () => {
-    setIsForgetPasswordModalVisible(false);
   };
 
   return (
@@ -82,29 +77,19 @@ const LoginScreen = ({ navigation }) => {
               <View style={styles.logoBox}></View>
               <View style={[styles.logoBox, styles.logoBoxOverlap]}></View>
             </View>
-            <Text style={styles.title}>Files Classification</Text>
+            <Text style={styles.title}>{strings.title}</Text>
 
             <Formik
-              initialValues={{
-                email: '',
-                password: '',
-              }}
+              initialValues={{ email: '', password: '' }}
               validationSchema={validationSchema}
               onSubmit={handleLogin}
             >
-              {({
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                values,
-                errors,
-                touched,
-              }) => (
+              {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                 <View style={styles.form}>
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder="אימייל"
+                      placeholder={placeholders.email}
                       keyboardType="email-address"
                       onChangeText={handleChange('email')}
                       onBlur={handleBlur('email')}
@@ -118,7 +103,7 @@ const LoginScreen = ({ navigation }) => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder="סיסמה"
+                      placeholder={placeholders.password}
                       secureTextEntry
                       onChangeText={handleChange('password')}
                       onBlur={handleBlur('password')}
@@ -140,14 +125,14 @@ const LoginScreen = ({ navigation }) => {
                       }
                     }}
                   >
-                    <Text style={styles.buttonText}>התחבר</Text>
+                    <Text style={styles.buttonText}>{buttons.login}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     style={styles.linkButton}
-                    onPress={openForgetPasswordModal}
+                    onPress={() => setIsForgetPasswordModalVisible(true)}
                   >
-                    <Text style={styles.linkText}>שכחתי סיסמה</Text>
+                    <Text style={styles.linkText}>{buttons.forgotPassword}</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -157,14 +142,14 @@ const LoginScreen = ({ navigation }) => {
 
         <ForgetPasswordModal
           visible={isForgetPasswordModalVisible}
-          onClose={closeForgetPasswordModal}
+          onClose={() => setIsForgetPasswordModalVisible(false)}
         />
         <AlertModal
           visible={alertVisible}
           onClose={() => setAlertVisible(false)}
-          title={alertTitle || 'שגיאה'}
+          title={alertTitle}
           message={alertMessage}
-          buttons={[{ text: 'סגור', onPress: () => setAlertVisible(false) }]}
+          buttons={[{ text: strings.alert.close, onPress: () => setAlertVisible(false) }]}
         />
       </SafeAreaView>
     </SafeAreaProvider>

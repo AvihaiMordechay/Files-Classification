@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import constats from '../../styles/constats';
+import { useNavigation } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -19,33 +20,36 @@ import { auth } from '../../services/firebase';
 import theme from '../../styles/theme';
 import { useUser } from '../../context/UserContext';
 import AlertModal from '../../components/modals/AlertModal';
+import strings from '../../styles/strings';
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required('יש למלא שם מלא'),
+  name: Yup.string().required(strings.registrationScreen.validation.nameRequired),
   email: Yup.string()
     .matches(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      'אימייל לא תקין'
+      strings.registrationScreen.validation.emailInvalid
     )
-    .required('יש למלא אימייל'),
+    .required(strings.registrationScreen.validation.emailRequired),
   password: Yup.string()
-    .required('יש למלא סיסמה')
-    .min(8, 'הסיסמה חייבת להיות באורך של לפחות 8 תווים')
+    .required(strings.registrationScreen.validation.passwordRequired)
+    .min(8, strings.registrationScreen.validation.passwordMinLength)
     .matches(
       /^[A-Za-z0-9!@#$%^&*()_+=\-[\]{};':"\\|,.<>/?`~]*$/,
-      'הסיסמה חייבת להכיל אותיות באנגלית, מספרים או סימנים מיוחדים בלבד'
+      strings.registrationScreen.validation.passwordPattern
     ),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password')], 'הסיסמאות אינן תואמות')
-    .required('יש לאמת את הסיסמה'),
-  gender: Yup.string().required('יש לבחור מגדר'),
+    .oneOf([Yup.ref('password')], strings.registrationScreen.validation.confirmPasswordMismatch)
+    .required(strings.registrationScreen.validation.confirmPasswordRequired),
+  gender: Yup.string().required(strings.registrationScreen.validation.genderRequired),
 });
 
-const RegistrationScreen = ({ navigation }) => {
+const RegistrationScreen = () => {
   const { createUser, loadUser } = useUser();
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertTitle, setAlertTitle] = useState('');
+  const navigation = useNavigation();
+
 
   const handleRegister = async (values, { setFieldError }) => {
     try {
@@ -64,11 +68,11 @@ const RegistrationScreen = ({ navigation }) => {
           values.email
         );
         await loadUser();
-        navigation.replace('Application');
+        navigation.navigate('Application');
       } catch (dbError) {
         if (dbError.code === 'ERR_UNEXPECTED') {
-          setAlertTitle('שגיאה');
-          setAlertMessage('לא ניתן ליצור את המשתמש כעת, אנא נסה שנית');
+          setAlertTitle(strings.alert.titleError);
+          setAlertMessage(strings.errors.dbCreateUserFailed);
           setAlertVisible(true);
         }
         await deleteUser(firebaseUserAuth);
@@ -76,17 +80,17 @@ const RegistrationScreen = ({ navigation }) => {
       }
     } catch (error) {
       if (error.code === 'auth/network-request-failed') {
-        setAlertTitle('שגיאה');
-        setAlertMessage('אין חיבור לאינטרנט');
+        setAlertTitle(strings.alert.titleError);
+        setAlertMessage(strings.errors.networkFailed);
         setAlertVisible(true);
       } else if (error.code === 'auth/email-already-in-use') {
-        setFieldError('email', 'האימייל כבר קיים במערכת');
+        setFieldError('email', strings.errors.emailAlreadyInUse);
       } else {
-        setAlertTitle('שגיאה');
-        setAlertMessage('לא ניתן להירשם כעת, אנא נסה שנית');
+        setAlertTitle(strings.alert.titleError);
+        setAlertMessage(strings.errors.generalRegisteritionError);
         setAlertVisible(true);
       }
-      console.error('Error creating user:', error.message);
+      console.log('Error creating user:', error.message);
     }
   };
 
@@ -99,7 +103,7 @@ const RegistrationScreen = ({ navigation }) => {
               <View style={styles.logoBox}></View>
               <View style={[styles.logoBox, styles.logoBoxOverlap]}></View>
             </View>
-            <Text style={styles.title}>Files Classifiction</Text>
+            <Text style={styles.title}>{strings.title}</Text>
 
             <Formik
               initialValues={{
@@ -125,7 +129,7 @@ const RegistrationScreen = ({ navigation }) => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder="שם"
+                      placeholder={strings.registrationScreen.inputs.namePlaceholder}
                       onChangeText={handleChange('name')}
                       onBlur={handleBlur('name')}
                       value={values.name}
@@ -177,7 +181,7 @@ const RegistrationScreen = ({ navigation }) => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder="אימייל"
+                      placeholder={strings.registrationScreen.inputs.emailPlaceholder}
                       keyboardType="email-address"
                       onChangeText={handleChange('email')}
                       onBlur={handleBlur('email')}
@@ -191,7 +195,7 @@ const RegistrationScreen = ({ navigation }) => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder="סיסמה"
+                      placeholder={strings.registrationScreen.inputs.passwordPlaceholder}
                       secureTextEntry
                       onChangeText={handleChange('password')}
                       onBlur={handleBlur('password')}
@@ -205,7 +209,7 @@ const RegistrationScreen = ({ navigation }) => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder="אימות סיסמה"
+                      placeholder={strings.registrationScreen.inputs.confirmPasswordPlaceholder}
                       secureTextEntry
                       onChangeText={handleChange('confirmPassword')}
                       onBlur={handleBlur('confirmPassword')}
@@ -229,15 +233,15 @@ const RegistrationScreen = ({ navigation }) => {
                       }
                     }}
                   >
-                    <Text style={styles.buttonText}>הרשם</Text>
+                    <Text style={styles.buttonText}>{strings.registrationScreen.buttons.register}</Text>
                   </TouchableOpacity>
                   <AlertModal
                     visible={alertVisible}
                     onClose={() => setAlertVisible(false)}
-                    title={alertTitle || 'שגיאה'}
+                    title={alertTitle || strings.alert.titleError}
                     message={alertMessage}
                     buttons={[
-                      { text: 'סגור', onPress: () => setAlertVisible(false) },
+                      { text: strings.alert.close, onPress: () => setAlertVisible(false) },
                     ]}
                   />
                 </View>

@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import constats from '../styles/constats';
 import { useNavigation } from '@react-navigation/native';
+import strings from '../styles/strings';
 
 const onboardingPages = [
     {
         id: 1,
-        title: 'ברוכים הבאים\nלאפליקציה לניהול מסמכים',
-        startText: 'בואו נתחיל!'
+        title: strings.onboarding.page1.title,
+        startText: strings.onboarding.page1.button
     },
     {
         id: 2,
-        title: 'על האפליקציה',
-        startText: 'הרשמו עכשיו'
+        title: strings.onboarding.page2.title,
+        startText: strings.onboarding.page2.button
     }
 ];
 
@@ -33,18 +34,15 @@ const OnboardingScreen = () => {
         if (page.id === 1) {
             return (
                 <Text style={styles.description}>
-                    הפכו את ניהול הקבצים שלכם לפשוט, מהיר ויעיל.{"\n"}
-                    כל המסמכים במקום אחד ובנגישות מלאה.
+                    {strings.onboarding.page1.description}
                 </Text>
             );
         } else if (page.id === 2) {
             return (
                 <Text style={styles.description}>
-                    האפליקציה שלנו מאפשרת לכם לאחסן קבצים ותמונות בצורה חכמה באמצעות עיבוד תמונה.{"\n"}
-                    יצרנו ממשק פשוט ונוח שמאפשר למצוא מסמכים חשובים במהירות ובקלות.{"\n\n"}
-                    כשתעלו קובץ, האפליקציה תזהה באופן אוטומטי אחת מארבעת הקטגוריות:{"\n"}
-                    <Text style={styles.bold}>תחבורה, פיננסי, השכלה או רפואה.</Text>{"\n\n"}
-                    תוכלו גם לבחור בעצמכם איך לארגן את התיקיות שלכם, כדי שניהול המסמכים יתאים בדיוק לצרכים שלכם.
+                    {strings.onboarding.page2.descriptionPart1}
+                    <Text style={styles.bold}>{strings.onboarding.page2.boldText}</Text>
+                    {strings.onboarding.page2.descriptionPart2}
                 </Text>
             );
         }
