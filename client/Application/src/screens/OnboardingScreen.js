@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import constats from '../styles/constats';
-import { useNavigation } from '@react-navigation/native';
 import strings from '../styles/strings';
+import RegistrationScreen from './auth/RegistrationScreen';
 
 const onboardingPages = [
     {
@@ -19,24 +19,20 @@ const onboardingPages = [
 
 const OnboardingScreen = () => {
     const [pageIndex, setPageIndex] = useState(0);
-    const navigation = useNavigation();
+    const [showRegistration, setShowRegistration] = useState(false);
     const page = onboardingPages[pageIndex];
 
     const setPage = () => {
         if (pageIndex === 0) {
             setPageIndex(1);
         } else {
-            navigation.navigate('Registration');
+            setShowRegistration(true);
         }
     };
 
     const renderDescription = () => {
         if (page.id === 1) {
-            return (
-                <Text style={styles.description}>
-                    {strings.onboarding.page1.description}
-                </Text>
-            );
+            return <Text style={styles.description}>{strings.onboarding.page1.description}</Text>;
         } else if (page.id === 2) {
             return (
                 <Text style={styles.description}>
@@ -48,6 +44,10 @@ const OnboardingScreen = () => {
         }
         return null;
     };
+
+    if (showRegistration) {
+        return <RegistrationScreen />;
+    }
 
     return (
         <View style={styles.container}>

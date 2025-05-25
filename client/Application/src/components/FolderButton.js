@@ -7,7 +7,7 @@ import ChangeFolderNameModal from './modals/ChangeFolderNameModal';
 import AlertModal from './modals/AlertModal';
 import { useUser } from '../context/UserContext';
 
-const FolderButton = ({ folder, onPress }) => {
+const FolderButton = ({ folder, onPress, setResultSearch = null }) => {
     const { deleteFolder } = useUser();
     const [changeFolderNameModalVisible, setChangeFolderNameModalVisible] = useState(false);
     const [deleteFolderModalVisible, setDeleteFolderModalVisible] = useState(false);
@@ -31,7 +31,10 @@ const FolderButton = ({ folder, onPress }) => {
     };
 
     const hangleDeleteFile = async () => {
-        await deleteFolder(folder.name)
+        await deleteFolder(folder.name);
+        if (setResultSearch) {
+            setResultSearch(prev => prev.filter(item => item.name !== folder.name));
+        }
         setDeleteFolderModalVisible(false);
     }
 

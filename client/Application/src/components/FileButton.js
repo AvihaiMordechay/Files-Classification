@@ -7,7 +7,7 @@ import ActionSheet from 'react-native-actions-sheet';
 import ChangeFileNameModal from './modals/ChangeFileNameModal';
 import AlertModal from './modals/AlertModal';
 
-const FileButton = ({ file, onPress, folderName, presentFolderName = false }) => {
+const FileButton = ({ file, onPress, folderName, presentFolderName = false, setResultSearch = null }) => {
     const { markAsFavorite, user, deleteFile } = useUser();
     const [changeFileNameModalVisible, setChangeFileNameModalVisible] = useState(false);
     const [deleteFileModalVisible, setDeleteFileModalVisible] = useState(false);
@@ -41,6 +41,9 @@ const FileButton = ({ file, onPress, folderName, presentFolderName = false }) =>
 
     const hangleDeleteFile = async () => {
         await deleteFile(folderName, file.id);
+        if (setResultSearch) {
+            setResultSearch(prev => prev.filter(item => item.id !== file.id));
+        }
         setDeleteFileModalVisible(false);
     }
 

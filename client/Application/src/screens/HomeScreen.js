@@ -29,7 +29,7 @@ const HomeScreen = ({ navigation }) => {
         } else if (item.type === 'file') {
             navigation.navigate('File', {
                 file: item,
-                folderName:item.folderName
+                folderName: item.folderName
             });
         }
     };
@@ -59,6 +59,7 @@ const HomeScreen = ({ navigation }) => {
                                             key={`folder-${item.id}`}
                                             folder={item}
                                             onPress={() => handleItemPress(item)}
+                                            setResultSearch={setResultSearch}
                                         />
                                     );
                                 } else if (item.type === 'file') {
@@ -69,6 +70,7 @@ const HomeScreen = ({ navigation }) => {
                                             onPress={() => handleItemPress(item)}
                                             folderName={item.folderName}
                                             presentFolderName={true}
+                                            setResultSearch={setResultSearch}
                                         />
                                     );
                                 }

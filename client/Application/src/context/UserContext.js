@@ -67,7 +67,6 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       await resetDatabaseState();
-
       if (await isFirstTime()) {
         setUser(null);
         setUserStatus('new');
