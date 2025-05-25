@@ -1,4 +1,3 @@
-// Fixed UserContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AppState } from 'react-native';
 import { auth } from '../services/firebase';
@@ -214,7 +213,7 @@ export const UserProvider = ({ children }) => {
           [newName]: {
             id: folderId,
             filesCount: 0,
-            files: {}, // Fixed: should be empty object, not array
+            files: {},
           },
         },
       }));

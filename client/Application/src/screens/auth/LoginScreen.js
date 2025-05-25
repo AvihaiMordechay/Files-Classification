@@ -21,7 +21,7 @@ import ForgetPasswordModal from '../../components/modals/ForgetPasswordModal';
 import AlertModal from '../../components/modals/AlertModal';
 import strings from '../../styles/strings';
 
-const { validation, placeholders, buttons, errors } = strings.loginScreen;
+const { validation, placeholders, buttons } = strings.loginScreen;
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -51,18 +51,18 @@ const LoginScreen = ({ navigation }) => {
     } catch (error) {
       if (error.code === 'ERR_UNEXPECTED') {
         setAlertTitle(strings.alert.titleError);
-        setAlertMessage(errors.unexpected);
+        setAlertMessage(strings.errors.unexpected);
         setAlertVisible(true);
       } else if (error.code === 'auth/network-request-failed') {
         setAlertTitle(strings.alert.titleError);
-        setAlertMessage(errors.noInternet);
+        setAlertMessage(strings.errors.networkFailed);
         setAlertVisible(true);
       } else if (error.code === 'auth/invalid-credential') {
         setFieldError('email', validation.invalidCredentials);
       } else {
         console.log(error.code);
         setAlertTitle(strings.alert.titleError);
-        setAlertMessage(errors.unknown);
+        setAlertMessage(strings.errors.unknown);
         setAlertVisible(true);
       }
     }

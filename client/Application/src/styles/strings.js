@@ -8,6 +8,8 @@ export default {
         sharingNotAvailable: 'שיתוף לא זמין במכשיר הזה',
         sharingFailed: 'שגיאה בשיתוף הקובץ',
         NoFileProvided: 'לא סופק קובץ',
+        unexpected: 'לא ניתן לטעון את המשתמש כעת, אנא נסה שנית',
+        unknown: 'אירעה שגיאה לא ידועה',
     },
     alert: {
         close: 'סגור',
@@ -79,12 +81,7 @@ export default {
             passwordRequired: 'יש למלא סיסמה',
             passwordMinLength: 'הסיסמה חייבת להיות באורך של לפחות 8 תווים',
             invalidCredentials: 'האימייל או הסיסמה אינם נכונים',
-        },
-        errors: {
-            unexpected: 'לא ניתן לטעון את המשתמש כעת, אנא נסה שנית',
-            noInternet: 'אין חיבור לאינטרנט',
-            unknown: 'אירעה שגיאה לא ידועה',
-        },
+        }
     },
 
 };
