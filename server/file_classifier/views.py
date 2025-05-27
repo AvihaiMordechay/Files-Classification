@@ -45,8 +45,13 @@ def process_file(request):
                     category = "undefined"
                     message = "Text extracted successfully, but it's too short to classify reliably."
                 else:
-                    category = predict_category(extracted_text)
-                    message = "Text extracted and categorized successfully."
+                    predicted_category = predict_category(extracted_text)
+                    if predicted_category == "אחר":
+                        category = "undefined"
+                        message = "Text extracted, but couldn't be confidently categorized."
+                    else:
+                        category = predicted_category
+                        message = "Text extracted and categorized successfully."
 
                 return JsonResponse(
                     {
@@ -85,4 +90,3 @@ def process_file(request):
         {"error": "Invalid request method", "message": "Only POST requests are allowed."},
         status=405,
     )
-
