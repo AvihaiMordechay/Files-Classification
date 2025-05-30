@@ -1,3 +1,5 @@
+let scaleFactor = 0;
+
 const constats = {
     colors: {
         primary: '#00C7BE',
@@ -10,12 +12,14 @@ const constats = {
         starIcon: '#C0C1B8FF'
     },
     sizes: {
-        font: {
-            small: 12,
-            medium: 16,
-            mediumPlus: 20,
-            large: 24,
-            xl: 32,
+        get font() {
+            return {
+                small: 12 + scaleFactor,
+                medium: 16 + scaleFactor,
+                mediumPlus: 20 + scaleFactor,
+                large: 24 + scaleFactor,
+                xl: 32 + scaleFactor,
+            };
         },
         button: {
             width: 120,
@@ -34,7 +38,9 @@ const constats = {
             profile: 47
         }
 
+    },
+    setFontScale(newScale) {
+        scaleFactor = newScale;
     }
-
 };
 export default constats;

@@ -152,14 +152,14 @@ const styles = StyleSheet.create({
         paddingBottom: Platform.OS === 'ios' ? 40 : 16,
     },
     actionSheetTitle: {
-        fontSize: 18,
+        fontSize: constats.sizes.font.medium + 2,
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 8,
         color: '#333',
     },
     actionSheetMessage: {
-        fontSize: 16,
+        fontSize: constats.sizes.font.medium,
         textAlign: 'center',
         marginBottom: 20,
         color: '#666',
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     actionSheetButtonText: {
-        fontSize: 16,
+        fontSize: constats.sizes.font.medium,
         fontWeight: '500',
         color: constats.colors.primary,
         textAlign: 'center',

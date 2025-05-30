@@ -15,8 +15,9 @@ import {
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../../services/firebase"; 
+import { auth } from "../../services/firebase";
 import theme from "../../styles/theme";
+import constats from "../../styles/constats";
 
 const ForgetPasswordModal = ({ visible, onClose }) => {
   const [generalError, setGeneralError] = useState("");
@@ -85,7 +86,7 @@ const ForgetPasswordModal = ({ visible, onClose }) => {
                       <View style={styles.modalInputContainer}>
                         <TextInput
                           style={styles.modalInput}
-                          placeholder="example@mail.com"
+                          placeholder="הכנס מייל"
                           keyboardType="email-address"
                           autoCapitalize="none"
                           onChangeText={handleChange("email")}
@@ -156,14 +157,14 @@ const styles = StyleSheet.create({
 
   errorText: {
     color: "red",
-    fontSize: 12,
+    fontSize: constats.sizes.font.small,
     textAlign: "right",
     marginBottom: 8,
     marginTop: 4,
   },
   successText: {
     color: "green",
-    fontSize: 12,
+    fontSize: constats.sizes.font.small,
     textAlign: "right",
     marginBottom: 8,
     marginTop: 4,

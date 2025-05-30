@@ -4,6 +4,7 @@ import FileButton from '../components/FileButton';
 import Header from '../components/Header';
 import { useUser } from '../context/UserContext';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import constats from '../styles/constats';
 
 const FavoriteScreen = ({ navigation }) => {
     const { user } = useUser();
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     },
     baseText: {
         fontWeight: 'bold',
-        fontSize: 20,
+        fontSize: constats.sizes.font.large,
         marginRight: 20,
         marginTop: 30,
         writingDirection: 'rtl',
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     noFavoritesText: {
-        fontSize: 16,
+        fontSize: constats.sizes.font.medium,
         color: '#555',
     },
 });

@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
         writingDirection: 'rtl',
         textAlign: 'right',
         marginRight: 6,
-        fontSize: 15,
+        fontSize: constats.sizes.font.medium + 1,
         fontWeight: 'bold',
         color: '#595959FF',
     },

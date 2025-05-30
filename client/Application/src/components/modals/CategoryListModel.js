@@ -13,6 +13,7 @@ import { useUser } from "../../context/UserContext";
 import theme from "../../styles/theme";
 import VerifyFileNameModal from "./VerifyFileNameModal";
 import AlertModal from "./AlertModal";
+import constats from "../../styles/constats";
 
 const CategoryListModel = ({ visible, onClose, attachedFile }) => {
   const { user } = useUser();
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   folderText: {
-    fontSize: 16,
+    fontSize: constats.sizes.font.medium,
     color: "#333",
     textAlign: "right",
   },

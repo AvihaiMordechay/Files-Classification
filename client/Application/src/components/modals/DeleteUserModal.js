@@ -4,6 +4,7 @@ import theme from "../../styles/theme";
 import { auth } from '../../services/firebase';
 import { useUser } from '../../context/UserContext';
 import { EmailAuthProvider, reauthenticateWithCredential, deleteUser, signOut } from 'firebase/auth';
+import constats from '../../styles/constats';
 
 const DeleteUserModal = ({ visible, onClose }) => {
     const { setUserStatus, deleteAccount } = useUser();
@@ -121,13 +122,13 @@ const styles = StyleSheet.create({
     disabledButton: theme.modal.disabledButton,
     errorText: {
         color: 'red',
-        fontSize: 14,
+        fontSize: constats.sizes.font.small + 2,
         marginTop: 5,
         textAlign: 'right',
     },
     modalWarningText: {
         color: 'red',
-        fontSize: 14,
+        fontSize: constats.sizes.font.small + 2,
         marginTop: 20,
         textAlign: 'center',
         fontWeight: 'bold',

@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../../screens/HomeScreen';
 import FolderScreen from '../../screens/FolderScreen';
 import FileScreen from '../../screens/FileScreen';
+import constats from '../../styles/constats';
 
 const Stack = createStackNavigator();
 
@@ -23,7 +24,7 @@ const HomeStackNavigator = () => {
                     headerTitleAlign: 'center',
                     headerTitleStyle: {
                         writingDirection: 'rtl',
-                        fontSize: 18,
+                        fontSize: constats.sizes.font.medium + 2,
                         fontWeight: 'bold',
                         color: 'black',
                     },
@@ -37,7 +38,7 @@ const HomeStackNavigator = () => {
                     headerTitleAlign: 'center',
                     headerTitleStyle: {
                         writingDirection: 'rtl',
-                        fontSize: 18,
+                        fontSize: constats.sizes.font.medium + 2,
                         fontWeight: 'bold',
                         color: 'black',
                     },

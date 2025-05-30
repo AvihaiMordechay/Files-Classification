@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Header from '../components/Header';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import FolderButton from '../components/FolderButton';
 import { useUser } from '../context/UserContext';
 import Spinner from '../components/Spinner';
-import constats from '../styles/constats';
 import Search from '../components/Search';
 import FileButton from '../components/FileButton';
-import { printDB } from '../services/database';
 
 const HomeScreen = ({ navigation }) => {
     const { user } = useUser();

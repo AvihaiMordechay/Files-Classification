@@ -18,6 +18,7 @@ import { auth } from "../../services/firebase";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import constats from "../../styles/constats";
 
 const ForgotPasswordModal = ({ visible, onClose }) => {
   const [generalError, setGeneralError] = useState("");
@@ -242,7 +243,7 @@ const styles = StyleSheet.create({
 
   errorText: {
     color: "red",
-    fontSize: 12,
+    fontSize: constats.sizes.font.small,
     textAlign: "right",
     marginBottom: 8,
     marginTop: 4,

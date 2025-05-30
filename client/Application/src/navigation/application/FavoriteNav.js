@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import FavoriteScreen from '../../screens/FavoriteScreen';
 import FileScreen from '../../screens/FileScreen';
+import constats from '../../styles/constats';
 
 const Stack = createStackNavigator();
 
@@ -22,7 +23,7 @@ const FavoriteStackNavigator = () => {
                     headerTitleAlign: 'center',
                     headerTitleStyle: {
                         writingDirection: 'rtl',
-                        fontSize: 18,
+                        fontSize: constats.sizes.font.medium + 2,
                         fontWeight: 'bold',
                         color: 'black',
                     },

@@ -17,6 +17,7 @@ import { useUser } from "../../context/UserContext";
 import AlertModal from "./AlertModal";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import constats from "../../styles/constats";
 
 const ChangeFolderNameModal = ({ visible, onClose, folderName }) => {
     const { changeFolderName } = useUser();
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
     disabledButton: theme.modal.disabledButton,
     errorText: {
         color: "red",
-        fontSize: 12,
+        fontSize: constats.sizes.font.small,
         textAlign: "right",
         marginBottom: 8,
     },

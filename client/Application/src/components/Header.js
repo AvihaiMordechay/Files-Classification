@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     },
     initialText: {
         color: 'white',
-        fontSize: 20,
+        fontSize: constats.sizes.font.large,
         fontWeight: 'bold',
     },
     greetingText: {
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
         textAlign: 'right',
     },
     headerText: {
-        fontSize: 20,
+        fontSize: constats.sizes.font.large,
         fontWeight: 'bold',
         writingDirection: 'rtl',
         textAlign: 'right',
