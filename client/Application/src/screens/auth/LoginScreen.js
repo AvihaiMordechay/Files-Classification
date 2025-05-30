@@ -19,20 +19,17 @@ import { updateLastLogin } from '../../services/database';
 import { useUser } from '../../context/UserContext';
 import ForgetPasswordModal from '../../components/modals/ForgetPasswordModal';
 import AlertModal from '../../components/modals/AlertModal';
-import strings from '../../styles/strings';
-
-const { validation, placeholders, buttons } = strings.loginScreen;
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
     .matches(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      validation.emailInvalid
+      'אימייל לא תקין'
     )
-    .required(validation.emailRequired),
+    .required('יש למלא אימייל'),
   password: Yup.string()
-    .required(validation.passwordRequired)
-    .min(8, validation.passwordMinLength),
+    .required('יש למלא סיסמה')
+    .min(8, 'הסיסמה חייבת להיות באורך של לפחות 8 תווים'),
 });
 
 const LoginScreen = ({ navigation }) => {
@@ -50,19 +47,19 @@ const LoginScreen = ({ navigation }) => {
       navigation.replace('Application');
     } catch (error) {
       if (error.code === 'ERR_UNEXPECTED') {
-        setAlertTitle(strings.alert.titleError);
-        setAlertMessage(strings.errors.unexpected);
+        setAlertTitle('שגיאה');
+        setAlertMessage('לא ניתן לטעון את המשתמש כעת, אנא נסה שנית');
         setAlertVisible(true);
       } else if (error.code === 'auth/network-request-failed') {
-        setAlertTitle(strings.alert.titleError);
-        setAlertMessage(strings.errors.networkFailed);
+        setAlertTitle('שגיאה');
+        setAlertMessage('אין חיבור לאינטרנט');
         setAlertVisible(true);
       } else if (error.code === 'auth/invalid-credential') {
-        setFieldError('email', validation.invalidCredentials);
+        setFieldError('email', 'האימייל או הסיסמה אינם נכונים');
       } else {
         console.log(error.code);
-        setAlertTitle(strings.alert.titleError);
-        setAlertMessage(strings.errors.unknown);
+        setAlertTitle('שגיאה');
+        setAlertMessage('אירעה שגיאה לא ידועה');
         setAlertVisible(true);
       }
     }
@@ -77,7 +74,7 @@ const LoginScreen = ({ navigation }) => {
               <View style={styles.logoBox}></View>
               <View style={[styles.logoBox, styles.logoBoxOverlap]}></View>
             </View>
-            <Text style={styles.title}>{strings.title}</Text>
+            <Text style={styles.title}>File Keeper</Text>
 
             <Formik
               initialValues={{ email: '', password: '' }}
@@ -89,7 +86,7 @@ const LoginScreen = ({ navigation }) => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder={placeholders.email}
+                      placeholder={'אימייל'}
                       keyboardType="email-address"
                       onChangeText={handleChange('email')}
                       onBlur={handleBlur('email')}
@@ -103,7 +100,7 @@ const LoginScreen = ({ navigation }) => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder={placeholders.password}
+                      placeholder={'סיסמה'}
                       secureTextEntry
                       onChangeText={handleChange('password')}
                       onBlur={handleBlur('password')}
@@ -125,14 +122,14 @@ const LoginScreen = ({ navigation }) => {
                       }
                     }}
                   >
-                    <Text style={styles.buttonText}>{buttons.login}</Text>
+                    <Text style={styles.buttonText}>התחבר</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     style={styles.linkButton}
                     onPress={() => setIsForgetPasswordModalVisible(true)}
                   >
-                    <Text style={styles.linkText}>{buttons.forgotPassword}</Text>
+                    <Text style={styles.linkText}>שכחתי סיסמה</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -149,7 +146,7 @@ const LoginScreen = ({ navigation }) => {
           onClose={() => setAlertVisible(false)}
           title={alertTitle}
           message={alertMessage}
-          buttons={[{ text: strings.alert.close, onPress: () => setAlertVisible(false) }]}
+          buttons={[{ text: 'סגור', onPress: () => setAlertVisible(false) }]}
         />
       </SafeAreaView>
     </SafeAreaProvider>

@@ -20,27 +20,26 @@ import { auth } from '../../services/firebase';
 import theme from '../../styles/theme';
 import { useUser } from '../../context/UserContext';
 import AlertModal from '../../components/modals/AlertModal';
-import strings from '../../styles/strings';
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required(strings.registrationScreen.validation.nameRequired),
+  name: Yup.string().required('יש למלא שם'),
   email: Yup.string()
     .matches(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      strings.registrationScreen.validation.emailInvalid
+      'אימייל לא תקין'
     )
-    .required(strings.registrationScreen.validation.emailRequired),
+    .required('יש למלא אימייל'),
   password: Yup.string()
-    .required(strings.registrationScreen.validation.passwordRequired)
-    .min(8, strings.registrationScreen.validation.passwordMinLength)
+    .required('יש למלא סיסמה')
+    .min(8, 'הסיסמה חייבת להיות באורך של לפחות 8 תווים')
     .matches(
       /^[A-Za-z0-9!@#$%^&*()_+=\-[\]{};':"\\|,.<>/?`~]*$/,
-      strings.registrationScreen.validation.passwordPattern
+      'הסיסמה חייבת להכיל אותיות באנגלית, מספרים או סימנים מיוחדים בלבד'
     ),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password')], strings.registrationScreen.validation.confirmPasswordMismatch)
-    .required(strings.registrationScreen.validation.confirmPasswordRequired),
-  gender: Yup.string().required(strings.registrationScreen.validation.genderRequired),
+    .oneOf([Yup.ref('password')], 'הסיסמאות אינן תואמות')
+    .required('יש למלא סיסמה'),
+  gender: Yup.string().required('יש לבחור מגדר'),
 });
 
 const RegistrationScreen = () => {
@@ -71,8 +70,8 @@ const RegistrationScreen = () => {
         navigation.navigate('Application');
       } catch (dbError) {
         if (dbError.code === 'ERR_UNEXPECTED') {
-          setAlertTitle(strings.alert.titleError);
-          setAlertMessage(strings.errors.dbCreateUserFailed);
+          setAlertTitle('שגיאה');
+          setAlertMessage('לא ניתן ליצור את המשתמש כעת, אנא נסה שנית');
           setAlertVisible(true);
         }
         await deleteUser(firebaseUserAuth);
@@ -80,14 +79,14 @@ const RegistrationScreen = () => {
       }
     } catch (error) {
       if (error.code === 'auth/network-request-failed') {
-        setAlertTitle(strings.alert.titleError);
-        setAlertMessage(strings.errors.networkFailed);
+        setAlertTitle('שגיאה');
+        setAlertMessage("אין חיבור לאינטרנט");
         setAlertVisible(true);
       } else if (error.code === 'auth/email-already-in-use') {
-        setFieldError('email', strings.errors.emailAlreadyInUse);
+        setFieldError('email', 'האימייל כבר קיים במערכת');
       } else {
-        setAlertTitle(strings.alert.titleError);
-        setAlertMessage(strings.errors.generalRegisteritionError);
+        setAlertTitle('שגיאה');
+        setAlertMessage('האימייל כבר קיים במערכת');
         setAlertVisible(true);
       }
       console.log('Error creating user:', error.message);
@@ -103,7 +102,7 @@ const RegistrationScreen = () => {
               <View style={styles.logoBox}></View>
               <View style={[styles.logoBox, styles.logoBoxOverlap]}></View>
             </View>
-            <Text style={styles.title}>{strings.title}</Text>
+            <Text style={styles.title}>File Keeper</Text>
 
             <Formik
               initialValues={{
@@ -129,7 +128,7 @@ const RegistrationScreen = () => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder={strings.registrationScreen.inputs.namePlaceholder}
+                      placeholder={'שם'}
                       onChangeText={handleChange('name')}
                       onBlur={handleBlur('name')}
                       value={values.name}
@@ -181,7 +180,7 @@ const RegistrationScreen = () => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder={strings.registrationScreen.inputs.emailPlaceholder}
+                      placeholder={'אימייל'}
                       keyboardType="email-address"
                       onChangeText={handleChange('email')}
                       onBlur={handleBlur('email')}
@@ -195,7 +194,7 @@ const RegistrationScreen = () => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder={strings.registrationScreen.inputs.passwordPlaceholder}
+                      placeholder={'סיסמה'}
                       secureTextEntry
                       onChangeText={handleChange('password')}
                       onBlur={handleBlur('password')}
@@ -209,7 +208,7 @@ const RegistrationScreen = () => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder={strings.registrationScreen.inputs.confirmPasswordPlaceholder}
+                      placeholder={'אימות סיסמה'}
                       secureTextEntry
                       onChangeText={handleChange('confirmPassword')}
                       onBlur={handleBlur('confirmPassword')}
@@ -233,15 +232,15 @@ const RegistrationScreen = () => {
                       }
                     }}
                   >
-                    <Text style={styles.buttonText}>{strings.registrationScreen.buttons.register}</Text>
+                    <Text style={styles.buttonText}>הרשם</Text>
                   </TouchableOpacity>
                   <AlertModal
                     visible={alertVisible}
                     onClose={() => setAlertVisible(false)}
-                    title={alertTitle || strings.alert.titleError}
+                    title={alertTitle || 'שגיאה'}
                     message={alertMessage}
                     buttons={[
-                      { text: strings.alert.close, onPress: () => setAlertVisible(false) },
+                      { text: 'סגור', onPress: () => setAlertVisible(false) },
                     ]}
                   />
                 </View>

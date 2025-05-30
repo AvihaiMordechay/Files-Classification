@@ -17,7 +17,6 @@ import { useUser } from '../context/UserContext';
 import PdfViewer from '../components/PdfViewer';
 import AlertModal from '../components/modals/AlertModal';
 import ChangeFileNameModal from '../components/modals/ChangeFileNameModal';
-import strings from '../styles/strings';
 
 const FileScreen = ({ route }) => {
   const { file, folderName } = route.params || {};
@@ -107,8 +106,8 @@ const FileScreen = ({ route }) => {
     try {
       const isAvailable = await Sharing.isAvailableAsync();
       if (!isAvailable) {
-        setAlertTitle(strings.alert.titleError);
-        setAlertMessage(strings.errors.sharingNotAvailable);
+        setAlertTitle('שגיאה');
+        setAlertMessage('שיתוף לא זמין במכשיר הזה');
         setAlertVisible(true);
         return;
       }
@@ -146,8 +145,8 @@ const FileScreen = ({ route }) => {
       }
     } catch (error) {
       console.log('שגיאה בשיתוף הקובץ:', error);
-      setAlertTitle(strings.alert.titleError);
-      setAlertMessage(strings.errors.sharingFailed);
+      setAlertTitle('שגיאה');
+      setAlertMessage('שגיאה בשיתוף הקובץ');
       setAlertVisible(true);
     } finally {
       setIsSharing(false);
@@ -159,7 +158,7 @@ const FileScreen = ({ route }) => {
   if (!file) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>{strings.errors.NoFileProvided}</Text>
+        <Text style={styles.errorText}>לא סופק קובץ</Text>
       </View>
     );
   }
@@ -201,20 +200,20 @@ const FileScreen = ({ route }) => {
           onPress={() => setChangeFileNameModalVisible(true)}
         >
           <Ionicons name="pencil-outline" size={28} color="#333" />
-          <Text style={styles.iconLabel}>{strings.fileScreen.rename}</Text>
+          <Text style={styles.iconLabel}>התחבר</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
           <Ionicons name="share-social-outline" size={28} color="#333" />
-          <Text style={styles.iconLabel}>{strings.fileScreen.share}</Text>
+          <Text style={styles.iconLabel}>שתף</Text>
         </TouchableOpacity>
       </View>
       <AlertModal
         visible={alertVisible}
         onClose={() => setAlertVisible(false)}
-        title={alertTitle || strings.alert.titleError}
+        title={alertTitle || 'שגיאה'}
         message={alertMessage}
-        buttons={[{ text: strings.alert.close, onPress: () => setAlertVisible(false) }]}
+        buttons={[{ text: 'סגור', onPress: () => setAlertVisible(false) }]}
       />
       <ChangeFileNameModal
         visible={changeFileNameModalVisible}
@@ -251,7 +250,7 @@ const styles = StyleSheet.create({
   },
   iconLabel: {
     marginTop: 4,
-    fontSize: 12,
+    fontSize: constats.sizes.font.small,
     color: '#333',
   },
   image: {
