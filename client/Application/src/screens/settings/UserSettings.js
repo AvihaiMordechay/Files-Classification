@@ -33,9 +33,6 @@ const UserSettingsScreen = () => {
         setForgotPasswordModalVisible(true);
     };
 
-    const handleEnable2FA = () => {
-    };
-
     const styles = StyleSheet.create({
         container: {
             flex: 1,
@@ -244,10 +241,6 @@ const UserSettingsScreen = () => {
 
                             <TouchableOpacity style={styles.actionButton} onPress={handleUpdatePassword}>
                                 <Text style={styles.actionButtonText}>שינוי סיסמה</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={styles.actionButton} onPress={handleEnable2FA}>
-                                <Text style={styles.actionButtonText}>הפעלת אימות דו-שלבי</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity style={[styles.deleteButton]} onPress={() => setDeleteUserModalVisible(true)}>

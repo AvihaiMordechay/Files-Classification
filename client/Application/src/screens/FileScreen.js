@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
   View,
@@ -6,10 +6,14 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Image,
-  Alert,
+  Animated,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import {
+  PinchGestureHandler,
+  TapGestureHandler,
+  State,
+} from 'react-native-gesture-handler';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { useConstats } from '../styles/constats';
@@ -17,6 +21,7 @@ import { useUser } from '../context/UserContext';
 import PdfViewer from '../components/PdfViewer';
 import AlertModal from '../components/modals/AlertModal';
 import ChangeFileNameModal from '../components/modals/ChangeFileNameModal';
+import { initDB, resetDatabaseState } from '../services/database';
 
 const FileScreen = ({ route }) => {
   const constats = useConstats();
@@ -30,10 +35,12 @@ const FileScreen = ({ route }) => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertTitle, setAlertTitle] = useState('');
   const [isSharing, setIsSharing] = useState(false);
-  const [changeFileNameModalVisible, setChangeFileNameModalVisible] =
-    useState(false);
-
+  const [changeFileNameModalVisible, setChangeFileNameModalVisible] = useState(false);
   const [localFavorite, setLocalFavorite] = useState(null);
+
+  const scale = useRef(new Animated.Value(1)).current;
+  const currentScale = useRef(1);
+  const doubleTapRef = useRef();
 
   const checkIsFavorite = () => {
     if (file.id) {
@@ -156,6 +163,30 @@ const FileScreen = ({ route }) => {
     }
   };
 
+  const onPinchGestureEvent = (event) => {
+    const newScale = currentScale.current * event.nativeEvent.scale;
+    scale.setValue(Math.max(0.5, Math.min(newScale, 3)));
+  };
+
+  const onPinchHandlerStateChange = (event) => {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      currentScale.current = currentScale.current * event.nativeEvent.scale;
+      currentScale.current = Math.max(0.5, Math.min(currentScale.current, 3));
+    }
+  };
+
+  const onDoubleTap = (event) => {
+    if (event.nativeEvent.state === State.ACTIVE) {
+      currentScale.current = 1;
+
+      Animated.timing(scale, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+    }
+  };
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -184,9 +215,14 @@ const FileScreen = ({ route }) => {
       fontSize: constats.sizes.font.small,
       color: '#333',
     },
+    imageContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
     image: {
       width: '100%',
-      flex: 1,
+      height: '100%',
     },
   });
 
@@ -216,11 +252,30 @@ const FileScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={{ uri: file.path }}
-        style={styles.image}
-        resizeMode="contain"
-      />
+      <TapGestureHandler
+        ref={doubleTapRef}
+        onHandlerStateChange={onDoubleTap}
+        numberOfTaps={2}
+      >
+        <PinchGestureHandler
+          onGestureEvent={onPinchGestureEvent}
+          onHandlerStateChange={onPinchHandlerStateChange}
+        >
+          <Animated.View style={styles.imageContainer}>
+            <Animated.Image
+              source={{ uri: file.path }}
+              style={[
+                styles.image,
+                {
+                  transform: [{ scale }],
+                },
+              ]}
+              resizeMode="contain"
+            />
+          </Animated.View>
+        </PinchGestureHandler>
+      </TapGestureHandler>
+
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.iconButton} onPress={handleFavorite}>
           <Ionicons
@@ -235,7 +290,7 @@ const FileScreen = ({ route }) => {
           onPress={() => setChangeFileNameModalVisible(true)}
         >
           <Ionicons name="pencil-outline" size={28} color="#333" />
-          <Text style={styles.iconLabel}>התחבר</Text>
+          <Text style={styles.iconLabel}>שנה שם</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
@@ -259,6 +314,5 @@ const FileScreen = ({ route }) => {
     </View>
   );
 };
-
 
 export default FileScreen;

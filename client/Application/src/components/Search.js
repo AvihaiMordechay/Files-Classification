@@ -45,6 +45,7 @@ const Search = ({ setResultSearch }) => {
                         isFavorite: file.isFavorite,
                         lastViewed: file.lastViewed,
                         folderName: folderName,
+                        size: file.size,
                         type: 'file',
                     };
                 })
