@@ -3,10 +3,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import SettingsScreen from '../../screens/settings/SettingsScreen';
 import UserSettingsScreen from '../../screens/settings/UserSettings';
+import { useConstats } from '../../styles/constats';
+import AccessibilityScreen from '../../screens/AccessibilityScreen';
 
 const Stack = createStackNavigator();
 
 const SettingsNavigator = () => {
+    const constats = useConstats();
+
     return (
         <Stack.Navigator>
             <Stack.Screen
@@ -23,7 +27,22 @@ const SettingsNavigator = () => {
                     headerTitleAlign: 'center',
                     headerTitleStyle: {
                         writingDirection: 'rtl',
-                        fontSize: 18,
+                        fontSize: constats.sizes.font.medium + 2,
+                        fontWeight: 'bold',
+                        color: 'black',
+                    },
+                }}
+            />
+
+            <Stack.Screen
+                name="Accessibility"
+                component={AccessibilityScreen}
+                options={{
+                    title: 'נגישות',
+                    headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        writingDirection: 'rtl',
+                        fontSize: constats.sizes.font.medium + 2,
                         fontWeight: 'bold',
                         color: 'black',
                     },

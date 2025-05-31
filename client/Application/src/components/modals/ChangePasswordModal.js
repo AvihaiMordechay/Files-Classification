@@ -13,14 +13,16 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import theme from "../../styles/theme";
+import { getTheme } from "../../styles/theme";
 import { auth } from "../../services/firebase";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import constats from "../../styles/constats";
+import { useConstats } from "../../styles/constats";
 
 const ForgotPasswordModal = ({ visible, onClose }) => {
+  const constats = useConstats();
+  const theme = getTheme(constats);
   const [generalError, setGeneralError] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const closeModal = () => {
@@ -64,6 +66,31 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
       setSubmitting(false);
     }
   };
+
+  const styles = StyleSheet.create({
+    modalOverlay: theme.modal.modalOverlay,
+    centeredView: theme.modal.centeredView,
+    scrollViewContent: theme.modal.scrollViewContent,
+    modalView: theme.modal.modalView,
+    modalTitle: theme.modal.modalTitle,
+    modalLabel: theme.modal.modalLabel,
+    modalInputContainer: theme.modal.modalInputContainer,
+    modalInput: theme.modal.modalInput,
+    modalButtonsContainer: theme.modal.modalButtonsContainer,
+    modalSaveButton: theme.modal.modalSaveButton,
+    modalSaveButtonText: theme.modal.modalSaveButtonText,
+    modalCancelButton: theme.modal.modalCancelButton,
+    modalCancelButtonText: theme.modal.modalCancelButtonText,
+    disabledButton: theme.modal.disabledButton,
+
+    errorText: {
+      color: "red",
+      fontSize: constats.sizes.font.small,
+      textAlign: "right",
+      marginBottom: 8,
+      marginTop: 4,
+    },
+  });
 
   return (
     <Modal
@@ -225,27 +252,3 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
 
 export default ForgotPasswordModal;
 
-const styles = StyleSheet.create({
-  modalOverlay: theme.modal.modalOverlay,
-  centeredView: theme.modal.centeredView,
-  scrollViewContent: theme.modal.scrollViewContent,
-  modalView: theme.modal.modalView,
-  modalTitle: theme.modal.modalTitle,
-  modalLabel: theme.modal.modalLabel,
-  modalInputContainer: theme.modal.modalInputContainer,
-  modalInput: theme.modal.modalInput,
-  modalButtonsContainer: theme.modal.modalButtonsContainer,
-  modalSaveButton: theme.modal.modalSaveButton,
-  modalSaveButtonText: theme.modal.modalSaveButtonText,
-  modalCancelButton: theme.modal.modalCancelButton,
-  modalCancelButtonText: theme.modal.modalCancelButtonText,
-  disabledButton: theme.modal.disabledButton,
-
-  errorText: {
-    color: "red",
-    fontSize: constats.sizes.font.small,
-    textAlign: "right",
-    marginBottom: 8,
-    marginTop: 4,
-  },
-});

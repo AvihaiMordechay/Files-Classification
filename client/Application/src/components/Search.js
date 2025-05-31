@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { useUser } from "../context/UserContext";
 import { View, TextInput, StyleSheet } from 'react-native';
-import constats from "../styles/constats";
+import { useConstats } from "../styles/constats";
 import { Ionicons } from '@expo/vector-icons';
 
 const Search = ({ setResultSearch }) => {
+    const constats = useConstats();
+
     const { user } = useUser();
     const [searchValue, setSearchValue] = useState("");
 
@@ -63,6 +65,34 @@ const Search = ({ setResultSearch }) => {
         performSearch(text);
     };
 
+    const styles = StyleSheet.create({
+        searchContainer: {
+            alignItems: 'center',
+            marginVertical: 15,
+        },
+        searchBox: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: constats.colors.white,
+            borderRadius: 12,
+            paddingHorizontal: 15,
+            height: 55,
+            width: '90%',
+            borderWidth: 1,
+            borderColor: '#E0E0E0',
+        },
+        searchIcon: {
+            marginLeft: 10,
+        },
+        searchInput: {
+            flex: 1,
+            fontSize: constats.sizes.font.medium + 2,
+            textAlign: 'right',
+            color: '#333',
+            fontWeight: '500',
+        },
+    });
+
     return (
         <View style={styles.searchContainer}>
             <View style={styles.searchBox}>
@@ -80,31 +110,3 @@ const Search = ({ setResultSearch }) => {
 };
 
 export default Search;
-
-const styles = StyleSheet.create({
-    searchContainer: {
-        alignItems: 'center',
-        marginVertical: 15,
-    },
-    searchBox: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: constats.colors.white,
-        borderRadius: 12,
-        paddingHorizontal: 15,
-        height: 55,
-        width: '90%',
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
-    },
-    searchIcon: {
-        marginLeft: 10,
-    },
-    searchInput: {
-        flex: 1,
-        fontSize: constats.sizes.font.medium + 2,
-        textAlign: 'right',
-        color: '#333',
-        fontWeight: '500',
-    },
-});

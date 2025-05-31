@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, Pressable, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard, TextInput, BackHandler } from 'react-native';
-import theme from "../../styles/theme";
+import { getTheme } from "../../styles/theme";
 import { auth } from '../../services/firebase';
 import { useUser } from '../../context/UserContext';
 import { EmailAuthProvider, reauthenticateWithCredential, deleteUser, signOut } from 'firebase/auth';
-import constats from '../../styles/constats';
+import { useConstats } from '../../styles/constats';
 
 const DeleteUserModal = ({ visible, onClose }) => {
+    const constats = useConstats();
+    const theme = getTheme(constats);
     const { setUserStatus, deleteAccount } = useUser();
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -49,6 +51,36 @@ const DeleteUserModal = ({ visible, onClose }) => {
             }
         }
     };
+
+    const styles = StyleSheet.create({
+        modalOverlay: theme.modal.modalOverlay,
+        centeredView: theme.modal.centeredView,
+        scrollViewContent: theme.modal.scrollViewContent,
+        modalView: theme.modal.modalView,
+        modalTitle: theme.modal.modalTitle,
+        modalLabel: theme.modal.modalLabel,
+        modalInputContainer: theme.modal.modalInputContainer,
+        modalInput: theme.modal.modalInput,
+        modalButtonsContainer: theme.modal.modalButtonsContainer,
+        modalDeleteButton: theme.modal.modalSaveButton, // Reusing the save button style for "Delete"
+        modalDeleteButtonText: theme.modal.modalSaveButtonText, // Reusing the save button text style
+        modalCancelButton: theme.modal.modalCancelButton,
+        modalCancelButtonText: theme.modal.modalCancelButtonText,
+        disabledButton: theme.modal.disabledButton,
+        errorText: {
+            color: 'red',
+            fontSize: constats.sizes.font.small + 2,
+            marginTop: 5,
+            textAlign: 'right',
+        },
+        modalWarningText: {
+            color: 'red',
+            fontSize: constats.sizes.font.small + 2,
+            marginTop: 20,
+            textAlign: 'center',
+            fontWeight: 'bold',
+        }
+    });
 
     return (
         <Modal
@@ -105,32 +137,3 @@ const DeleteUserModal = ({ visible, onClose }) => {
 
 export default DeleteUserModal;
 
-const styles = StyleSheet.create({
-    modalOverlay: theme.modal.modalOverlay,
-    centeredView: theme.modal.centeredView,
-    scrollViewContent: theme.modal.scrollViewContent,
-    modalView: theme.modal.modalView,
-    modalTitle: theme.modal.modalTitle,
-    modalLabel: theme.modal.modalLabel,
-    modalInputContainer: theme.modal.modalInputContainer,
-    modalInput: theme.modal.modalInput,
-    modalButtonsContainer: theme.modal.modalButtonsContainer,
-    modalDeleteButton: theme.modal.modalSaveButton, // Reusing the save button style for "Delete"
-    modalDeleteButtonText: theme.modal.modalSaveButtonText, // Reusing the save button text style
-    modalCancelButton: theme.modal.modalCancelButton,
-    modalCancelButtonText: theme.modal.modalCancelButtonText,
-    disabledButton: theme.modal.disabledButton,
-    errorText: {
-        color: 'red',
-        fontSize: constats.sizes.font.small + 2,
-        marginTop: 5,
-        textAlign: 'right',
-    },
-    modalWarningText: {
-        color: 'red',
-        fontSize: constats.sizes.font.small + 2,
-        marginTop: 20,
-        textAlign: 'center',
-        fontWeight: 'bold',
-    }
-});

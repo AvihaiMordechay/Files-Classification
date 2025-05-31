@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, TouchableOpacity, StyleSheet, View, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import constats from '../styles/constats';
+import { useConstats } from '../styles/constats';
 import { useUser } from '../context/UserContext';
 import ActionSheet from 'react-native-actions-sheet';
 import ChangeFileNameModal from './modals/ChangeFileNameModal';
 import AlertModal from './modals/AlertModal';
 
 const FileButton = ({ file, onPress, folderName, presentFolderName = false, setResultSearch = null }) => {
+    const constats = useConstats();
     const { markAsFavorite, user, deleteFile } = useUser();
     const [changeFileNameModalVisible, setChangeFileNameModalVisible] = useState(false);
     const [deleteFileModalVisible, setDeleteFileModalVisible] = useState(false);
@@ -59,6 +60,89 @@ const FileButton = ({ file, onPress, folderName, presentFolderName = false, setR
                 break;
         }
     };
+
+    const styles = StyleSheet.create({
+        button: {
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 15,
+            backgroundColor: constats.colors.backgroundButton,
+            borderRadius: 12,
+            margin: 6,
+            width: constats.sizes.button.width,
+            height: constats.sizes.button.height,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            position: 'relative',
+        },
+
+        starIcon: {
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            padding: 5,
+        },
+        iconContainer: {
+            marginBottom: 10,
+        },
+        buttonText: {
+            fontSize: constats.sizes.font.medium + 2,
+            fontWeight: '600',
+            color: '#333',
+            textAlign: 'center',
+        },
+        folderNameText: {
+            fontSize: constats.sizes.font.small + 1,
+            color: '#666',
+            textAlign: 'center',
+            marginTop: 2,
+        },
+        actionSheetContainer: {
+            padding: 16,
+            backgroundColor: '#fff',
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            paddingBottom: Platform.OS === 'ios' ? 40 : 16,
+        },
+        actionSheetTitle: {
+            fontSize: constats.sizes.font.medium + 2,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: 8,
+            color: '#333',
+        },
+        actionSheetMessage: {
+            fontSize: constats.sizes.font.medium,
+            textAlign: 'center',
+            marginBottom: 20,
+            color: '#666',
+        },
+        actionSheetButton: {
+            paddingVertical: 16,
+            backgroundColor: '#f8f8f8',
+            borderRadius: 10,
+            marginBottom: 10,
+            alignItems: 'center',
+        },
+        actionSheetButtonText: {
+            fontSize: constats.sizes.font.medium,
+            fontWeight: '500',
+            color: constats.colors.primary,
+            textAlign: 'center',
+        },
+        destructiveButton: {
+            backgroundColor: '#fff0f0',
+        },
+        destructiveText: {
+            color: '#ff3b30',
+        },
+        cancelButton: {
+            backgroundColor: '#f0f0f0',
+            marginTop: 5,
+        },
+    });
 
     return (
         <>
@@ -152,87 +236,6 @@ const FileButton = ({ file, onPress, folderName, presentFolderName = false, setR
     );
 };
 
-const styles = StyleSheet.create({
-    button: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 15,
-        backgroundColor: constats.colors.backgroundButton,
-        borderRadius: 12,
-        margin: 6,
-        width: constats.sizes.button.width,
-        height: constats.sizes.button.height,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        position: 'relative',
-    },
 
-    starIcon: {
-        position: 'absolute',
-        top: 8,
-        right: 8,
-        padding: 5,
-    },
-    iconContainer: {
-        marginBottom: 10,
-    },
-    buttonText: {
-        fontSize: constats.sizes.font.medium + 2,
-        fontWeight: '600',
-        color: '#333',
-        textAlign: 'center',
-    },
-    folderNameText: {
-        fontSize: constats.sizes.font.small + 1,
-        color: '#666',
-        textAlign: 'center',
-        marginTop: 2,
-    },
-    actionSheetContainer: {
-        padding: 16,
-        backgroundColor: '#fff',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        paddingBottom: Platform.OS === 'ios' ? 40 : 16,
-    },
-    actionSheetTitle: {
-        fontSize: constats.sizes.font.medium + 2,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 8,
-        color: '#333',
-    },
-    actionSheetMessage: {
-        fontSize: constats.sizes.font.medium,
-        textAlign: 'center',
-        marginBottom: 20,
-        color: '#666',
-    },
-    actionSheetButton: {
-        paddingVertical: 16,
-        backgroundColor: '#f8f8f8',
-        borderRadius: 10,
-        marginBottom: 10,
-        alignItems: 'center',
-    },
-    actionSheetButtonText: {
-        fontSize: constats.sizes.font.medium,
-        fontWeight: '500',
-        color: constats.colors.primary,
-        textAlign: 'center',
-    },
-    destructiveButton: {
-        backgroundColor: '#fff0f0',
-    },
-    destructiveText: {
-        color: '#ff3b30',
-    },
-    cancelButton: {
-        backgroundColor: '#f0f0f0',
-        marginTop: 5,
-    },
-});
 
 export default FileButton;

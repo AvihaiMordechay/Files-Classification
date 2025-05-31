@@ -7,14 +7,75 @@ import {
   Pressable,
   StyleSheet,
   KeyboardAvoidingView,
-  ScrollView,
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import theme from "../../styles/theme";
-import constats from "../../styles/constats";
+import { getTheme } from "../../styles/theme";
+import { useConstats } from "../../styles/constats";
 
 const AlertModal = ({ visible, onClose, title, message, buttons }) => {
+  const constats = useConstats();
+  const theme = getTheme(constats);
+
+
+  const styles = StyleSheet.create({
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.4)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    centeredView: {
+      width: '100%',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flex: 1,
+    },
+    modalView: {
+      ...theme.modal.modalView,
+      width: 350,
+      padding: 24,
+      backgroundColor: '#fff',
+      borderRadius: 16,
+      alignItems: 'center',
+    },
+    modalTitle: {
+      fontSize: constats.sizes.font.mediumPlus,
+      fontWeight: 'bold',
+      marginBottom: 20,
+      textAlign: 'center',
+      color: '#333',
+    },
+    modalMessage: {
+      fontSize: constats.sizes.font.medium,
+      marginBottom: 20,
+      textAlign: 'center',
+      color: '#333',
+    },
+    modalButtonsContainer: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 10,
+    },
+    modalButton: {
+      backgroundColor: constats.colors.primary,
+      paddingVertical: 12,
+      paddingHorizontal: 20,
+      borderRadius: 12,
+      alignItems: 'center',
+      height: 50,
+      maxWidth: 150,
+      flex: 1,
+    },
+    modalButtonText: theme.modal.modalSaveButtonText,
+    modalCancelButton: {
+      backgroundColor: constats.colors.backgroundButton
+    },
+    modalCancelButtonText: {
+      color: "#000"
+    }
+  });
   return (
     <Modal
       animationType="fade"
@@ -61,62 +122,4 @@ const AlertModal = ({ visible, onClose, title, message, buttons }) => {
 
 export default AlertModal;
 
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  centeredView: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  modalView: {
-    ...theme.modal.modalView,
-    width: 350,
-    padding: 24,
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: constats.sizes.font.mediumPlus,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333',
-  },
-  modalMessage: {
-    fontSize: constats.sizes.font.medium,
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333',
-  },
-  modalButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 10,
-  },
-  modalButton: {
-    backgroundColor: constats.colors.primary,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    alignItems: 'center',
-    height: 50,
-    maxWidth: 150,
-    flex: 1,
-  },
-  modalButtonText: theme.modal.modalSaveButtonText,
-  modalCancelButton: {
-    backgroundColor: constats.colors.backgroundButton
-  },
-  modalCancelButtonText: {
-    color: "#000"
-  }
-});
 

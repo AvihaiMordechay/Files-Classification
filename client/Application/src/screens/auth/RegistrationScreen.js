@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import constats from '../../styles/constats';
+import { useConstats } from '../../styles/constats';
 import { useNavigation } from '@react-navigation/native';
 import {
   View,
@@ -17,7 +17,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { createUserWithEmailAndPassword, deleteUser } from 'firebase/auth';
 import { auth } from '../../services/firebase';
-import theme from '../../styles/theme';
+import { getTheme } from '../../styles/theme';
 import { useUser } from '../../context/UserContext';
 import AlertModal from '../../components/modals/AlertModal';
 
@@ -43,6 +43,8 @@ const validationSchema = Yup.object().shape({
 });
 
 const RegistrationScreen = () => {
+  const constats = useConstats();
+  const theme = getTheme(constats);
   const { createUser, loadUser } = useUser();
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -92,6 +94,70 @@ const RegistrationScreen = () => {
       console.log('Error creating user:', error.message);
     }
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    keyboardAvoidingView: {
+      flex: 1,
+    },
+    scrollView: {
+      flexGrow: 0.5,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    logoContainer: {
+      flexDirection: 'row',
+      marginBottom: 20,
+    },
+    logoBox: theme.authLogoBox,
+    logoBoxOverlap: {
+      marginLeft: -15,
+    },
+    title: {
+      fontSize: constats.sizes.font.large,
+      fontWeight: 'bold',
+      marginBottom: 20,
+    },
+    form: {
+      width: '80%',
+    },
+    inputContainer: theme.inputContainer,
+    input: theme.input,
+    button: theme.authButton,
+    buttonText: {
+      color: constats.colors.backgroundButton,
+      fontSize: constats.sizes.font.medium,
+      fontWeight: 'bold',
+    },
+    errorText: theme.errorText,
+    genderContainer: {
+      flexDirection: 'row',
+      backgroundColor: constats.colors.backgroundButton,
+      borderRadius: 10,
+      overflow: 'hidden',
+      alignItems: 'center',
+      borderRadius: 8,
+      marginBottom: 15,
+    },
+    genderButton: {
+      flex: 1,
+      paddingVertical: 15,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    selectedGender: {
+      backgroundColor: constats.colors.primary,
+    },
+    genderText: {
+      fontSize: constats.sizes.font.medium,
+      color: 'gray',
+    },
+    selectedText: {
+      color: 'white',
+    },
+  });
 
   return (
     <SafeAreaProvider>
@@ -253,68 +319,5 @@ const RegistrationScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
-  scrollView: {
-    flexGrow: 0.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  logoBox: theme.authLogoBox,
-  logoBoxOverlap: {
-    marginLeft: -15,
-  },
-  title: {
-    fontSize: constats.sizes.font.large,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  form: {
-    width: '80%',
-  },
-  inputContainer: theme.inputContainer,
-  input: theme.input,
-  button: theme.authButton,
-  buttonText: {
-    color: constats.colors.backgroundButton,
-    fontSize: constats.sizes.font.medium,
-    fontWeight: 'bold',
-  },
-  errorText: theme.errorText,
-  genderContainer: {
-    flexDirection: 'row',
-    backgroundColor: constats.colors.backgroundButton,
-    borderRadius: 10,
-    overflow: 'hidden',
-    alignItems: 'center',
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  genderButton: {
-    flex: 1,
-    paddingVertical: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  selectedGender: {
-    backgroundColor: constats.colors.primary,
-  },
-  genderText: {
-    fontSize: constats.sizes.font.medium,
-    color: 'gray',
-  },
-  selectedText: {
-    color: 'white',
-  },
-});
 
 export default RegistrationScreen;

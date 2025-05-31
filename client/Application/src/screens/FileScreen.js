@@ -12,13 +12,14 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-import constats from '../styles/constats';
+import { useConstats } from '../styles/constats';
 import { useUser } from '../context/UserContext';
 import PdfViewer from '../components/PdfViewer';
 import AlertModal from '../components/modals/AlertModal';
 import ChangeFileNameModal from '../components/modals/ChangeFileNameModal';
 
 const FileScreen = ({ route }) => {
+  const constats = useConstats();
   const { file, folderName } = route.params || {};
   const { updateLastViewedToFile } = useUser();
   const { markAsFavorite, user } = useUser();
@@ -155,6 +156,40 @@ const FileScreen = ({ route }) => {
     }
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+    },
+    errorText: {
+      fontSize: constats.sizes.font.medium,
+      color: 'red',
+      textAlign: 'center',
+      marginTop: 20,
+    },
+    bottomBar: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      alignItems: 'center',
+      paddingVertical: 10,
+      borderTopWidth: 1,
+      borderColor: '#ddd',
+      backgroundColor: '#f9f9f9',
+    },
+    iconButton: {
+      alignItems: 'center',
+    },
+    iconLabel: {
+      marginTop: 4,
+      fontSize: constats.sizes.font.small,
+      color: '#333',
+    },
+    image: {
+      width: '100%',
+      flex: 1,
+    },
+  });
+
   if (!file) {
     return (
       <View style={styles.container}>
@@ -225,38 +260,5 @@ const FileScreen = ({ route }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  errorText: {
-    fontSize: constats.sizes.font.medium,
-    color: 'red',
-    textAlign: 'center',
-    marginTop: 20,
-  },
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderColor: '#ddd',
-    backgroundColor: '#f9f9f9',
-  },
-  iconButton: {
-    alignItems: 'center',
-  },
-  iconLabel: {
-    marginTop: 4,
-    fontSize: constats.sizes.font.small,
-    color: '#333',
-  },
-  image: {
-    width: '100%',
-    flex: 1,
-  },
-});
 
 export default FileScreen;

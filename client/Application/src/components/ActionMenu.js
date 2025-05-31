@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { SafeAreaView, StyleSheet, View, Pressable, Text, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import constats from '../styles/constats';
+import { useConstats } from '../styles/constats';
 import CreateFolderModel from './modals/CreateFolderModal';
 import UploadFile from './UploadFile';
 import * as ImagePicker from 'expo-image-picker';
@@ -12,7 +12,8 @@ import { initDB, resetDatabaseState } from '../services/database';
 
 const OFFSET = 60;
 
-const FloatingActionButton = ({ isExpanded, index, label, icon, myOnPress }) => {
+const FloatingActionButton = ({ isExpanded, index, label, icon, myOnPress, styles }) => {
+    const constats = useConstats();
     const translateY = useRef(new Animated.Value(0)).current;
     const scale = useRef(new Animated.Value(0)).current;
 
@@ -43,6 +44,7 @@ const FloatingActionButton = ({ isExpanded, index, label, icon, myOnPress }) => 
 };
 
 const ActionMenu = () => {
+    const constats = useConstats();
     const [isExpanded, setIsExpanded] = useState(false);
     const [createFolderModalVisible, setCreateFolderModalVisible] = useState(false);
     const [file, setFile] = useState(null);
@@ -182,6 +184,78 @@ const ActionMenu = () => {
         }
     };
 
+    const mainButtonStyles = StyleSheet.create({
+        button: {
+            zIndex: 1,
+            height: 70,
+            width: 70,
+            borderRadius: 100,
+            backgroundColor: constats.colors.primary,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        content: {
+            fontSize: 50,
+            color: '#f8f9ff',
+            marginTop: -3,
+        },
+    });
+
+    const styles = StyleSheet.create({
+        mainContainer: {
+            position: 'relative',
+            height: 50,
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+        },
+        floatingButtonContainer: {
+            position: 'absolute',
+        },
+        button: {
+            width: 50,
+            height: 50,
+            borderRadius: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            display: 'flex',
+            zIndex: -2,
+        },
+        buttonView: {
+            backgroundColor: '#F5FDFEFF',
+            marginLeft: -70,
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingStart: 8,
+            borderRadius: 100,
+            overflow: 'hidden',
+        },
+        label: {
+            writingDirection: 'rtl',
+            textAlign: 'right',
+            marginRight: 6,
+            fontSize: constats.sizes.font.medium + 1,
+            fontWeight: 'bold',
+            color: '#595959FF',
+        },
+        buttonContainer: {
+            position: 'absolute',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+        },
+        shadow: {
+            shadowColor: '#313131FF',
+            shadowOffset: { width: -0.5, height: 3.5 },
+            shadowOpacity: 0.2,
+            shadowRadius: 3,
+        },
+        content: {
+            color: constats.colors.primary,
+            fontWeight: '500',
+        },
+    });
 
     return (
         <SafeAreaView>
@@ -199,6 +273,7 @@ const ActionMenu = () => {
                                 label={'צור תיקייה \nחדשה'}
                                 icon={'folder-outline'}
                                 myOnPress={handleCreateFolderPress}
+                                styles={styles}
                             />
                             <FloatingActionButton
                                 isExpanded={isExpanded}
@@ -206,6 +281,7 @@ const ActionMenu = () => {
                                 label={'העלה קובץ מהקבצים'}
                                 icon={'cloud-upload-outline'}
                                 myOnPress={uploadFileFromFiles}
+                                styles={styles}
                             />
                             <FloatingActionButton
                                 isExpanded={isExpanded}
@@ -213,6 +289,7 @@ const ActionMenu = () => {
                                 label={'העלה קובץ מהגלרייה'}
                                 icon={'cloud-upload-outline'}
                                 myOnPress={uploadFileFromGallery}
+                                styles={styles}
                             />
                         </>
                     )}
@@ -228,78 +305,5 @@ const ActionMenu = () => {
         </SafeAreaView>
     );
 };
-
-const mainButtonStyles = StyleSheet.create({
-    button: {
-        zIndex: 1,
-        height: 70,
-        width: 70,
-        borderRadius: 100,
-        backgroundColor: constats.colors.primary,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    content: {
-        fontSize: 50,
-        color: '#f8f9ff',
-        marginTop: -3,
-    },
-});
-
-const styles = StyleSheet.create({
-    mainContainer: {
-        position: 'relative',
-        height: 50,
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-    },
-    floatingButtonContainer: {
-        position: 'absolute',
-    },
-    button: {
-        width: 50,
-        height: 50,
-        borderRadius: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-        display: 'flex',
-        zIndex: -2,
-    },
-    buttonView: {
-        backgroundColor: '#F5FDFEFF',
-        marginLeft: -70,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingStart: 8,
-        borderRadius: 100,
-        overflow: 'hidden',
-    },
-    label: {
-        writingDirection: 'rtl',
-        textAlign: 'right',
-        marginRight: 6,
-        fontSize: constats.sizes.font.medium + 1,
-        fontWeight: 'bold',
-        color: '#595959FF',
-    },
-    buttonContainer: {
-        position: 'absolute',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    shadow: {
-        shadowColor: '#313131FF',
-        shadowOffset: { width: -0.5, height: 3.5 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-    },
-    content: {
-        color: constats.colors.primary,
-        fontWeight: '500',
-    },
-});
 
 export default ActionMenu;

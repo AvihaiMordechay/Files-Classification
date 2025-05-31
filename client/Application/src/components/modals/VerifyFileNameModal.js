@@ -4,8 +4,8 @@ import {
     Pressable, StyleSheet, KeyboardAvoidingView,
     ScrollView, TouchableWithoutFeedback, Keyboard
 } from 'react-native';
-import theme from "../../styles/theme";
-import constats from '../../styles/constats';
+import { getTheme } from "../../styles/theme";
+import { useConstats } from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
 import { Ionicons } from '@expo/vector-icons';
 import * as yup from 'yup';
@@ -20,6 +20,8 @@ const schema = yup.object().shape({
 });
 
 const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, size, createDate, isNewFile = true }) => {
+    const constats = useConstats();
+    const theme = getTheme(constats);
     const { addNewFile, isFileExist } = useUser();
     const [newFileName, setNewFileName] = useState("");
     const [error, setError] = useState("");
@@ -63,6 +65,37 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, siz
         }
         handleClose();
     };
+
+    const styles = StyleSheet.create({
+        modalOverlay: theme.modal.modalOverlay,
+        centeredView: theme.modal.centeredView,
+        scrollViewContent: theme.modal.scrollViewContent,
+        modalView: theme.modal.modalView,
+        modalTitle: theme.modal.modalTitle,
+        modalLabel: theme.modal.modalLabel,
+        modalInputContainer: theme.modal.modalInputContainer,
+        modalInput: theme.modal.modalInput,
+        modalButtonsContainer: theme.modal.modalButtonsContainer,
+        modalSaveButton: theme.modal.modalSaveButton,
+        modalSaveButtonText: theme.modal.modalSaveButtonText,
+        modalCancelButton: theme.modal.modalCancelButton,
+        modalCancelButtonText: theme.modal.modalCancelButtonText,
+        disabledButton: theme.modal.disabledButton,
+        errorText: {
+            color: constats.colors.danger,
+            fontSize: constats.sizes.font.small,
+            marginTop: -5,
+            fontWeight: 'bold',
+            textAlign: 'right',
+        },
+        closeButton: {
+            position: 'absolute',
+            top: 10,
+            left: 10,
+            zIndex: 1,
+            padding: 5,
+        },
+    });
 
     return (
         <Modal
@@ -155,34 +188,3 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, siz
 };
 
 export default VerifyFileNameModal;
-
-const styles = StyleSheet.create({
-    modalOverlay: theme.modal.modalOverlay,
-    centeredView: theme.modal.centeredView,
-    scrollViewContent: theme.modal.scrollViewContent,
-    modalView: theme.modal.modalView,
-    modalTitle: theme.modal.modalTitle,
-    modalLabel: theme.modal.modalLabel,
-    modalInputContainer: theme.modal.modalInputContainer,
-    modalInput: theme.modal.modalInput,
-    modalButtonsContainer: theme.modal.modalButtonsContainer,
-    modalSaveButton: theme.modal.modalSaveButton,
-    modalSaveButtonText: theme.modal.modalSaveButtonText,
-    modalCancelButton: theme.modal.modalCancelButton,
-    modalCancelButtonText: theme.modal.modalCancelButtonText,
-    disabledButton: theme.modal.disabledButton,
-    errorText: {
-        color: constats.colors.danger,
-        fontSize: constats.sizes.font.small,
-        marginTop: -5,
-        fontWeight: 'bold',
-        textAlign: 'right',
-    },
-    closeButton: {
-        position: 'absolute',
-        top: 10,
-        left: 10,
-        zIndex: 1,
-        padding: 5,
-    },
-});

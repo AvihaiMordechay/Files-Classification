@@ -1,5 +1,7 @@
 import * as SQLite from 'expo-sqlite';
+import { AccessibilityInfo } from 'react-native';
 
+const ACCESSIBILITY = 'accessibility';
 const USER = 'user';
 const FOLDERS = 'folders';
 const FILES = 'files';
@@ -93,6 +95,12 @@ export const createDB = async (id, name, gender) => {
       const db = await initDB();
 
       await db.execAsync(`
+            CREATE TABLE IF NOT EXISTS ${ACCESSIBILITY}  ( 
+                scaleFactor INTEGER NOT NULL DEFAULT 0
+            );
+        `);
+
+      await db.execAsync(`
             CREATE TABLE IF NOT EXISTS ${USER}  ( 
                 id TEXT PRIMARY KEY NOT NULL,
                 name TEXT NOT NULL, 
@@ -147,6 +155,11 @@ export const createDB = async (id, name, gender) => {
                 WHERE id = OLD.folderId;
             END;
         `);
+
+      await db.runAsync(
+        `INSERT INTO ${ACCESSIBILITY} (scaleFactor) VALUES (?)`,
+        [0]
+      );
 
       // Check if user exists first
       const userExists = await db.getFirstAsync(
@@ -320,6 +333,32 @@ export const changeUserName = async (name, userId) => {
       console.log('User name changed successfully.');
     }
     return rowsUpdated > 0;
+  });
+};
+
+export const getScaleFactor = async () => {
+  return safeDBOperation(async () => {
+    try {
+      const db = await initDB();
+      const result = await db.getFirstAsync(`SELECT scaleFactor FROM ${ACCESSIBILITY}`);
+      return result.scaleFactor;
+    } catch (error) {
+      console.log('Error getting user ID:', error);
+      throw error;
+    }
+  });
+}
+
+export const changeScaleFactor = async (scaleFactor) => {
+  return safeDBOperation(async () => {
+    const db = await initDB();
+
+    const result = await db.runAsync(
+      `UPDATE ${ACCESSIBILITY} SET scaleFactor = ?`,
+      [scaleFactor]
+    );
+
+    return result > 0;
   });
 };
 
@@ -659,10 +698,12 @@ export const printDB = async () => {
       const user = await getTable(USER);
       const folders = await getTable(FOLDERS);
       const files = await getTable(FILES);
+      const accessibility = await getTable(ACCESSIBILITY);
 
       console.log('User Table:', user);
       console.log('Folders Table:', folders);
       console.log('Files Table:', files);
+      console.log('Accessibility Table:', accessibility);
     } catch (error) {
       console.log('Error printing database:', error);
     }

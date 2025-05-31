@@ -12,14 +12,16 @@ import {
     TouchableWithoutFeedback,
     Keyboard,
 } from "react-native";
-import theme from "../../styles/theme";
+import { getTheme } from "../../styles/theme";
 import { useUser } from "../../context/UserContext";
 import AlertModal from "./AlertModal";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import constats from "../../styles/constats";
+import { useConstats } from "../../styles/constats";
 
 const ChangeFileNameModal = ({ visible, onClose, fileId, folderName }) => {
+    const constats = useConstats();
+    const theme = getTheme(constats);
     const { user, changeFileName } = useUser();
     const [alertModalVisible, setAlertModalVisible] = useState(false);
     const [error, setError] = useState("");
@@ -63,6 +65,29 @@ const ChangeFileNameModal = ({ visible, onClose, fileId, folderName }) => {
             setSubmitting(false);
         }
     };
+
+    const styles = StyleSheet.create({
+        modalOverlay: theme.modal.modalOverlay,
+        centeredView: theme.modal.centeredView,
+        scrollViewContent: theme.modal.scrollViewContent,
+        modalView: theme.modal.modalView,
+        modalTitle: theme.modal.modalTitle,
+        modalLabel: theme.modal.modalLabel,
+        modalInputContainer: theme.modal.modalInputContainer,
+        modalInput: theme.modal.modalInput,
+        modalButtonsContainer: theme.modal.modalButtonsContainer,
+        modalSaveButton: theme.modal.modalSaveButton,
+        modalSaveButtonText: theme.modal.modalSaveButtonText,
+        modalCancelButton: theme.modal.modalCancelButton,
+        modalCancelButtonText: theme.modal.modalCancelButtonText,
+        disabledButton: theme.modal.disabledButton,
+        errorText: {
+            color: "red",
+            fontSize: constats.sizes.font.small,
+            textAlign: "right",
+            marginBottom: 8,
+        },
+    });
 
     return (
         <Modal animationType="fade" transparent={true} visible={visible} onRequestClose={handleClose}>
@@ -149,27 +174,5 @@ const ChangeFileNameModal = ({ visible, onClose, fileId, folderName }) => {
     );
 };
 
-const styles = StyleSheet.create({
-    modalOverlay: theme.modal.modalOverlay,
-    centeredView: theme.modal.centeredView,
-    scrollViewContent: theme.modal.scrollViewContent,
-    modalView: theme.modal.modalView,
-    modalTitle: theme.modal.modalTitle,
-    modalLabel: theme.modal.modalLabel,
-    modalInputContainer: theme.modal.modalInputContainer,
-    modalInput: theme.modal.modalInput,
-    modalButtonsContainer: theme.modal.modalButtonsContainer,
-    modalSaveButton: theme.modal.modalSaveButton,
-    modalSaveButtonText: theme.modal.modalSaveButtonText,
-    modalCancelButton: theme.modal.modalCancelButton,
-    modalCancelButtonText: theme.modal.modalCancelButtonText,
-    disabledButton: theme.modal.disabledButton,
-    errorText: {
-        color: "red",
-        fontSize: constats.sizes.font.small,
-        textAlign: "right",
-        marginBottom: 8,
-    },
-});
 
 export default ChangeFileNameModal;

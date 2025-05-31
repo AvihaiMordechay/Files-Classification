@@ -2,17 +2,17 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import constats from '../../styles/constats';
+import { useConstats } from '../../styles/constats';
 
 import HomeStackNavigator from './HomeNav';
 import FavoriteStackNavigator from './FavoriteNav';
 import SettingsNavigator from './SettingsNav';
 import ActionMenu from '../../components/ActionMenu';
 
-
 const Tab = createBottomTabNavigator();
 
 const ApplicationNavigator = () => {
+    const constats = useConstats();
 
     return (
         <Tab.Navigator
@@ -68,18 +68,5 @@ const ApplicationNavigator = () => {
         </Tab.Navigator>
     );
 };
-
-const styles = StyleSheet.create({
-    addButton: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: -30,
-        marginLeft: -10,
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-    },
-});
 
 export default ApplicationNavigator;

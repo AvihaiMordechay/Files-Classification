@@ -3,10 +3,11 @@ import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import AlertModal from './modals/AlertModal';
-import constats from '../styles/constats';
+import { useConstats } from '../styles/constats';
 import { initDB, resetDatabaseState } from '../services/database';
 
 const PdfViewer = ({ base64 }) => {
+    const constats = useConstats();
     const [alertVisible, setAlertVisible] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [alertTitle, setAlertTitle] = useState("");
@@ -40,6 +41,39 @@ const PdfViewer = ({ base64 }) => {
         }
     };
 
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        pdfButton: {
+            backgroundColor: constats.colors.white,
+            borderWidth: 1.5,
+            borderColor: constats.colors.primary,
+            borderRadius: 12,
+            paddingHorizontal: 32,
+            paddingVertical: 16,
+            minWidth: 140,
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadowColor: constats.colors.primary,
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 3,
+        },
+        buttonText: {
+            color: constats.colors.primary,
+            fontSize: constats.sizes.font.medium,
+            fontWeight: '600',
+            textAlign: 'center',
+        },
+    });
+
     return (
         <>
             <View style={styles.container}>
@@ -64,37 +98,4 @@ const PdfViewer = ({ base64 }) => {
 };
 
 export default PdfViewer;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    pdfButton: {
-        backgroundColor: constats.colors.white,
-        borderWidth: 1.5,
-        borderColor: constats.colors.primary,
-        borderRadius: 12,
-        paddingHorizontal: 32,
-        paddingVertical: 16,
-        minWidth: 140,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: constats.colors.primary,
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    buttonText: {
-        color: constats.colors.primary,
-        fontSize: constats.sizes.font.medium,
-        fontWeight: '600',
-        textAlign: 'center',
-    },
-});
 

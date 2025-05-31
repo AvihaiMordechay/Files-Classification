@@ -12,7 +12,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import theme from "../../styles/theme";
+import { getTheme } from "../../styles/theme";
 import { useUser } from "../../context/UserContext";
 import {
   verifyBeforeUpdateEmail,
@@ -22,6 +22,7 @@ import {
 import { auth } from "../../services/firebase";
 import AlertModal from "./AlertModal";
 import * as yup from 'yup';
+import { useConstats } from "../../styles/constats";
 
 const emailSchema = yup.string().email("כתובת אימייל לא תקינה").required("יש להזין כתובת אימייל");
 const passwordSchema = yup.string()
@@ -30,6 +31,8 @@ const passwordSchema = yup.string()
   .matches(/^[A-Za-z0-9!@#$%^&*()_+=\-[\]{};':"\\|,.<>/?`~]*$/, 'הסיסמה חייבת להכיל אותיות באנגלית, מספרים או סימנים מיוחדים בלבד');
 
 const EmailUpdateModal = ({ visible, onClose }) => {
+  const constats = useConstats();
+  const theme = getTheme(constats);
   const { user } = useUser();
   const [newEmail, setNewEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -118,6 +121,24 @@ const EmailUpdateModal = ({ visible, onClose }) => {
       }
     }
   };
+
+  const styles = StyleSheet.create({
+    modalOverlay: theme.modal.modalOverlay,
+    centeredView: theme.modal.centeredView,
+    scrollViewContent: theme.modal.scrollViewContent,
+    modalView: theme.modal.modalView,
+    modalTitle: theme.modal.modalTitle,
+    modalLabel: theme.modal.modalLabel,
+    modalInputContainer: theme.modal.modalInputContainer,
+    modalInput: theme.modal.modalInput,
+    modalButtonsContainer: theme.modal.modalButtonsContainer,
+    modalSaveButton: theme.modal.modalSaveButton,
+    modalSaveButtonText: theme.modal.modalSaveButtonText,
+    modalCancelButton: theme.modal.modalCancelButton,
+    modalCancelButtonText: theme.modal.modalCancelButtonText,
+    disabledButton: theme.modal.disabledButton,
+    errorText: theme.errorText,
+  });
 
   return (
     <Modal
@@ -219,23 +240,5 @@ const EmailUpdateModal = ({ visible, onClose }) => {
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  modalOverlay: theme.modal.modalOverlay,
-  centeredView: theme.modal.centeredView,
-  scrollViewContent: theme.modal.scrollViewContent,
-  modalView: theme.modal.modalView,
-  modalTitle: theme.modal.modalTitle,
-  modalLabel: theme.modal.modalLabel,
-  modalInputContainer: theme.modal.modalInputContainer,
-  modalInput: theme.modal.modalInput,
-  modalButtonsContainer: theme.modal.modalButtonsContainer,
-  modalSaveButton: theme.modal.modalSaveButton,
-  modalSaveButtonText: theme.modal.modalSaveButtonText,
-  modalCancelButton: theme.modal.modalCancelButton,
-  modalCancelButtonText: theme.modal.modalCancelButtonText,
-  disabledButton: theme.modal.disabledButton,
-  errorText: theme.errorText,
-});
 
 export default EmailUpdateModal;

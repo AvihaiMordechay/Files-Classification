@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import constats from '../styles/constats';
+import { useConstats } from '../styles/constats';
 import strings from '../styles/strings';
 import RegistrationScreen from './auth/RegistrationScreen';
 
@@ -18,6 +18,7 @@ const onboardingPages = [
 ];
 
 const OnboardingScreen = () => {
+    const constats = useConstats();
     const [pageIndex, setPageIndex] = useState(0);
     const [showRegistration, setShowRegistration] = useState(false);
     const page = onboardingPages[pageIndex];
@@ -49,6 +50,68 @@ const OnboardingScreen = () => {
         return <RegistrationScreen />;
     }
 
+
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: constats.colors.white,
+            padding: 24,
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            direction: 'rtl',
+        },
+        content: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        title: {
+            fontSize: constats.sizes.font.large + 3,
+            fontWeight: 'bold',
+            color: '#000',
+            textAlign: 'center',
+            marginBottom: 20
+        },
+        description: {
+            fontSize: constats.sizes.font.medium + 1,
+            color: '#333',
+            textAlign: 'center',
+            lineHeight: 24
+        },
+        bold: {
+            fontWeight: 'bold',
+            color: '#000'
+        },
+        dotsContainer: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            gap: 8,
+            marginBottom: 24
+        },
+        dot: {
+            width: 8,
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: '#ccc'
+        },
+        activeDot: {
+            backgroundColor: constats.colors.primary,
+            width: 16
+        },
+        startButton: {
+            backgroundColor: constats.colors.primary,
+            borderRadius: 12,
+            paddingVertical: 14,
+            paddingHorizontal: 36,
+            marginBottom: 32
+        },
+        startButtonText: {
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: constats.sizes.font.medium
+        }
+    });
+
     return (
         <View style={styles.container}>
             <View style={styles.content}>
@@ -79,63 +142,3 @@ const OnboardingScreen = () => {
 
 export default OnboardingScreen;
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: constats.colors.white,
-        padding: 24,
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        direction: 'rtl',
-    },
-    content: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: constats.sizes.font.large + 3,
-        fontWeight: 'bold',
-        color: '#000',
-        textAlign: 'center',
-        marginBottom: 20
-    },
-    description: {
-        fontSize: constats.sizes.font.medium + 1,
-        color: '#333',
-        textAlign: 'center',
-        lineHeight: 24
-    },
-    bold: {
-        fontWeight: 'bold',
-        color: '#000'
-    },
-    dotsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: 8,
-        marginBottom: 24
-    },
-    dot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        backgroundColor: '#ccc'
-    },
-    activeDot: {
-        backgroundColor: constats.colors.primary,
-        width: 16
-    },
-    startButton: {
-        backgroundColor: constats.colors.primary,
-        borderRadius: 12,
-        paddingVertical: 14,
-        paddingHorizontal: 36,
-        marginBottom: 32
-    },
-    startButtonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: constats.sizes.font.medium
-    }
-});

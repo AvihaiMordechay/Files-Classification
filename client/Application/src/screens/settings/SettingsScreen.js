@@ -3,15 +3,56 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../../components/Header';
-import constats from '../../styles/constats';
+import { useConstats } from '../../styles/constats';
 
 const settingsOptions = [
     { id: '1', title: 'הגדרות משתמש', screen: 'UserSettings', icon: 'person-outline' },
-    { id: '2', title: 'נגישות', screen: 'NotificationsSettings', icon: 'accessibility-outline' },
+    { id: '2', title: 'נגישות', screen: 'Accessibility', icon: 'accessibility-outline' },
 ];
 
 const SettingsScreen = () => {
+    const constats = useConstats();
     const navigation = useNavigation();
+
+    const styles = StyleSheet.create({
+        listTable: {
+            paddingHorizontal: 20,
+        },
+        title: {
+            fontSize: constats.sizes.font.large,
+            fontWeight: 'bold',
+            textAlign: 'right',
+            marginVertical: 20,
+            color: '#333',
+            paddingHorizontal: 25,
+        },
+        list: {
+            backgroundColor: '#FFF',
+            borderRadius: 12,
+            overflow: 'hidden',
+
+        },
+        item: {
+            flexDirection: 'row-reverse',
+            alignItems: 'center',
+            paddingVertical: 15,
+            paddingHorizontal: 20,
+            borderBottomWidth: 1,
+            borderColor: '#E0E0E0',
+        },
+        text: {
+            fontSize: constats.sizes.font.medium + 2,
+            color: '#333',
+            flex: 1,
+            textAlign: 'right',
+        },
+        icon: {
+            marginLeft: 10,
+        },
+        chevron: {
+            marginRight: 10,
+        },
+    });
 
     const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.item} onPress={() => navigation.navigate(item.screen)}>
@@ -36,44 +77,5 @@ const SettingsScreen = () => {
     );
 };
 
-const styles = StyleSheet.create({
-    listTable: {
-        paddingHorizontal: 20,
-    },
-    title: {
-        fontSize: constats.sizes.font.large,
-        fontWeight: 'bold',
-        textAlign: 'right',
-        marginVertical: 20,
-        color: '#333',
-        paddingHorizontal: 25,
-    },
-    list: {
-        backgroundColor: '#FFF',
-        borderRadius: 12,
-        overflow: 'hidden',
-
-    },
-    item: {
-        flexDirection: 'row-reverse',
-        alignItems: 'center',
-        paddingVertical: 15,
-        paddingHorizontal: 20,
-        borderBottomWidth: 1,
-        borderColor: '#E0E0E0',
-    },
-    text: {
-        fontSize: 18,
-        color: '#333',
-        flex: 1,
-        textAlign: 'right',
-    },
-    icon: {
-        marginLeft: 10,
-    },
-    chevron: {
-        marginRight: 10,
-    },
-});
 
 export default SettingsScreen;

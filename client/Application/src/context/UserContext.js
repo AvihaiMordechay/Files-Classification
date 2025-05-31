@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { AppState } from 'react-native';
 import { auth } from '../services/firebase';
 import AlertModal from '../components/modals/AlertModal';
@@ -24,19 +24,20 @@ import {
   isFileExistInDB,
   markFileAsFavorite,
   updateLastViewed,
-  favorites,
-  setFavorites,
   updateFileName,
   deleteFileFromFolder,
   resetDatabaseState,
-  updateFilePath,
   updateFolderName,
   deleteFolderDB,
+  getScaleFactor,
+  printDB,
 } from "../services/database";
+import { useFontScale } from './AccessibilityContext';
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
+  const { setScaleFactor, scaleFactor } = useFontScale();
   const [user, setUser] = useState(null);
   const [userStatus, setUserStatus] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -71,6 +72,8 @@ export const UserProvider = ({ children }) => {
         setUser(null);
         setUserStatus('new');
       } else if (firebaseUser !== null && (await isUserLoggedIn())) {
+        const scale = await getScaleFactor();
+        setScaleFactor(scale);
         try {
           await loadUser();
           setUserStatus('authenticated');
@@ -78,6 +81,8 @@ export const UserProvider = ({ children }) => {
           setUserStatus('unauthenticated');
         }
       } else {
+        const scale = await getScaleFactor();
+        setScaleFactor(scale);
         setUser(null);
         setUserStatus('unauthenticated');
       }
@@ -86,6 +91,7 @@ export const UserProvider = ({ children }) => {
 
     return () => unsubscribe();
   }, []);
+
 
   const isUserLoggedIn = async () => {
     try {

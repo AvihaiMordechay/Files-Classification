@@ -1,6 +1,12 @@
-let scaleFactor = 0;
+import { useFontScale } from "../context/AccessibilityContext";
 
-const constats = {
+export const useConstats = () => {
+    const { scaleFactor } = useFontScale();
+    return getConstats(scaleFactor);
+};
+
+
+const getConstats = (scaleFactor = 0) => ({
     colors: {
         primary: '#00C7BE',
         white: '#ffffff',
@@ -12,14 +18,12 @@ const constats = {
         starIcon: '#C0C1B8FF'
     },
     sizes: {
-        get font() {
-            return {
-                small: 12 + scaleFactor,
-                medium: 16 + scaleFactor,
-                mediumPlus: 20 + scaleFactor,
-                large: 24 + scaleFactor,
-                xl: 32 + scaleFactor,
-            };
+        font: {
+            small: 12 + scaleFactor,
+            medium: 16 + scaleFactor,
+            mediumPlus: 20 + scaleFactor,
+            large: 24 + scaleFactor,
+            xl: 32 + scaleFactor,
         },
         button: {
             width: 120,
@@ -37,10 +41,5 @@ const constats = {
             FileUploadModal: 42,
             profile: 47
         }
-
-    },
-    setFontScale(newScale) {
-        scaleFactor = newScale;
     }
-};
-export default constats;
+});

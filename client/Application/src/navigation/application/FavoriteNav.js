@@ -3,11 +3,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import FavoriteScreen from '../../screens/FavoriteScreen';
 import FileScreen from '../../screens/FileScreen';
-import constats from '../../styles/constats';
+import { useConstats } from '../../styles/constats';
 
 const Stack = createStackNavigator();
 
 const FavoriteStackNavigator = () => {
+    const constats = useConstats();
+
     return (
         <Stack.Navigator>
             <Stack.Screen

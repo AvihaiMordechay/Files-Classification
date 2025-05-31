@@ -5,6 +5,7 @@ import Spinner from './src/components/Spinner';
 import RegistrationNavigator from './src/navigation/RegistrationNav';
 import AuthenticatedNavigator from './src/navigation/AuthenticatedNav';
 import LoginNavigator from './src/navigation/LoginNav';
+import { FontScaleProvider } from './src/context/AccessibilityContext';
 
 const MainNavigator = () => {
   const { userStatus } = useUser();
@@ -24,10 +25,13 @@ const MainNavigator = () => {
 
 export default function App() {
   return (
-    <UserProvider>
-      <ActionSheetProvider>
-        <MainNavigator />
-      </ActionSheetProvider>
-    </UserProvider>
+    <FontScaleProvider>
+      <UserProvider>
+        <ActionSheetProvider>
+          <MainNavigator />
+        </ActionSheetProvider>
+      </UserProvider>
+    </FontScaleProvider>
+
   );
 }

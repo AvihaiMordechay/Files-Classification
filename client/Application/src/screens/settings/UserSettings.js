@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { View, StyleSheet, TextInput, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
-import theme from '../../styles/theme';
-import constats from '../../styles/constats';
+import { getTheme } from '../../styles/theme';
+import { useConstats } from '../../styles/constats';
 import { useUser } from '../../context/UserContext';
 import EmailUpdateModal from '../../components/modals/EmailUpdateModal';
 import { auth } from '../../services/firebase';
@@ -10,6 +10,8 @@ import DeleteUserModal from '../../components/modals/DeleteUserModal';
 import ForgotPasswordModal from '../../components/modals/ChangePasswordModal';
 
 const UserSettingsScreen = () => {
+    const constats = useConstats();
+    const theme = getTheme(constats);
     const { user, updateUserName } = useUser();
     const [userName, setUserName] = useState(user.name || '');
     const [saveNameButtonVisible, setSaveNameButtonVisible] = useState(false);
@@ -33,6 +35,172 @@ const UserSettingsScreen = () => {
 
     const handleEnable2FA = () => {
     };
+
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            alignItems: 'stretch',
+            justifyContent: 'flex-start',
+            paddingTop: 20,
+        },
+        keyboardAvoidingView: {
+            flex: 1,
+            width: '100%',
+        },
+        scrollView: {
+            flexGrow: 1,
+            paddingHorizontal: 20,
+            paddingVertical: 20,
+            alignItems: 'stretch',
+        },
+        formContainer: {
+            width: '100%',
+        },
+        label: {
+            fontSize: constats.sizes.font.medium + 1,
+            fontWeight: 'bold',
+            marginBottom: 6,
+            color: '#333',
+            textAlign: 'right',
+        },
+        inputContainer: theme.inputContainer,
+        disabledInputContainer: {
+            opacity: 0.5,
+        },
+        input: theme.input,
+        actionButton: {
+            backgroundColor: constats.colors.primary,
+            padding: 15,
+            borderRadius: 10,
+            alignItems: 'center',
+            marginTop: 10,
+        },
+        actionButtonText: {
+            color: '#fff',
+            fontSize: constats.sizes.font.medium,
+            fontWeight: 'bold',
+        },
+        deleteButton: {
+            backgroundColor: 'red',
+            padding: 15,
+            borderRadius: 10,
+            alignItems: 'center',
+            marginTop: 20,
+        },
+        saveButton: {
+            backgroundColor: constats.colors.primary,
+            paddingVertical: 8,
+            paddingHorizontal: 15,
+            borderRadius: 20,
+            alignItems: 'center',
+            alignSelf: 'flex-start',
+            marginTop: 4,
+        },
+        saveButtonText: {
+            color: '#fff',
+            fontSize: constats.sizes.font.small,
+            fontWeight: 'bold',
+        },
+        modalOverlay: {
+            flex: 1,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        centeredView: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+        },
+        modalView: {
+            width: '85%',
+            backgroundColor: 'white',
+            borderRadius: 20,
+            padding: 25,
+            shadowColor: '#000',
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 4,
+            elevation: 5,
+        },
+        modalTitle: {
+            fontSize: constats.sizes.font.large,
+            fontWeight: 'bold',
+            marginBottom: 20,
+            color: '#333',
+            textAlign: 'center',
+        },
+        modalLabel: {
+            fontSize: constats.sizes.font.medium,
+            fontWeight: 'bold',
+            marginBottom: 8,
+            color: '#333',
+            textAlign: 'right',
+            alignSelf: 'stretch',
+        },
+        modalInputContainer: {
+            height: 50,
+            backgroundColor: '#F5F5F5',
+            borderRadius: 10,
+            paddingHorizontal: 15,
+            marginBottom: 15,
+            borderWidth: 1,
+            borderColor: '#E0E0E0',
+            flexDirection: 'row',
+            alignItems: 'center',
+            width: '100%',
+        },
+        modalInput: {
+            flex: 1,
+            color: '#333',
+            fontSize: constats.sizes.font.medium,
+            textAlign: 'right',
+            fontWeight: '500',
+        },
+        modalButtonsContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            marginTop: 10,
+        },
+        modalSaveButton: {
+            backgroundColor: constats.colors.primary,
+            paddingVertical: 12,
+            paddingHorizontal: 20,
+            borderRadius: 12,
+            flex: 1,
+            marginLeft: 8,
+            alignItems: 'center',
+        },
+        modalSaveButtonText: {
+            color: '#fff',
+            fontSize: constats.sizes.font.medium,
+            fontWeight: 'bold',
+        },
+        modalCancelButton: {
+            backgroundColor: '#F5F5F5',
+            paddingVertical: 12,
+            paddingHorizontal: 20,
+            borderRadius: 12,
+            flex: 1,
+            marginRight: 8,
+            alignItems: 'center',
+            borderWidth: 1,
+            borderColor: '#E0E0E0',
+        },
+        modalCancelButtonText: {
+            color: '#666',
+            fontSize: constats.sizes.font.medium,
+            fontWeight: 'bold',
+        },
+        disabledButton: {
+            opacity: 0.5,
+        },
+    });
 
     return (
         <SafeAreaProvider>
@@ -107,170 +275,5 @@ const UserSettingsScreen = () => {
     );
 };
 
-export default UserSettingsScreen;
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'stretch',
-        justifyContent: 'flex-start',
-        paddingTop: 20,
-    },
-    keyboardAvoidingView: {
-        flex: 1,
-        width: '100%',
-    },
-    scrollView: {
-        flexGrow: 1,
-        paddingHorizontal: 20,
-        paddingVertical: 20,
-        alignItems: 'stretch',
-    },
-    formContainer: {
-        width: '100%',
-    },
-    label: {
-        fontSize: constats.sizes.font.medium + 1,
-        fontWeight: 'bold',
-        marginBottom: 6,
-        color: '#333',
-        textAlign: 'right',
-    },
-    inputContainer: theme.inputContainer,
-    disabledInputContainer: {
-        opacity: 0.5,
-    },
-    input: theme.input,
-    actionButton: {
-        backgroundColor: constats.colors.primary,
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    actionButtonText: {
-        color: '#fff',
-        fontSize: constats.sizes.font.medium,
-        fontWeight: 'bold',
-    },
-    deleteButton: {
-        backgroundColor: 'red',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    saveButton: {
-        backgroundColor: constats.colors.primary,
-        paddingVertical: 8,
-        paddingHorizontal: 15,
-        borderRadius: 20,
-        alignItems: 'center',
-        alignSelf: 'flex-start',
-        marginTop: 4,
-    },
-    saveButtonText: {
-        color: '#fff',
-        fontSize: constats.sizes.font.small,
-        fontWeight: 'bold',
-    },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-    },
-    modalView: {
-        width: '85%',
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 25,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    modalTitle: {
-        fontSize: constats.sizes.font.large,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        color: '#333',
-        textAlign: 'center',
-    },
-    modalLabel: {
-        fontSize: constats.sizes.font.medium,
-        fontWeight: 'bold',
-        marginBottom: 8,
-        color: '#333',
-        textAlign: 'right',
-        alignSelf: 'stretch',
-    },
-    modalInputContainer: {
-        height: 50,
-        backgroundColor: '#F5F5F5',
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        marginBottom: 15,
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: '100%',
-    },
-    modalInput: {
-        flex: 1,
-        color: '#333',
-        fontSize: constats.sizes.font.medium,
-        textAlign: 'right',
-        fontWeight: '500',
-    },
-    modalButtonsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        marginTop: 10,
-    },
-    modalSaveButton: {
-        backgroundColor: constats.colors.primary,
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 12,
-        flex: 1,
-        marginLeft: 8,
-        alignItems: 'center',
-    },
-    modalSaveButtonText: {
-        color: '#fff',
-        fontSize: constats.sizes.font.medium,
-        fontWeight: 'bold',
-    },
-    modalCancelButton: {
-        backgroundColor: '#F5F5F5',
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 12,
-        flex: 1,
-        marginRight: 8,
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
-    },
-    modalCancelButtonText: {
-        color: '#666',
-        fontSize: constats.sizes.font.medium,
-        fontWeight: 'bold',
-    },
-    disabledButton: {
-        opacity: 0.5,
-    },
-});
+export default UserSettingsScreen;

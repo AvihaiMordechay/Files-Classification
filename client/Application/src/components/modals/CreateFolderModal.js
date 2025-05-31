@@ -14,12 +14,14 @@ import {
   Keyboard,
 } from 'react-native';
 import AlertModal from "./AlertModal";
-import theme from '../../styles/theme';
+import { getTheme } from '../../styles/theme';
 import { useUser } from '../../context/UserContext';
-import constats from '../../styles/constats';
+import { useConstats } from '../../styles/constats';
 import VerifyFileNameModal from './VerifyFileNameModal';
 
 const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
+  const constats = useConstats();
+  const theme = getTheme(constats);
   const { createNewFolder } = useUser();
   const [newFolderName, setNewFolderName] = useState('');
   const [changeFileNameModelVisible, setChangeFileNameModelVisible] = useState(false);
@@ -91,6 +93,30 @@ const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
       }
     }
   };
+
+  const styles = StyleSheet.create({
+    modalOverlay: theme.modal.modalOverlay,
+    centeredView: theme.modal.centeredView,
+    scrollViewContent: theme.modal.scrollViewContent,
+    modalView: theme.modal.modalView,
+    modalTitle: theme.modal.modalTitle,
+    modalLabel: theme.modal.modalLabel,
+    modalInputContainer: theme.modal.modalInputContainer,
+    modalInput: theme.modal.modalInput,
+    modalButtonsContainer: theme.modal.modalButtonsContainer,
+    modalSaveButton: theme.modal.modalSaveButton,
+    modalSaveButtonText: theme.modal.modalSaveButtonText,
+    modalCancelButton: theme.modal.modalCancelButton,
+    modalCancelButtonText: theme.modal.modalCancelButtonText,
+    disabledButton: theme.modal.disabledButton,
+    errorText: {
+      color: constats.colors.danger,
+      fontSize: constats.sizes.font.small,
+      marginTop: -5,
+      fontWeight: 'bold',
+      textAlign: 'right',
+    },
+  });
 
   return (
     <>
@@ -186,26 +212,3 @@ const CreateFolderModal = ({ visible, onClose, attachedFile = null }) => {
 
 export default CreateFolderModal;
 
-const styles = StyleSheet.create({
-  modalOverlay: theme.modal.modalOverlay,
-  centeredView: theme.modal.centeredView,
-  scrollViewContent: theme.modal.scrollViewContent,
-  modalView: theme.modal.modalView,
-  modalTitle: theme.modal.modalTitle,
-  modalLabel: theme.modal.modalLabel,
-  modalInputContainer: theme.modal.modalInputContainer,
-  modalInput: theme.modal.modalInput,
-  modalButtonsContainer: theme.modal.modalButtonsContainer,
-  modalSaveButton: theme.modal.modalSaveButton,
-  modalSaveButtonText: theme.modal.modalSaveButtonText,
-  modalCancelButton: theme.modal.modalCancelButton,
-  modalCancelButtonText: theme.modal.modalCancelButtonText,
-  disabledButton: theme.modal.disabledButton,
-  errorText: {
-    color: constats.colors.danger,
-    fontSize: constats.sizes.font.small,
-    marginTop: -5,
-    fontWeight: 'bold',
-    textAlign: 'right',
-  },
-});

@@ -1,7 +1,6 @@
 import { Platform } from 'react-native';
-import constats from "./constats";
 
-const theme = {
+export const getTheme = (constats) => ({
     inputContainer: {
         backgroundColor: '#FFF',
         borderRadius: 8,
@@ -135,6 +134,4 @@ const theme = {
             opacity: 0.5,
         },
     }
-};
-
-export default theme;
+});

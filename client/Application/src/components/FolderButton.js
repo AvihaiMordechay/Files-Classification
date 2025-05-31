@@ -1,13 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { Text, TouchableOpacity, StyleSheet, View, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import constats from '../styles/constats';
+import { useConstats } from '../styles/constats';
 import ActionSheet from 'react-native-actions-sheet';
 import ChangeFolderNameModal from './modals/ChangeFolderNameModal';
 import AlertModal from './modals/AlertModal';
 import { useUser } from '../context/UserContext';
 
 const FolderButton = ({ folder, onPress, setResultSearch = null }) => {
+    const constats = useConstats();
+
     const { deleteFolder } = useUser();
     const [changeFolderNameModalVisible, setChangeFolderNameModalVisible] = useState(false);
     const [deleteFolderModalVisible, setDeleteFolderModalVisible] = useState(false);
@@ -37,6 +39,81 @@ const FolderButton = ({ folder, onPress, setResultSearch = null }) => {
         }
         setDeleteFolderModalVisible(false);
     }
+
+    const styles = StyleSheet.create({
+        button: {
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 15,
+            backgroundColor: constats.colors.backgroundButton,
+            borderRadius: 12,
+            margin: 6,
+            width: constats.sizes.button.width,
+            height: constats.sizes.button.height,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            writingDirection: 'center',
+        },
+        iconContainer: {
+            marginBottom: 10,
+        },
+        buttonText: {
+            fontSize: constats.sizes.font.medium,
+            fontWeight: '600',
+            color: '#333',
+            textAlign: 'center',
+        },
+        subButtonText: {
+            fontSize: constats.sizes.font.small,
+            color: '#888',
+            textAlign: 'center',
+        },
+        actionSheetContainer: {
+            padding: 16,
+            backgroundColor: '#fff',
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            paddingBottom: Platform.OS === 'ios' ? 40 : 16,
+        },
+        actionSheetTitle: {
+            fontSize: constats.sizes.font.medium + 2,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: 8,
+            color: '#333',
+        },
+        actionSheetMessage: {
+            fontSize: constats.sizes.font.medium,
+            textAlign: 'center',
+            marginBottom: 20,
+            color: '#666',
+        },
+        actionSheetButton: {
+            paddingVertical: 16,
+            backgroundColor: '#f8f8f8',
+            borderRadius: 10,
+            marginBottom: 10,
+            alignItems: 'center',
+        },
+        actionSheetButtonText: {
+            fontSize: constats.sizes.font.medium,
+            fontWeight: '500',
+            color: constats.colors.primary,
+            textAlign: 'center',
+        },
+        destructiveButton: {
+            backgroundColor: '#fff0f0',
+        },
+        destructiveText: {
+            color: '#ff3b30',
+        },
+        cancelButton: {
+            backgroundColor: '#f0f0f0',
+            marginTop: 5,
+        },
+    });
 
     return (
         <>
@@ -113,80 +190,5 @@ const FolderButton = ({ folder, onPress, setResultSearch = null }) => {
 
     );
 };
-
-const styles = StyleSheet.create({
-    button: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 15,
-        backgroundColor: constats.colors.backgroundButton,
-        borderRadius: 12,
-        margin: 6,
-        width: constats.sizes.button.width,
-        height: constats.sizes.button.height,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        writingDirection: 'center',
-    },
-    iconContainer: {
-        marginBottom: 10,
-    },
-    buttonText: {
-        fontSize: constats.sizes.font.medium,
-        fontWeight: '600',
-        color: '#333',
-        textAlign: 'center',
-    },
-    subButtonText: {
-        fontSize: constats.sizes.font.small,
-        color: '#888',
-        textAlign: 'center',
-    },
-    actionSheetContainer: {
-        padding: 16,
-        backgroundColor: '#fff',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        paddingBottom: Platform.OS === 'ios' ? 40 : 16,
-    },
-    actionSheetTitle: {
-        fontSize: constats.sizes.font.medium + 2,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 8,
-        color: '#333',
-    },
-    actionSheetMessage: {
-        fontSize: constats.sizes.font.medium,
-        textAlign: 'center',
-        marginBottom: 20,
-        color: '#666',
-    },
-    actionSheetButton: {
-        paddingVertical: 16,
-        backgroundColor: '#f8f8f8',
-        borderRadius: 10,
-        marginBottom: 10,
-        alignItems: 'center',
-    },
-    actionSheetButtonText: {
-        fontSize: constats.sizes.font.medium,
-        fontWeight: '500',
-        color: constats.colors.primary,
-        textAlign: 'center',
-    },
-    destructiveButton: {
-        backgroundColor: '#fff0f0',
-    },
-    destructiveText: {
-        color: '#ff3b30',
-    },
-    cancelButton: {
-        backgroundColor: '#f0f0f0',
-        marginTop: 5,
-    },
-});
 
 export default FolderButton;

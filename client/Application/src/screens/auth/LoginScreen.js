@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import constats from '../../styles/constats';
+import { useConstats } from '../../styles/constats';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/firebase';
-import theme from '../../styles/theme';
+import { getTheme } from '../../styles/theme';
 import { updateLastLogin } from '../../services/database';
 import { useUser } from '../../context/UserContext';
 import ForgetPasswordModal from '../../components/modals/ForgetPasswordModal';
@@ -33,6 +33,8 @@ const validationSchema = Yup.object().shape({
 });
 
 const LoginScreen = ({ navigation }) => {
+  const constats = useConstats();
+  const theme = getTheme(constats);
   const { loadUser } = useUser();
   const [isForgetPasswordModalVisible, setIsForgetPasswordModalVisible] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
@@ -64,6 +66,56 @@ const LoginScreen = ({ navigation }) => {
       }
     }
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    keyboardAvoidingView: {
+      flex: 1,
+    },
+    scrollView: {
+      flexGrow: 0.3,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    logoContainer: {
+      flexDirection: 'row',
+      marginBottom: 20,
+    },
+    logoBox: theme.authLogoBox,
+    logoBoxOverlap: {
+      marginLeft: -15,
+    },
+    title: {
+      fontSize: constats.sizes.font.large,
+      fontWeight: 'bold',
+      marginBottom: 20,
+    },
+    form: {
+      width: '80%',
+    },
+    inputContainer: theme.inputContainer,
+    input: theme.input,
+    button: theme.authButton,
+    buttonText: {
+      color: constats.colors.backgroundButton,
+      fontSize: constats.sizes.font.medium,
+      fontWeight: 'bold',
+    },
+    errorText: theme.errorText,
+    linkButton: {
+      marginTop: 15,
+      alignItems: 'center',
+      alignSelf: 'flex-end',
+    },
+    linkText: {
+      color: constats.colors.primary,
+      fontSize: constats.sizes.font.small,
+      textDecorationLine: 'underline',
+      paddingRight: 10,
+    },
+  });
 
   return (
     <SafeAreaProvider>
@@ -153,54 +205,5 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
-  scrollView: {
-    flexGrow: 0.3,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  logoBox: theme.authLogoBox,
-  logoBoxOverlap: {
-    marginLeft: -15,
-  },
-  title: {
-    fontSize: constats.sizes.font.large,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  form: {
-    width: '80%',
-  },
-  inputContainer: theme.inputContainer,
-  input: theme.input,
-  button: theme.authButton,
-  buttonText: {
-    color: constats.colors.backgroundButton,
-    fontSize: constats.sizes.font.medium,
-    fontWeight: 'bold',
-  },
-  errorText: theme.errorText,
-  linkButton: {
-    marginTop: 15,
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-  },
-  linkText: {
-    color: constats.colors.primary,
-    fontSize: constats.sizes.font.small,
-    textDecorationLine: 'underline',
-    paddingRight: 10,
-  },
-});
 
 export default LoginScreen;

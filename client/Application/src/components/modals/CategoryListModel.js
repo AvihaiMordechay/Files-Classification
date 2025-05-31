@@ -10,12 +10,14 @@ import {
   Keyboard,
 } from "react-native";
 import { useUser } from "../../context/UserContext";
-import theme from "../../styles/theme";
+import { getTheme } from "../../styles/theme";
 import VerifyFileNameModal from "./VerifyFileNameModal";
 import AlertModal from "./AlertModal";
-import constats from "../../styles/constats";
+import { useConstats } from "../../styles/constats";
 
 const CategoryListModel = ({ visible, onClose, attachedFile }) => {
+  const constats = useConstats();
+  const theme = getTheme(constats);
   const { user } = useUser();
   const [changeFileNameModelVisible, setChangeFileNameModelVisible] = useState(false);
   const [folderId, setFolderId] = useState(null);
@@ -36,6 +38,38 @@ const CategoryListModel = ({ visible, onClose, attachedFile }) => {
     setFolderId(folder.id);
     setChangeFileNameModelVisible(true);
   };
+
+  const styles = StyleSheet.create({
+    modalOverlay: theme.modal.modalOverlay,
+    modalView: {
+      ...theme.modal.modalView,
+      width: "85%",
+      maxHeight: "80%",
+      padding: 20,
+    },
+    title: {
+      ...theme.modal.modalTitle,
+      marginBottom: 20,
+    },
+    folderList: {
+      marginBottom: 20,
+    },
+    folderItem: {
+      paddingVertical: 12,
+      paddingHorizontal: 15,
+      backgroundColor: "#f0f0f0",
+      borderRadius: 10,
+      marginBottom: 10,
+    },
+    folderText: {
+      fontSize: constats.sizes.font.medium,
+      color: "#333",
+      textAlign: "right",
+    },
+    cancelButton: theme.modal.modalCancelButton,
+    cancelButtonText: theme.modal.modalCancelButtonText,
+    buttonContainer: theme.modal.modalButtonsContainer,
+  });
 
   return (
     <>
@@ -100,36 +134,5 @@ const CategoryListModel = ({ visible, onClose, attachedFile }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  modalOverlay: theme.modal.modalOverlay,
-  modalView: {
-    ...theme.modal.modalView,
-    width: "85%",
-    maxHeight: "80%",
-    padding: 20,
-  },
-  title: {
-    ...theme.modal.modalTitle,
-    marginBottom: 20,
-  },
-  folderList: {
-    marginBottom: 20,
-  },
-  folderItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  folderText: {
-    fontSize: constats.sizes.font.medium,
-    color: "#333",
-    textAlign: "right",
-  },
-  cancelButton: theme.modal.modalCancelButton,
-  cancelButtonText: theme.modal.modalCancelButtonText,
-  buttonContainer: theme.modal.modalButtonsContainer,
-});
 
 export default CategoryListModel;

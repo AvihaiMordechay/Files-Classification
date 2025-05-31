@@ -4,9 +4,10 @@ import FileButton from '../components/FileButton';
 import Header from '../components/Header';
 import { useUser } from '../context/UserContext';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
-import constats from '../styles/constats';
+import { useConstats } from '../styles/constats';
 
 const FavoriteScreen = ({ navigation }) => {
+    const constats = useConstats();
     const { user } = useUser();
     const favorites = user?.favorites || [];
 
@@ -25,6 +26,36 @@ const FavoriteScreen = ({ navigation }) => {
             folderName: folderName,
         });
     };
+
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            paddingHorizontal: 15,
+        },
+        baseText: {
+            fontWeight: 'bold',
+            fontSize: constats.sizes.font.large,
+            marginRight: 20,
+            marginTop: 30,
+            writingDirection: 'rtl',
+            textAlign: 'right',
+        },
+        categoriesContainer: {
+            marginTop: 20,
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        noFavoritesContainer: {
+            marginTop: 50,
+            alignItems: 'center',
+        },
+        noFavoritesText: {
+            fontSize: constats.sizes.font.medium,
+            color: '#555',
+        },
+    });
 
     return (
         <>
@@ -60,35 +91,5 @@ const FavoriteScreen = ({ navigation }) => {
         </>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingHorizontal: 15,
-    },
-    baseText: {
-        fontWeight: 'bold',
-        fontSize: constats.sizes.font.large,
-        marginRight: 20,
-        marginTop: 30,
-        writingDirection: 'rtl',
-        textAlign: 'right',
-    },
-    categoriesContainer: {
-        marginTop: 20,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    noFavoritesContainer: {
-        marginTop: 50,
-        alignItems: 'center',
-    },
-    noFavoritesText: {
-        fontSize: constats.sizes.font.medium,
-        color: '#555',
-    },
-});
 
 export default FavoriteScreen;
