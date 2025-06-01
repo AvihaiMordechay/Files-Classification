@@ -12,7 +12,8 @@ CATEGORY_MAP = {
     'תחבורה': 'transportation',
     'רפואה': 'health',
     'פיננסי': 'finance',
-    'השכלה':'education'
+    'השכלה': 'education',
+    'אחר': 'other'
 }
 
 

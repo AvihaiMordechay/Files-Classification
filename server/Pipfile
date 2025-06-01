@@ -5,13 +5,13 @@ name = "pypi"
 
 [packages]
 django = "*"
-google-cloud-vision = "*"
 google-cloud-secret-manager = "*"
 python-dotenv = "*"
 torch = "*"
 transformers = "*"
 pdf2image = "*"
 django-cors-headers = "*"
+google-cloud-vision = "*"
 
 [dev-packages]
 
