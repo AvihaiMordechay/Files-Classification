@@ -53,18 +53,24 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, siz
     };
 
     const handleRemainName = async () => {
+        if (isExistNameTooLong) {
+            setError("שם הקובץ הנוכחי ארוך מדי. נא להזין שם חדש.");
+            return;
+        }
+
         try {
             if (await isFileExist(folderId, name)) {
                 setError("שם קובץ קיים בתיקייה, אנא בחר שם אחר");
                 return;
-            } else {
-                await addNewFile(name, folderId, type, size, createDate, path);
             }
+            await addNewFile(name, folderId, type, size, createDate, path);
+            handleClose();
         } catch (error) {
             console.log(error);
+            setError("שגיאה בלתי צפויה");
         }
-        handleClose();
     };
+
 
     const styles = StyleSheet.create({
         modalOverlay: theme.modal.modalOverlay,
@@ -145,24 +151,14 @@ const VerifyFileNameModal = ({ visible, onClose, name, folderId, type, path, siz
                                     />
                                 </View>
 
-                                {isExistNameTooLong && (
-                                    <Text style={styles.errorText}>
-                                        שם הקובץ הנוכחי ארוך מדי. נא להזין שם חדש.
-                                    </Text>
-                                )}
-
-                                {!isExistNameTooLong && error ? (
+                                {error ? (
                                     <Text style={styles.errorText}>{error}</Text>
                                 ) : null}
 
                                 <View style={styles.modalButtonsContainer}>
                                     <TouchableOpacity
-                                        style={[
-                                            styles.modalCancelButton,
-                                            isExistNameTooLong && styles.disabledButton
-                                        ]}
+                                        style={styles.modalCancelButton}
                                         onPress={handleRemainName}
-                                        disabled={isExistNameTooLong}
                                     >
                                         <Text style={styles.modalCancelButtonText}>השאר נוכחי</Text>
                                     </TouchableOpacity>

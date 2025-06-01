@@ -23,6 +23,7 @@ const UploadFile = ({ file }) => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertTitle, setAlertTitle] = useState('');
   const [alertButtons, setAlertButtons] = useState([]);
+  const hasFolders = user?.folders && Object.keys(user.folders).length > 0;
 
   useEffect(() => {
     const handleUploadFileToServer = async () => {
@@ -151,12 +152,14 @@ const UploadFile = ({ file }) => {
               onPress: () =>
                 handleButtonPress('createNewFolder', 'newCategoryModal'),
             },
-            {
-              icon: 'save-outline',
-              text: 'שמור בתיקייה אחרת',
-              onPress: () =>
-                handleButtonPress('saveToExisting', 'newCategoryModal'),
-            },
+            ...(hasFolders
+              ? [{
+                icon: 'save-outline',
+                text: 'שמור בתיקייה קיימת',
+                onPress: () =>
+                  handleButtonPress('saveToExisting', 'newCategoryModal'),
+              }]
+              : []),
             {
               icon: 'folder-outline',
               isPrimary: true,
@@ -177,12 +180,14 @@ const UploadFile = ({ file }) => {
               onPress: () =>
                 handleButtonPress('createNewFolder', 'existCategoryModal'),
             },
-            {
-              icon: 'save-outline',
-              text: 'שמור בתיקייה אחרת',
-              onPress: () =>
-                handleButtonPress('saveToExisting', 'existCategoryModal'),
-            },
+            ...(hasFolders
+              ? [{
+                icon: 'save-outline',
+                text: 'שמור בתיקייה קיימת',
+                onPress: () =>
+                  handleButtonPress('saveToExisting', 'newCategoryModal'),
+              }]
+              : []),
             {
               icon: 'save-outline',
               isPrimary: true,
@@ -206,12 +211,14 @@ const UploadFile = ({ file }) => {
               onPress: () =>
                 handleButtonPress('createNewFolder', 'failedRecognitionModel'),
             },
-            {
-              icon: 'save-outline',
-              text: 'שמור בתיקייה קיימת',
-              onPress: () =>
-                handleButtonPress('saveToExisting', 'failedRecognitionModel'),
-            },
+            ...(hasFolders
+              ? [{
+                icon: 'save-outline',
+                text: 'שמור בתיקייה קיימת',
+                onPress: () =>
+                  handleButtonPress('saveToExisting', 'newCategoryModal'),
+              }]
+              : []),
           ]}
           onClose={() => setFailedRecognitionModelVisible(false)}
         />
