@@ -9,66 +9,41 @@ import * as DocumentPicker from 'expo-document-picker';
 import { PDFDocument } from 'pdf-lib';
 import * as FileSystem from 'expo-file-system';
 import { initDB, resetDatabaseState } from '../services/database';
+import FileUploadModal from './modals/FileUploadModal';
 
-const OFFSET = 60;
-
-const FloatingActionButton = ({ isExpanded, index, label, icon, myOnPress, styles }) => {
-    const constats = useConstats();
-    const translateY = useRef(new Animated.Value(0)).current;
-    const scale = useRef(new Animated.Value(0)).current;
-
-    React.useEffect(() => {
-        Animated.parallel([
-            Animated.spring(translateY, {
-                toValue: isExpanded ? -OFFSET * index : 0,
-                useNativeDriver: true,
-            }),
-            Animated.timing(scale, {
-                toValue: isExpanded ? 1 : 0,
-                duration: 200,
-                useNativeDriver: true,
-            }),
-        ]).start();
-    }, [isExpanded]);
-
-    return (
-        <Animated.View style={[{ transform: [{ translateY }, { scale }] }, styles.floatingButtonContainer]}>
-            <View style={styles.buttonView}>
-                <Text style={styles.label}>{label}</Text>
-                <Pressable onPress={myOnPress} style={[styles.button, styles.shadow]}>
-                    <Ionicons name={icon} size={constats.sizes.icon.default + 4} />
-                </Pressable>
-            </View>
-        </Animated.View>
-    );
-};
 
 const ActionMenu = () => {
     const constats = useConstats();
-    const [isExpanded, setIsExpanded] = useState(false);
     const [createFolderModalVisible, setCreateFolderModalVisible] = useState(false);
     const [file, setFile] = useState(null);
-    const rotateAnim = useRef(new Animated.Value(0)).current;
+    const [actionModalVisible, setActionModalVisible] = useState(false);
 
-    const handlePlusPress = () => {
-        setIsExpanded(!isExpanded);
-        Animated.timing(rotateAnim, {
-            toValue: isExpanded ? 0 : 1,
-            duration: 200,
-            useNativeDriver: true,
-        }).start();
-    };
+    const uploadModalButtons = [
+        {
+            text: "העלה תמונה מהגלריה",
+            icon: "image-outline",
+            onPress: () => uploadFileFromGallery(),
+        },
+        {
+            text: "העלה תמונה מהקבצים",
+            icon: "document-outline",
+            onPress: () => uploadFileFromFiles(),
+        },
+        {
+            text: "צור תיקייה חדשה",
+            icon: "folder-outline",
+            onPress: () => handleCreateFolderPress(),
+        },
+    ];
 
     const handleCreateFolderPress = () => {
-        setIsExpanded(false);
-        handlePlusPress();
+        setActionModalVisible(false);
         setCreateFolderModalVisible(true);
     };
 
     const uploadFileFromGallery = async () => {
-        setIsExpanded(false);
-        handlePlusPress();
         try {
+            setActionModalVisible(false);
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
             await resetDatabaseState();
             await initDB();
@@ -103,9 +78,8 @@ const ActionMenu = () => {
 
 
     const uploadFileFromFiles = async () => {
-        setIsExpanded(false);
-        handlePlusPress();
         try {
+            setActionModalVisible(false);
             const result = await DocumentPicker.getDocumentAsync({
                 type: ['application/pdf', 'image/*'],
             });
@@ -152,24 +126,6 @@ const ActionMenu = () => {
         }
     };
 
-    const rotateStyle = {
-        transform: [
-            {
-                rotate: rotateAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ['0deg', '45deg'],
-                }),
-            },
-            {
-                translateX: rotateAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 2],
-                }),
-            },
-        ],
-
-    };
-
     const formatFileSize = (sizeInBytes) => {
         const kb = 1024;
         const mb = kb * 1024;
@@ -184,7 +140,13 @@ const ActionMenu = () => {
         }
     };
 
-    const mainButtonStyles = StyleSheet.create({
+    const styles = StyleSheet.create({
+        mainContainer: {
+            position: 'relative',
+            height: '90%',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+        },
         button: {
             zIndex: 1,
             height: 70,
@@ -195,6 +157,13 @@ const ActionMenu = () => {
             justifyContent: 'center',
             alignItems: 'center',
         },
+        buttonContainer: {
+            position: 'absolute',
+            display: 'flex',
+            flexDirection: 'column-reverse',
+            alignItems: 'center',
+            bottom: 15
+        },
         content: {
             fontSize: 50,
             color: '#f8f9ff',
@@ -202,98 +171,21 @@ const ActionMenu = () => {
         },
     });
 
-    const styles = StyleSheet.create({
-        mainContainer: {
-            position: 'relative',
-            height: 50,
-            display: 'flex',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-        },
-        floatingButtonContainer: {
-            position: 'absolute',
-        },
-        button: {
-            width: 50,
-            height: 50,
-            borderRadius: 100,
-            justifyContent: 'center',
-            alignItems: 'center',
-            display: 'flex',
-            zIndex: -2,
-        },
-        buttonView: {
-            backgroundColor: '#F5FDFEFF',
-            marginLeft: -70,
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingStart: 8,
-            borderRadius: 100,
-            overflow: 'hidden',
-        },
-        label: {
-            writingDirection: 'rtl',
-            textAlign: 'right',
-            marginRight: 6,
-            fontSize: constats.sizes.font.medium + 1,
-            fontWeight: 'bold',
-            color: '#595959FF',
-        },
-        buttonContainer: {
-            position: 'absolute',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-        },
-        shadow: {
-            shadowColor: '#313131FF',
-            shadowOffset: { width: -0.5, height: 3.5 },
-            shadowOpacity: 0.2,
-            shadowRadius: 3,
-        },
-        content: {
-            color: constats.colors.primary,
-            fontWeight: '500',
-        },
-    });
-
     return (
         <SafeAreaView>
             <View style={styles.mainContainer}>
                 <View style={styles.buttonContainer}>
-                    <Pressable onPress={handlePlusPress} style={[styles.shadow, mainButtonStyles.button]}>
-                        <Animated.Text style={[rotateStyle, mainButtonStyles.content]}>+</Animated.Text>
+                    <Pressable onPress={() => setActionModalVisible(true)} style={styles.button}>
+                        <Text style={styles.content}>+</Text>
                     </Pressable>
-
-                    {isExpanded && (
-                        <>
-                            <FloatingActionButton
-                                isExpanded={isExpanded}
-                                index={1}
-                                label={'צור תיקייה \nחדשה'}
-                                icon={'folder-outline'}
-                                myOnPress={handleCreateFolderPress}
-                                styles={styles}
-                            />
-                            <FloatingActionButton
-                                isExpanded={isExpanded}
-                                index={2}
-                                label={'העלה קובץ מהקבצים'}
-                                icon={'cloud-upload-outline'}
-                                myOnPress={uploadFileFromFiles}
-                                styles={styles}
-                            />
-                            <FloatingActionButton
-                                isExpanded={isExpanded}
-                                index={3}
-                                label={'העלה קובץ מהגלרייה'}
-                                icon={'cloud-upload-outline'}
-                                myOnPress={uploadFileFromGallery}
-                                styles={styles}
-                            />
-                        </>
-                    )}
                 </View>
+
+                <FileUploadModal
+                    visible={actionModalVisible}
+                    content="בחר פעולה שברצונך לבצע"
+                    buttons={uploadModalButtons}
+                    onClose={() => setActionModalVisible(false)}
+                />
             </View>
 
             <CreateFolderModel

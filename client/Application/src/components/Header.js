@@ -46,7 +46,7 @@ const Header = () => {
             fontWeight: 'bold',
         },
         greetingText: {
-            fontSize: constats.sizes.font.medium,
+            fontSize: constats.sizes.font.medium - 3,
             color: '#777',
             fontWeight: 'normal',
             writingDirection: 'rtl',
