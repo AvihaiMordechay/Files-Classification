@@ -4,3 +4,34 @@ eas login
 adb uninstall com.avihaimo1.Application
 eas build --profile preview --platform android
 adb install application-bc7b6f4c-7e2a-4dca-aa9e-40a8fa9972db.apk
+
+
+{
+  "cli": {
+    "version": ">= 15.0.9",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "",
+        "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "",
+        "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": ""
+      }
+    },
+    "production": {
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
