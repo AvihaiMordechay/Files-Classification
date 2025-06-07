@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { useUser } from "../context/UserContext";
-import { View, TextInput, StyleSheet } from 'react-native';
+import { View, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { useConstats } from "../styles/constats";
 import { Ionicons } from '@expo/vector-icons';
 
 const Search = ({ setResultSearch }) => {
     const constats = useConstats();
-
     const { user } = useUser();
     const [searchValue, setSearchValue] = useState("");
 
@@ -36,19 +35,17 @@ const Search = ({ setResultSearch }) => {
 
         const filesResults = Object.entries(user.folders || {})
             .flatMap(([folderName, folder]) =>
-                Object.entries(folder.files || {}).map(([fileId, file]) => {
-                    return {
-                        id: fileId,
-                        name: file.name,
-                        path: file.path,
-                        fileType: file.type,
-                        isFavorite: file.isFavorite,
-                        lastViewed: file.lastViewed,
-                        folderName: folderName,
-                        size: file.size,
-                        type: 'file',
-                    };
-                })
+                Object.entries(folder.files || {}).map(([fileId, file]) => ({
+                    id: fileId,
+                    name: file.name,
+                    path: file.path,
+                    fileType: file.type,
+                    isFavorite: file.isFavorite,
+                    lastViewed: file.lastViewed,
+                    folderName: folderName,
+                    size: file.size,
+                    type: 'file',
+                }))
             )
             .filter(file => file.name.toLowerCase().includes(searchLower));
 
@@ -64,6 +61,11 @@ const Search = ({ setResultSearch }) => {
     const handleSearch = (text) => {
         setSearchValue(text);
         performSearch(text);
+    };
+
+    const clearSearch = () => {
+        setSearchValue("");
+        setResultSearch([]);
     };
 
     const styles = StyleSheet.create({
@@ -92,18 +94,27 @@ const Search = ({ setResultSearch }) => {
             color: '#333',
             fontWeight: '500',
         },
+        iconButton: {
+            padding: 5,
+        },
     });
 
     return (
         <View style={styles.searchContainer}>
             <View style={styles.searchBox}>
-                <Ionicons name="search-outline" size={constats.sizes.icon.default} color="#999" style={styles.searchIcon} />
+                {searchValue.length > 0 ? (
+                    <TouchableOpacity onPress={clearSearch} style={styles.iconButton}>
+                        <Ionicons name="close-circle-outline" size={constats.sizes.icon.default} color="#999" />
+                    </TouchableOpacity>
+                ) : (
+                    <Ionicons name="search-outline" size={constats.sizes.icon.default} color="#999" style={styles.searchIcon} />
+                )}
                 <TextInput
                     style={styles.searchInput}
                     placeholder="חפש שם תיקייה או קובץ"
                     placeholderTextColor="#999"
                     value={searchValue}
-                    onChangeText={(text) => handleSearch(text)}
+                    onChangeText={handleSearch}
                 />
             </View>
         </View>

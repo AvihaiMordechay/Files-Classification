@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useConstats } from '../../styles/constats';
+import { Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {
   View,
@@ -9,8 +10,6 @@ import {
   StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
-  Platform,
-  Alert,
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
@@ -107,6 +106,11 @@ const RegistrationScreen = () => {
       justifyContent: 'center',
       alignItems: 'center',
     },
+    logoImage: {
+      width: constats.sizes.icon.width,
+      height: constats.sizes.icon.height,
+      marginBottom: 20,
+    },
     logoContainer: {
       flexDirection: 'row',
       marginBottom: 20,
@@ -165,10 +169,13 @@ const RegistrationScreen = () => {
         <KeyboardAvoidingView style={styles.keyboardAvoidingView}>
           <ScrollView contentContainerStyle={styles.scrollView}>
             <View style={styles.logoContainer}>
-              <View style={styles.logoBox}></View>
-              <View style={[styles.logoBox, styles.logoBoxOverlap]}></View>
+              <Image
+                source={require('../../../assets/icon.png')}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
             </View>
-            <Text style={styles.title}>File Keeper</Text>
+
 
             <Formik
               initialValues={{

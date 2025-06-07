@@ -64,7 +64,7 @@ const FavoriteScreen = ({ navigation }) => {
             </View>
             <SafeAreaProvider>
                 <SafeAreaView style={styles.container}>
-                    <Text style={styles.baseText}>המועדפים שלי:</Text>
+                    <Text style={styles.baseText}>מועדפים:</Text>
                     <ScrollView contentContainerStyle={styles.categoriesContainer}>
                         {validFavorites.length > 0 ? (
                             validFavorites.map((fav, index) => {

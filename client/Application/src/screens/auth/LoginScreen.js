@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useConstats } from '../../styles/constats';
+import { Image } from 'react-native';
 import {
   View,
   Text,
@@ -115,6 +116,11 @@ const LoginScreen = ({ navigation }) => {
       textDecorationLine: 'underline',
       paddingRight: 10,
     },
+    logoImage: {
+      width: constats.sizes.icon.width,
+      height: constats.sizes.icon.height,
+      marginBottom: 20,
+    },
   });
 
   return (
@@ -123,10 +129,12 @@ const LoginScreen = ({ navigation }) => {
         <KeyboardAvoidingView style={styles.keyboardAvoidingView}>
           <ScrollView contentContainerStyle={styles.scrollView}>
             <View style={styles.logoContainer}>
-              <View style={styles.logoBox}></View>
-              <View style={[styles.logoBox, styles.logoBoxOverlap]}></View>
+              <Image
+                source={require('../../../assets/icon.png')}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
             </View>
-            <Text style={styles.title}>File Keeper</Text>
 
             <Formik
               initialValues={{ email: '', password: '' }}

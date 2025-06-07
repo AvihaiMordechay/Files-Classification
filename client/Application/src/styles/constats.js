@@ -39,7 +39,9 @@ const getConstats = (scaleFactor = 0) => ({
             star: 22,
             default: 24,
             FileUploadModal: 42,
-            profile: 47
+            profile: 47,
+            width: 450,
+            height: 100,
         }
     }
 });

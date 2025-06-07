@@ -44,7 +44,7 @@ const ApplicationNavigator = () => {
             </Tab.Screen>
             <Tab.Screen
                 name="Favorites"
-                options={{ title: 'מעודפים' }}
+                options={{ title: 'מועדפים' }}
             >
                 {() => <FavoriteStackNavigator />}
             </Tab.Screen>
