@@ -4,13 +4,13 @@
     "slug": "application",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/favicon.jpeg",
+    "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FFFFFFFF"
     },
     "ios": {
       "supportsTablet": true,
@@ -20,8 +20,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/favicon.jpeg",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/adaptiveIcon.png",
+        "backgroundColor": "#FFFFFFFF"
       },
       "package": "com.avihaimo1.application",
       "permissions": [
@@ -31,7 +31,7 @@
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.jpeg"
+      "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
