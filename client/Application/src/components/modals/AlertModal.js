@@ -38,6 +38,7 @@ const AlertModal = ({ visible, onClose, title, message, buttons }) => {
       backgroundColor: '#fff',
       borderRadius: 16,
       alignItems: 'center',
+      justifyContent: 'center',
     },
     modalTitle: {
       fontSize: constats.sizes.font.mediumPlus,
@@ -47,8 +48,9 @@ const AlertModal = ({ visible, onClose, title, message, buttons }) => {
       color: '#333',
     },
     modalMessage: {
-      fontSize: constats.sizes.font.medium,
-      marginBottom: 20,
+      fontSize: constats.sizes.font.medium + 2,
+      marginBottom: 30,
+      marginTop: 20,
       textAlign: 'center',
       color: '#333',
     },
@@ -90,7 +92,6 @@ const AlertModal = ({ visible, onClose, title, message, buttons }) => {
               style={styles.modalView}
               onPress={(e) => e.stopPropagation()}
             >
-              <Text style={styles.modalTitle}>{title}</Text>
               <Text style={styles.modalMessage}>{message}</Text>
               <View style={styles.modalButtonsContainer}>
                 {buttons.map((button, index) => (
