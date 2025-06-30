@@ -1,0 +1,29 @@
+{
+  "cli": {
+    "version": ">= 15.0.9",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyBdmN9_ELgy-Ui-EnLkosq8iE0cpIbh8Q4",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "files-classification.firebaseapp.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "files-classification",
+        "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "files-classification.appspot.com",
+        "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "912043324894",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "1:912043324894:web:e9b2a26533009f8b8e594f"
+      }
+    },
+    "production": {
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
