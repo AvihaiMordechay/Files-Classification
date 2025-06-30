@@ -17,7 +17,7 @@ export default {
     },
     onboarding: {
         page1: {
-            title: 'ברוכים הבאים\nלאפליקציה לניהול מסמכים',
+            title: 'ברוכים הבאים\nלFile Kepper',
             description: 'הדרך הפשוטה והמהירה לנהל את כל \nהמסמכים שלכם במקום אחד ובנוחות מלאה.',
             button: 'בואו נתחיל!',
         },
