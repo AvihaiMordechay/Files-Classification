@@ -149,23 +149,29 @@ const UploadFile = ({ file }) => {
             {
               text: 'צור תיקייה חדשה',
               icon: 'add-outline',
-              onPress: () =>
-                handleButtonPress('createNewFolder', 'newCategoryModal'),
+              onPress: () => {
+                handleButtonPress('createNewFolder', 'newCategoryModal');
+                setNewCategoryModalVisible(false);
+              }
             },
             ...(hasFolders
               ? [{
                 icon: 'save-outline',
                 text: 'שמור בתיקייה קיימת',
-                onPress: () =>
-                  handleButtonPress('saveToExisting', 'newCategoryModal'),
+                onPress: () => {
+                  handleButtonPress('saveToExisting', 'newCategoryModal');
+                  setNewCategoryModalVisible(false);
+                }
               }]
               : []),
             {
               icon: 'folder-outline',
               isPrimary: true,
               text: `צור תיקייה ${category}`,
-              onPress: () =>
-                handleButtonPress('createCategoryFolder', 'newCategoryModal'),
+              onPress: () => {
+                handleButtonPress('createCategoryFolder', 'newCategoryModal');
+                setNewCategoryModalVisible(false);
+              }
             },
           ]}
           onClose={() => setNewCategoryModalVisible(false)}
@@ -177,26 +183,32 @@ const UploadFile = ({ file }) => {
             {
               text: 'צור תיקייה חדשה',
               icon: 'add-outline',
-              onPress: () =>
-                handleButtonPress('createNewFolder', 'existCategoryModal'),
+              onPress: () => {
+                handleButtonPress('createNewFolder', 'existCategoryModal');
+                setExistCategoryModalVisible(false)
+              }
             },
             ...(hasFolders
               ? [{
                 icon: 'save-outline',
                 text: 'שמור בתיקייה קיימת',
-                onPress: () =>
-                  handleButtonPress('saveToExisting', 'newCategoryModal'),
+                onPress: () => {
+                  handleButtonPress('saveToExisting', 'newCategoryModal');
+                  setExistCategoryModalVisible(false)
+                }
               }]
               : []),
             {
               icon: 'save-outline',
               isPrimary: true,
               text: `שמור בתיקיית ${category}`,
-              onPress: () =>
+              onPress: () => {
                 handleButtonPress(
                   'saveToExistingCategory',
                   'existCategoryModal'
-                ),
+                );
+                setExistCategoryModalVisible(false)
+              }
             },
           ]}
           onClose={() => setExistCategoryModalVisible(false)}
@@ -208,15 +220,19 @@ const UploadFile = ({ file }) => {
             {
               text: 'צור תיקייה חדשה',
               icon: 'add-outline',
-              onPress: () =>
-                handleButtonPress('createNewFolder', 'failedRecognitionModel'),
+              onPress: () => {
+                handleButtonPress('createNewFolder', 'failedRecognitionModel');
+                setFailedRecognitionModelVisible(false);
+              }
             },
             ...(hasFolders
               ? [{
                 icon: 'save-outline',
                 text: 'שמור בתיקייה קיימת',
-                onPress: () =>
-                  handleButtonPress('saveToExisting', 'newCategoryModal'),
+                onPress: () => {
+                  handleButtonPress('saveToExisting', 'newCategoryModal');
+                  setFailedRecognitionModelVisible(false);
+                },
               }]
               : []),
           ]}
